@@ -46,47 +46,116 @@ function useCountUp(target, go) {
 
 function WaterViz({ level = 0, active }) {
   const safeLevel = typeof level === 'number' ? level : parseFloat(level) || 0;
-  const [fill,setFill]=useState(0);
-  const {dark,mid,light}=waterTheme(safeLevel);
-  useEffect(()=>{ if(active){ const t=setTimeout(()=>setFill(safeLevel),350); return()=>clearTimeout(t); } },[active,safeLevel]);
+  const [fill, setFill] = useState(0);
+
+  useEffect(() => {
+    if (active) {
+      const t = setTimeout(() => setFill(safeLevel), 350);
+      return () => clearTimeout(t);
+    }
+  }, [active, safeLevel]);
+
+  // Max water line y=22, Min water line y=102 (empty)
+  // Total span = 80px
+  const waterY = 102 - (fill / 100) * 80;
+
   return (
-    <div style={{position:"relative",height:145,background:"#010B15",borderRadius:10,overflow:"hidden",border:"1px solid rgba(255,255,255,0.05)"}}>
-      {[25,50,75].map(m=>(
-        <div key={m} style={{position:"absolute",bottom:`${m}%`,left:0,right:0,
-          borderTop:"1px dashed rgba(255,255,255,0.07)",zIndex:1,pointerEvents:"none"}}>
-          <span style={{position:"absolute",right:6,top:-8,fontSize:9,
-            color:"rgba(255,255,255,0.2)",fontFamily:"monospace"}}>{m}%</span>
-        </div>
-      ))}
-      {/* Water body */}
-      <div style={{
-        position:"absolute",bottom:0,left:0,right:0,height:`${fill}%`,
-        background:`linear-gradient(to top,${dark},${mid} 65%)`,
-        transition:"height 1.9s cubic-bezier(0.34,1.35,0.64,1)",
-        zIndex:2,overflow:"visible"
-      }}>
-        {/* Wave surface */}
-        <div style={{position:"absolute",top:-14,left:0,right:0,height:28,overflow:"hidden"}}>
-          <svg viewBox="0 0 480 24" preserveAspectRatio="none"
-            style={{width:"200%",height:"100%",display:"block",animation:"wv1 3s linear infinite"}}>
-            <path d={WAVE} fill="none" stroke={light} strokeWidth="2.5" strokeLinecap="round"/>
-          </svg>
-          <svg viewBox="0 0 480 24" preserveAspectRatio="none"
-            style={{position:"absolute",top:5,left:0,width:"200%",height:"100%",display:"block",animation:"wv1 5.5s linear infinite"}}>
-            <path d={WAVE} fill="none" stroke={mid} strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
-          </svg>
-        </div>
-      </div>
-      {/* Level % (ALWAYS VISIBLE OVERLAY) */}
-      <div style={{
-        position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center",
-        fontFamily:"monospace",fontSize:28,fontWeight:800,
-        color:"rgba(255,255,255,0.95)",letterSpacing:"-1px",
-        textShadow:`0 0 22px ${mid}, 0 2px 10px rgba(0,0,0,0.8)`,
-        zIndex:3,pointerEvents:"none"
-      }}>
-        {safeLevel.toFixed(1)}<span style={{fontSize:13,fontWeight:400,opacity:0.65}}>%</span>
-      </div>
+    <div style={{
+      position: "relative",
+      height: 145,
+      background: "#020912",
+      borderRadius: 10,
+      overflow: "hidden",
+      border: "1px solid rgba(255, 255, 255, 0.05)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 2
+    }}>
+      <svg width="100%" height="100%" viewBox="0 0 200 120" style={{ display: "block" }}>
+        <defs>
+          {/* Reservoir Clip Path */}
+          <clipPath id={`res-clip-${fill}`}>
+            <path d="M 10,15 L 10,102 L 115,102 C 142,98 156,65 162,15 Z" />
+          </clipPath>
+
+          {/* Water Gradient */}
+          <linearGradient id={`water-grad-${fill}`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#0284C7" stopOpacity="0.95" />
+          </linearGradient>
+
+          {/* Wave Pattern overlay */}
+          <pattern id={`wave-pat-${fill}`} width="30" height="12" patternUnits="userSpaceOnUse">
+            <path d="M 0,6 Q 7.5,3 15,6 Q 22.5,9 30,6" fill="none" stroke="#E0F2FE" strokeWidth="1.0" opacity="0.3" />
+            <animateTransform 
+              attributeName="patternTransform" 
+              type="translate" 
+              from="0,0" to="30,0" 
+              dur="3s" repeatCount="indefinite" 
+            />
+          </pattern>
+
+          {/* Dam Concrete Gradient */}
+          <linearGradient id="dam-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#9CA3AF" />
+            <stop offset="100%" stopColor="#4B5563" />
+          </linearGradient>
+        </defs>
+
+        {/* Grid lines background */}
+        <g opacity="0.12">
+          <line x1="10" y1="32" x2="162" y2="32" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <line x1="10" y1="52" x2="162" y2="52" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <line x1="10" y1="72" x2="162" y2="72" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <line x1="10" y1="92" x2="162" y2="92" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <text x="14" y="35" fill="#FFFFFF" fontSize="5" fontFamily="monospace">75%</text>
+          <text x="14" y="55" fill="#FFFFFF" fontSize="5" fontFamily="monospace">50%</text>
+          <text x="14" y="75" fill="#FFFFFF" fontSize="5" fontFamily="monospace">25%</text>
+        </g>
+
+        {/* Reservoir Water Body (Clipped to curved dam shape) */}
+        <g clipPath={`url(#res-clip-${fill})`}>
+          {/* Water Fill Gradient */}
+          <rect x="0" y={waterY} width="200" height="120" fill={`url(#water-grad-${fill})`} />
+          {/* Wave Pattern */}
+          <rect x="0" y={waterY} width="200" height="120" fill={`url(#wave-pat-${fill})`} />
+
+          {/* Animating Wave Line at Water Surface */}
+          <path 
+            d={`M -20,${waterY} Q -10,${waterY - 1.5} 0,${waterY} Q 10,${waterY + 1.5} 20,${waterY} Q 30,${waterY - 1.5} 40,${waterY} Q 50,${waterY + 1.5} 60,${waterY} Q 70,${waterY - 1.5} 80,${waterY} Q 90,${waterY + 1.5} 100,${waterY} Q 110,${waterY - 1.5} 120,${waterY} Q 130,${waterY + 1.5} 140,${waterY} Q 150,${waterY - 1.5} 160,${waterY} Q 170,${waterY + 1.5} 180,${waterY}`} 
+            fill="none" 
+            stroke="#E0F2FE" 
+            strokeWidth="1.2"
+            opacity="0.8"
+          >
+            <animateTransform 
+              attributeName="transform" 
+              type="translate" 
+              from="0,0" to="20,0" 
+              dur="2s" repeatCount="indefinite" 
+            />
+          </path>
+        </g>
+
+        {/* Dam Structure */}
+        <path d="M 115,102 C 142,98 156,65 162,15 L 190,15 L 190,102 Z" fill="url(#dam-grad)" stroke="#374151" strokeWidth="1" />
+
+        {/* Outer diagram boundary box */}
+        <rect x="10" y="15" width="180" height="87" fill="none" stroke="#4B5563" strokeWidth="1" opacity="0.4" />
+
+        {/* Text Labels matching the user's sketch */}
+        <text x="60" y="26" fill="#67E8F9" fontSize="8" fontWeight="bold" fontFamily="sans-serif" letterSpacing="0.4" textAnchor="middle" opacity="0.8">Reservoir</text>
+        <text x="176" y="76" fill="#111827" fontSize="9" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">Dam</text>
+
+        {/* Centered glassmorphic percentage readout overlay */}
+        <g>
+          <rect x="38" y="46" width="46" height="18" rx="4" fill="rgba(3, 10, 20, 0.82)" stroke="rgba(6, 182, 212, 0.4)" strokeWidth="0.5" />
+          <text x="61" y="58" fill="#FFFFFF" fontSize="10" fontWeight="900" fontFamily="monospace" textAnchor="middle">
+            {safeLevel.toFixed(1)}%
+          </text>
+        </g>
+      </svg>
     </div>
   );
 }
@@ -117,12 +186,6 @@ function DamCard({ dam, delay }) {
           <div style={{fontSize:11,color:"rgba(220,240,255,0.38)"}}>
             <span style={{color:mid,fontWeight:600}}>{dam.river}</span>{" · "}{dam.district}
           </div>
-        </div>
-        <div style={{display:"flex", gap: 6, alignItems:"center"}}>
-          <div style={{
-            padding:"4px 8px",borderRadius:20,fontSize:10.5,fontWeight:700,
-            color:"#BAE6FD",background:"rgba(6,182,212,0.12)",border:"1px solid rgba(6,182,212,0.2)"
-          }}>{safeLevel.toFixed(1)}%</div>
         </div>
       </div>
       <WaterViz level={safeLevel} active={vis}/>
@@ -345,57 +408,6 @@ export default function App() {
           }}>
             Real-time daily monitoring of reservoir levels, capacity, inflows, and outflows across South India.
           </p>
-
-          {/* Hero Search Box */}
-          <div style={{
-            width: "100%", maxWidth: 460, position: "relative", marginBottom: 32,
-            animation: "fadeSlideUp 0.8s ease 0.25s both", zIndex: 10
-          }}>
-            <div style={{ position: "relative" }}>
-              <input
-                type="text"
-                placeholder="🔍 Search reservoirs (e.g. KRS, Mettur, Idukki)..."
-                value={searchQuery}
-                onChange={e => {
-                  setSearchQuery(e.target.value);
-                  const sec = document.getElementById("dams-section");
-                  if (sec) {
-                    sec.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
-                style={{
-                  width: "100%", padding: "14px 18px 14px 46px", borderRadius: 30,
-                  border: "1px solid rgba(6, 182, 212, 0.25)",
-                  background: "rgba(3, 10, 20, 0.6)",
-                  color: "#E0F2FE", fontSize: 15, outline: "none",
-                  boxShadow: "0 8px 32px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255,255,255,0.05)",
-                  transition: "all 0.3s",
-                  backdropFilter: "blur(8px)"
-                }}
-                onFocus={e => { 
-                  e.target.style.borderColor = "rgba(6, 182, 212, 0.7)"; 
-                  e.target.style.boxShadow = "0 8px 32px rgba(6, 182, 212, 0.25), 0 0 0 1px rgba(6, 182, 212, 0.3)";
-                }}
-                onBlur={e => { 
-                  e.target.style.borderColor = "rgba(6, 182, 212, 0.25)"; 
-                  e.target.style.boxShadow = "0 8px 32px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255,255,255,0.05)";
-                }}
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  style={{
-                    position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)",
-                    background: "none", border: "none", color: "rgba(224, 242, 254, 0.4)",
-                    fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"
-                  }}
-                  title="Clear search"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          </div>
 
           {/* Hero Buttons */}
           <div style={{ display: "flex", gap: 16, animation: "fadeSlideUp 0.8s ease 0.3s both" }}>
