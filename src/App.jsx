@@ -61,8 +61,8 @@ function WaterViz({ level = 0, outflow = null, active }) {
   const waterY = 102 - (fill / 100) * 82;
 
   // Dynamic values based on flow rate (scaling between 0 and 12,000 cusecs)
-  const jetReach = Math.min(192, 183 + (safeOutflow / 12000) * 9);
-  const jetLanding = Math.min(198, 186 + (safeOutflow / 12000) * 12);
+  const jetReach = Math.min(196, 188 + (safeOutflow / 12000) * 8);
+  const jetLanding = Math.min(202, 191 + (safeOutflow / 12000) * 11);
   const streamWidth = Math.min(3.5, 0.8 + (safeOutflow / 12000) * 2.7);
   const animDuration = Math.max(0.35, 1.4 - (safeOutflow / 12000) * 1.05);
 
@@ -179,16 +179,62 @@ function WaterViz({ level = 0, outflow = null, active }) {
         <rect x="169" y="11" width="3" height="4" fill="#3B4252" />
         <line x1="159" y1="7.5" x2="175" y2="7.5" stroke="#D8DEE9" strokeWidth="0.5" opacity="0.8" />
 
-        {/* Water Release / Outflow Tunnel at Dam Toe */}
+        {/* Spillway Gates (Steel radial gate leaf styling that lifts when outflow active) */}
+        <g opacity="0.95">
+          <rect 
+            x="159.5" 
+            y={safeOutflow > 0 ? 12.5 : 15} 
+            width="2.2" 
+            height="3.5" 
+            rx="0.3"
+            fill={safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
+            stroke="#1E293B" 
+            strokeWidth="0.4" 
+            style={{ transition: "y 0.5s ease" }}
+          />
+          <rect 
+            x="165.5" 
+            y={safeOutflow > 0 ? 12.5 : 15} 
+            width="3" 
+            height="3.5" 
+            rx="0.3"
+            fill={safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
+            stroke="#1E293B" 
+            strokeWidth="0.4" 
+            style={{ transition: "y 0.5s ease" }}
+          />
+          <rect 
+            x="172.5" 
+            y={safeOutflow > 0 ? 12.5 : 15} 
+            width="2.2" 
+            height="3.5" 
+            rx="0.3"
+            fill={safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
+            stroke="#1E293B" 
+            strokeWidth="0.4" 
+            style={{ transition: "y 0.5s ease" }}
+          />
+        </g>
+
+        {/* Dark openings under gates when open */}
+        {safeOutflow > 0 && (
+          <g>
+            <rect x="159.5" y="16" width="2.2" height="1.8" fill="#0F172A" />
+            <rect x="165.5" y="16" width="3" height="1.8" fill="#0F172A" />
+            <rect x="172.5" y="16" width="2.2" height="1.8" fill="#0F172A" />
+          </g>
+        )}
+
+        {/* Closed/Low-Level Outflow Sluice Tunnel at Dam Toe */}
         <circle cx="180" cy="95" r="2" fill="#1E222B" stroke="#434C5E" strokeWidth="0.5" />
         <path d="M 180,95 Q 186,95 188,102 L 190,102" fill="none" stroke="#4C566A" strokeWidth="1.2" strokeLinecap="round" />
         
-        {/* Dynamic Outflow Release Water Jet */}
+        {/* Dynamic Outflow Release Water Jet (Cascading down the spillway slope and launching into air) */}
         {safeOutflow > 0 && (
           <g>
             {/* Base water stream */}
             <path 
-              d={`M 180,95 Q ${jetReach},95 ${jetReach + 2},102 L ${jetLanding},102`} 
+              d={`M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},102`} 
               fill="none" 
               stroke="#38BDF8" 
               strokeWidth={streamWidth} 
@@ -197,7 +243,7 @@ function WaterViz({ level = 0, outflow = null, active }) {
             />
             {/* Animated white foaming flow overlay */}
             <path 
-              d={`M 180,95 Q ${jetReach},95 ${jetReach + 2},102 L ${jetLanding},102`} 
+              d={`M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},102`} 
               fill="none" 
               stroke="#E0F2FE" 
               strokeWidth={streamWidth * 0.5} 
@@ -209,11 +255,11 @@ function WaterViz({ level = 0, outflow = null, active }) {
             </path>
 
             {/* Splash/Foam particles at the landing spot */}
-            <circle cx={jetReach + 2} cy="101" r="1.5" fill="#FFFFFF" opacity="0.8">
+            <circle cx={jetLanding} cy="101" r="1.5" fill="#FFFFFF" opacity="0.8">
               <animate attributeName="r" values="1;2.5;1" dur="0.5s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.85;0;0.85" dur="0.5s" repeatCount="indefinite" />
             </circle>
-            <circle cx={jetReach + 4} cy="101" r="1" fill="#E0F2FE" opacity="0.6">
+            <circle cx={jetLanding + 1.8} cy="101" r="1" fill="#E0F2FE" opacity="0.6">
               <animate attributeName="r" values="0.5;1.8;0.5" dur="0.7s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.6;0;0.6" dur="0.7s" repeatCount="indefinite" />
             </circle>
