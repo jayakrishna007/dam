@@ -50,8 +50,8 @@
     "district": "Vijayanagara",
     "level": 9.36,
     "capacity": 105.788,
-    "inflow": 419,
-    "outflow": 211,
+    "inflow": 365,
+    "outflow": 157,
     "state": "Karnataka"
   },
   {
@@ -301,7 +301,7 @@
     "name": "Chitravati Balancing",
     "river": "Chitravathi",
     "district": "Anantapur",
-    "level": 47.61,
+    "level": 47.41,
     "capacity": 10.23,
     "inflow": null,
     "outflow": null,
