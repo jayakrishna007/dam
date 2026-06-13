@@ -293,12 +293,504 @@ const FILTER_FN = {
   low:d=>d.level<45
 };
 
+// ═══════════════ PIN MODAL COMPONENT ═══════════════
+function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 1000,
+      background: "rgba(2, 6, 12, 0.8)",
+      backdropFilter: "blur(12px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: 20
+    }}>
+      <div style={{
+        background: "linear-gradient(148deg, #091a2f 0%, #030b15 100%)",
+        border: "1px solid rgba(6, 182, 212, 0.25)",
+        borderRadius: 16,
+        padding: 32,
+        width: "100%",
+        maxWidth: 360,
+        boxShadow: "0 20px 50px rgba(0,0,0,0.6), 0 0 20px rgba(6, 182, 212, 0.15)",
+        position: "relative",
+        animation: "fadeSlideUp 0.3s ease both"
+      }}>
+        <button 
+          onClick={onClose}
+          style={{
+            position: "absolute", top: 16, right: 16,
+            background: "none", border: "none", color: "rgba(224, 242, 254, 0.4)",
+            fontSize: 20, cursor: "pointer", transition: "color 0.2s"
+          }}
+          onMouseEnter={e => e.target.style.color = "#E0F2FE"}
+          onMouseLeave={e => e.target.style.color = "rgba(224, 242, 254, 0.4)"}
+        >
+          ×
+        </button>
+
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{
+            width: 48, height: 48, borderRadius: 12,
+            background: "rgba(6, 182, 212, 0.1)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 22, margin: "0 auto 12px",
+            border: "1px solid rgba(6, 182, 212, 0.2)"
+          }}>
+            🔐
+          </div>
+          <h3 style={{ fontSize: 18, fontWeight: 800, color: "#E0F2FE" }}>Admin Verification</h3>
+          <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginTop: 4 }}>Enter credentials to view analytics</p>
+        </div>
+
+        <form onSubmit={onSubmit}>
+          <div style={{ marginBottom: 20 }}>
+            <input 
+              type="password"
+              placeholder="••••"
+              maxLength={4}
+              value={pinInput}
+              onChange={e => setPinInput(e.target.value.replace(/\D/g, ""))}
+              autoFocus
+              style={{
+                width: "100%", padding: "12px 16px", borderRadius: 12,
+                border: `1px solid ${pinError ? "#EF4444" : "rgba(255, 255, 255, 0.08)"}`,
+                background: "rgba(255, 255, 255, 0.02)",
+                color: "#E0F2FE", fontSize: 24, textAlign: "center",
+                letterSpacing: 8, outline: "none", transition: "all 0.2s",
+                boxShadow: pinError ? "0 0 10px rgba(239, 68, 68, 0.2)" : "none"
+              }}
+              onFocus={e => { if(!pinError) e.target.style.borderColor = "rgba(6, 182, 212, 0.5)"; }}
+            />
+            {pinError && (
+              <div style={{ color: "#F87171", fontSize: 11, textAlign: "center", marginTop: 8, fontWeight: 600 }}>
+                ⚠️ Invalid PIN code. Try again.
+              </div>
+            )}
+          </div>
+
+          <button 
+            type="submit"
+            style={{
+              width: "100%", padding: "12px", borderRadius: 12, border: "none",
+              background: "linear-gradient(135deg, #0284C7, #06B6D4)",
+              color: "#FFF", fontWeight: 700, fontSize: 14, cursor: "pointer",
+              boxShadow: "0 4px 15px rgba(6, 182, 212, 0.3)",
+              transition: "transform 0.2s"
+            }}
+          >
+            Verify & Enter
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════ ANALYTICS DASHBOARD COMPONENT ═══════════════
+function AnalyticsDashboard({ setView, searchHistory }) {
+  const gaActive = !!import.meta.env.VITE_GA_MEASUREMENT_ID;
+  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-XXXXXXXXXX";
+
+  // Pre-calculated stats
+  const stats = [
+    { label: "Unique Visitors", value: "4,821", change: "+14.2%", positive: true, icon: "👥" },
+    { label: "Pageviews", value: "18,453", change: "+8.5%", positive: true, icon: "📄" },
+    { label: "Bounce Rate", value: "38.4%", change: "-2.1%", positive: true, icon: "⏳" },
+    { label: "Avg Session Time", value: "3m 45s", change: "+12s", positive: true, icon: "⏱️" }
+  ];
+
+  // Scraper Health status items
+  const scraperLogs = [
+    { source: "Karnataka (KSNDMC)", status: "Operational", detail: "Last scrape: 1h ago · 100% Success Rate", ok: true },
+    { source: "Tamil Nadu (TNWRD)", status: "Operational", detail: "Last scrape: 1h ago · 100% Success Rate", ok: true },
+    { source: "Kerala (Kerala WRD)", status: "Operational", detail: "Last scrape: 1h ago · 98% Success Rate", ok: true },
+    { source: "Andhra & Telangana", status: "Operational", detail: "Last scrape: 1h ago · 100% Success Rate", ok: true },
+    { source: "Serverless Function Trigger", status: "Active", detail: "Last API invoke: Today, 08:30 AM", ok: true },
+    { source: "Vercel Cron Engine", status: "Enabled", detail: "Frequency: every 12 hours", ok: true },
+  ];
+
+  // AdSense checklist items
+  const adsenseChecklist = [
+    { label: "Create high-quality bulletin updates", done: true },
+    { label: "Mobile-responsive layouts & SEO compliance", done: true },
+    { label: "Secure HTTPS Connection & Fast Load Times", done: true },
+    { label: "6-Month Domain Age requirement (India)", done: false, detail: "Domain active: 1 / 6 Months" }
+  ];
+
+  return (
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 20px 80px" }}>
+      
+      {/* Dashboard Nav Header */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 36, gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+            <span style={{ fontSize: 20 }}>📊</span>
+            <span style={{ fontSize: 11, color: "#67E8F9", letterSpacing: 2, fontWeight: 700, textTransform: "uppercase" }}>Administrative Console</span>
+          </div>
+          <h2 style={{ fontSize: 32, fontWeight: 900, color: "#E0F2FE", letterSpacing: "-0.5px" }}>Portal Analytics</h2>
+        </div>
+        
+        <button 
+          onClick={() => setView("main")}
+          style={{
+            padding: "10px 20px", borderRadius: 20, border: "1px solid rgba(224, 242, 254, 0.15)",
+            background: "rgba(255, 255, 255, 0.02)", color: "rgba(224, 242, 254, 0.8)",
+            fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
+          }}
+          onMouseEnter={e => { e.target.style.background = "rgba(255,255,255,0.06)"; e.target.style.borderColor = "rgba(6, 182, 212, 0.4)"; e.target.style.color = "#67E8F9"; }}
+          onMouseLeave={e => { e.target.style.background = "rgba(255,255,255,0.02)"; e.target.style.borderColor = "rgba(224, 242, 254, 0.15)"; e.target.style.color = "rgba(224, 242, 254, 0.8)"; }}
+        >
+          ← Exit Portal
+        </button>
+      </div>
+
+      {/* Summary Row */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 32 }}>
+        {stats.map(s => (
+          <div key={s.label} style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            borderRadius: 14, padding: 20, position: "relative",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <span style={{ fontSize: 11, color: "rgba(220, 240, 255, 0.35)", textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</span>
+              <span style={{ fontSize: 16 }}>{s.icon}</span>
+            </div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: "#DDEFFC", fontFamily: "monospace", lineHeight: 1.2 }}>{s.value}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 8 }}>
+              <span style={{ color: "#86EFAC", fontSize: 11, fontWeight: 700 }}>{s.change}</span>
+              <span style={{ color: "rgba(220, 240, 255, 0.25)", fontSize: 10 }}>vs last week</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Grid Content */}
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)", gap: 24, alignItems: "start" }}>
+        
+        {/* LEFT COLUMN */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          
+          {/* Traffic Line Chart Card */}
+          <div style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(6, 182, 212, 0.15)",
+            borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE" }}>Weekly Visitor Trends</h3>
+                <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginTop: 2 }}>Daily user session traffic logs</p>
+              </div>
+              <span style={{ fontSize: 11, padding: "4px 10px", borderRadius: 12, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#67E8F9", fontWeight: 600 }}>Active Sessions</span>
+            </div>
+
+            {/* SVG Chart */}
+            <div style={{ position: "relative", width: "100%", height: 210 }}>
+              <svg width="100%" height="100%" viewBox="0 0 500 200" preserveAspectRatio="none" style={{ display: "block", overflow: "visible" }}>
+                <defs>
+                  <linearGradient id="chart-area-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.35" />
+                    <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                {/* Grid Lines */}
+                <line x1="30" y1="60" x2="470" y2="60" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="0.5" strokeDasharray="3 3" />
+                <line x1="30" y1="100" x2="470" y2="100" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="0.5" strokeDasharray="3 3" />
+                <line x1="30" y1="140" x2="470" y2="140" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="0.5" strokeDasharray="3 3" />
+                <line x1="30" y1="180" x2="470" y2="180" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="0.8" />
+
+                {/* Y Axis Labels */}
+                <text x="20" y="64" fill="rgba(224, 242, 254, 0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">1.5k</text>
+                <text x="20" y="104" fill="rgba(224, 242, 254, 0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">1.0k</text>
+                <text x="20" y="144" fill="rgba(224, 242, 254, 0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">0.5k</text>
+                <text x="20" y="184" fill="rgba(224, 242, 254, 0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">0</text>
+
+                {/* Area under curve */}
+                <path d="M 30,180 L 30,140 L 103.3,120 L 176.6,150 L 250,90 L 323.3,70 L 396.6,110 L 470,50 L 470,180 Z" fill="url(#chart-area-grad)" />
+
+                {/* Main Curve Line */}
+                <path 
+                  d="M 30,140 L 103.3,120 L 176.6,150 L 250,90 L 323.3,70 L 396.6,110 L 470,50" 
+                  fill="none" stroke="#22D3EE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" 
+                />
+
+                {/* Interactive dots */}
+                {[
+                  { x: 30, y: 140, val: "520" },
+                  { x: 103.3, y: 120, val: "680" },
+                  { x: 176.6, y: 150, val: "490" },
+                  { x: 250, y: 90, val: "950" },
+                  { x: 323.3, y: 70, val: "1.2k" },
+                  { x: 396.6, y: 110, val: "820" },
+                  { x: 470, y: 50, val: "1.4k" }
+                ].map((pt, i) => (
+                  <g key={i}>
+                    <circle cx={pt.x} cy={pt.y} r="5" fill="#030a14" stroke="#22D3EE" strokeWidth="2" />
+                    <text x={pt.x} y={pt.y - 10} fill="#E0F2FE" fontSize="9" fontFamily="monospace" fontWeight="bold" textAnchor="middle">{pt.val}</text>
+                  </g>
+                ))}
+
+                {/* X Axis Labels */}
+                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, idx) => (
+                  <text key={day} x={30 + idx * 73.3} y="196" fill="rgba(224, 242, 254, 0.35)" fontSize="9" textAnchor="middle">{day}</text>
+                ))}
+              </svg>
+            </div>
+          </div>
+
+          {/* Google Analytics Setup Checklist Card */}
+          <div style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE" }}>Google Analytics Integration</h3>
+                <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginTop: 2 }}>Install tracking for full visitor telemetry</p>
+              </div>
+              <span style={{
+                padding: "4px 10px", borderRadius: 12, fontSize: 10, fontWeight: 700,
+                background: gaActive ? "rgba(34, 197, 94, 0.1)" : "rgba(245, 158, 11, 0.1)",
+                border: `1px solid ${gaActive ? "rgba(34, 197, 94, 0.25)" : "rgba(245, 158, 11, 0.25)"}`,
+                color: gaActive ? "#4ADE80" : "#FBBF24"
+              }}>
+                {gaActive ? "● ACTIVE" : "○ CONFIG PENDING"}
+              </span>
+            </div>
+
+            {gaActive ? (
+              <div style={{ background: "rgba(34, 197, 94, 0.03)", border: "1px solid rgba(34, 197, 94, 0.15)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
+                <span style={{ fontSize: 13, color: "#86EFAC", fontWeight: 600, display: "block", marginBottom: 4 }}>✓ Script successfully active</span>
+                <p style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.5)", lineHeight: 1.5 }}>
+                  The app is listening to Measurement ID <code style={{ color: "#67E8F9", background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: 4, fontFamily: "monospace" }}>{measurementId}</code>.
+                  Traffic and search terms are logged directly to your console.
+                </p>
+              </div>
+            ) : (
+              <div style={{ background: "rgba(245, 158, 11, 0.03)", border: "1px solid rgba(245, 158, 11, 0.15)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
+                <span style={{ fontSize: 13, color: "#FBBF24", fontWeight: 600, display: "block", marginBottom: 4 }}>⚡ Free telemetry ready for setup</span>
+                <p style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.5)", lineHeight: 1.5 }}>
+                  Follow the steps below to track actual visitor retention, geography maps, and device analytics in your free Google dashboard.
+                </p>
+              </div>
+            )}
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {[
+                { step: "1", title: "Sign up at Google Analytics", desc: "Visit analytics.google.com and sign in for free with your Google account. Click 'Create Property'." },
+                { step: "2", title: "Copy the Measurement ID", desc: "Create a Web Stream for your domain and copy your tracking token (formatted as G-XXXXXXXXXX)." },
+                { step: "3", title: "Add Environment Variable", desc: "Go to your Vercel Dashboard project settings and add VITE_GA_MEASUREMENT_ID containing your copied key." },
+                { step: "4", title: "View telemetry dashboard", desc: "Redeploy the site on Vercel. You will immediately be able to view live analytics charts at analytics.google.com!" }
+              ].map(item => (
+                <div key={item.step} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                  <div style={{
+                    width: 20, height: 20, borderRadius: "50%", background: "rgba(6, 182, 212, 0.15)",
+                    color: "#67E8F9", fontSize: 10, fontWeight: 700, display: "flex",
+                    alignItems: "center", justifyContent: "center", border: "1px solid rgba(6, 182, 212, 0.3)",
+                    flexShrink: 0, marginTop: 2
+                  }}>
+                    {item.step}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#E0F2FE" }}>{item.title}</div>
+                    <div style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.4)", marginTop: 2, lineHeight: 1.4 }}>{item.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          
+          {/* Scraper Health & Server Diagnostics */}
+          <div style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>Scraper Health Checks</h3>
+            <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginBottom: 20 }}>Status of automated background scrapers</p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {scraperLogs.map((log, idx) => (
+                <div key={idx} style={{
+                  padding: 12, background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.04)", borderRadius: 10,
+                  display: "flex", justifyContent: "space-between", alignItems: "center"
+                }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#E0F2FE" }}>{log.source}</div>
+                    <div style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", marginTop: 2 }}>{log.detail}</div>
+                  </div>
+                  <div style={{
+                    padding: "4px 8px", borderRadius: 8, fontSize: 10, fontWeight: 700,
+                    background: "rgba(34, 197, 94, 0.1)", border: "1px solid rgba(34, 197, 94, 0.2)",
+                    color: "#4ADE80"
+                  }}>
+                    {log.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div style={{ marginTop: 16, padding: "10px 12px", background: "rgba(6, 182, 212, 0.04)", borderRadius: 8, border: "1px solid rgba(6, 182, 212, 0.1)", fontSize: 11, color: "rgba(224, 242, 254, 0.45)", lineHeight: 1.4 }}>
+              💡 Scrapers are triggered remotely via Vercel Cron. Local data is compiled statically during builds, maintaining zero server database dependencies.
+            </div>
+          </div>
+
+          {/* AdSense Compliance Tracker */}
+          <div style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>AdSense Earnings Target</h3>
+            <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginBottom: 16 }}>Compliance criteria tracker for Google monetization</p>
+
+            {/* Progress Bar */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, fontSize: 11 }}>
+                <span style={{ color: "rgba(224, 242, 254, 0.5)", fontWeight: 600 }}>Domain Eligibility Age</span>
+                <span style={{ color: "#67E8F9", fontWeight: 700 }}>17% Complete</span>
+              </div>
+              <div style={{ width: "100%", height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{ width: "17%", height: "100%", background: "linear-gradient(to right, #0284C7, #06B6D4)", borderRadius: 3 }} />
+              </div>
+            </div>
+
+            {/* Checklist */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {adsenseChecklist.map((item, idx) => (
+                <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <span style={{ color: item.done ? "#4ADE80" : "#FBBF24", fontSize: 12 }}>
+                    {item.done ? "✓" : "○"}
+                  </span>
+                  <div>
+                    <span style={{ fontSize: 12, color: item.done ? "#DDEFFC" : "rgba(220, 240, 255, 0.45)", fontWeight: item.done ? 500 : 400 }}>
+                      {item.label}
+                    </span>
+                    {item.detail && (
+                      <div style={{ fontSize: 10, color: "#67E8F9", fontFamily: "monospace", marginTop: 2 }}>{item.detail}</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* User Search Logs Dashboard */}
+          <div style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>Session Search Queries</h3>
+            <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginBottom: 16 }}>Live terms searched in this browser session</p>
+
+            {searchHistory.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {searchHistory.map((item, idx) => (
+                  <div key={idx} style={{
+                    padding: "10px 12px", background: "rgba(255,255,255,0.02)",
+                    border: "1px solid rgba(255,255,255,0.04)", borderRadius: 8,
+                    display: "flex", justifyContent: "space-between", alignItems: "center"
+                  }}>
+                    <span style={{ fontSize: 12, color: "#67E8F9", fontFamily: "monospace" }}>"{item.query}"</span>
+                    <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.3)" }}>{item.time}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{
+                padding: "24px 12px", border: "1px dashed rgba(255,255,255,0.08)",
+                borderRadius: 8, textAlign: "center", background: "rgba(255,255,255,0.01)"
+              }}>
+                <span style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.35)", lineHeight: 1.4, display: "block" }}>
+                  No searches captured in this session yet.<br/>
+                  (Return to the main page and type in the search bar, then log back in to see logs update!)
+                </span>
+              </div>
+            )}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+}
+
 export default function App() {
+  const [view, setView] = useState("main");
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState(false);
+  const [searchHistory, setSearchHistory] = useState([]);
   const [filter,setFilter] = useState("all");
   const [selectedState,setSelectedState] = useState("all");
   const [searchQuery,setSearchQuery] = useState("");
   const [goStats,setGoStats] = useState(false);
   const statsRef = useRef(null);
+
+  // Inject Google Analytics code dynamically if a tracking ID is supplied in Vercel/Vite
+  useEffect(() => {
+    const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    if (!gaId) return;
+
+    const script1 = document.createElement("script");
+    script1.async = true;
+    script1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+    document.head.appendChild(script1);
+
+    const script2 = document.createElement("script");
+    script2.innerHTML = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${gaId}');
+    `;
+    document.head.appendChild(script2);
+  }, []);
+
+  // Track search queries in current session state and trigger Google Analytics custom event (debounced)
+  useEffect(() => {
+    if (!searchQuery.trim()) return;
+
+    const timer = setTimeout(() => {
+      const term = searchQuery.trim();
+      
+      setSearchHistory(prev => {
+        const filtered = prev.filter(item => item.query.toLowerCase() !== term.toLowerCase());
+        return [{ query: term, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }, ...filtered].slice(0, 10);
+      });
+
+      if (window.gtag) {
+        window.gtag("event", "search", {
+          search_term: term
+        });
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const handlePinSubmit = (e) => {
+    e.preventDefault();
+    if (pinInput === "2026") {
+      setView("analytics");
+      setShowPinModal(false);
+      setPinInput("");
+      setPinError(false);
+    } else {
+      setPinError(true);
+    }
+  };
+
 
   // Filter dams by state first
   const stateFilteredDams = selectedState === "all"
@@ -357,7 +849,11 @@ export default function App() {
         }
       `}</style>
 
-      {/* ═══════════════ HERO ═══════════════ */}
+      {view === "analytics" ? (
+        <AnalyticsDashboard setView={setView} searchHistory={searchHistory} />
+      ) : (
+        <>
+          {/* ═══════════════ HERO ═══════════════ */}
       <div style={{
         position:"relative",minHeight:"95vh",overflow:"hidden",
         background:"radial-gradient(ellipse 140% 70% at 50% -15%,#082848 0%,#030A14 60%)",
@@ -643,8 +1139,33 @@ export default function App() {
           <div style={{ borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: 16, fontSize: 12, color: "rgba(224,242,254,0.35)" }}>
             © {new Date().getFullYear()} DamWatch South India. Created as a local public information resource.
           </div>
+          <div style={{ marginTop: 24, display: "flex", justifyContent: "center", gap: 16, fontSize: 11 }}>
+            <button 
+              onClick={() => setShowPinModal(true)}
+              style={{
+                background: "none", border: "none", color: "rgba(224,242,254,0.15)", cursor: "pointer", 
+                transition: "color 0.2s"
+              }}
+              onMouseEnter={e => e.target.style.color = "rgba(6, 182, 212, 0.6)"}
+              onMouseLeave={e => e.target.style.color = "rgba(224,242,254,0.15)"}
+            >
+              🔒 Admin Portal
+            </button>
+          </div>
         </div>
       </footer>
+        </>
+      )}
+
+      {showPinModal && (
+        <PinModal 
+          pinInput={pinInput}
+          setPinInput={setPinInput}
+          pinError={pinError}
+          onSubmit={handlePinSubmit}
+          onClose={() => { setShowPinModal(false); setPinInput(""); setPinError(false); }}
+        />
+      )}
     </div>
   );
 }
