@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import DAMS from "./data/dams.json";
 
 // Wave path: period=80, viewBox=480, seamless at -50% translateX
 const WAVE = "M0,12 C20,2 60,22 80,12 C100,2 140,22 160,12 C180,2 220,22 240,12 C260,2 300,22 320,12 C340,2 380,22 400,12 C420,2 460,22 480,12";
 
-const TICKER = DAMS.map(d=>`${d.name}: ${d.level}%`).join("  ◆  ");
+const TICKER = DAMS.map(d=>`${d.name}: ${d.level}%`).join("  â—†  ");
 
 function statusOf(l = 0) {
   const level = typeof l === 'number' ? l : parseFloat(l) || 0;
@@ -25,7 +25,7 @@ function waterTheme(l = 0) {
 }
 
 const fmtK = n => {
-  if (n === null || n === undefined) return "—";
+  if (n === null || n === undefined) return "â€”";
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 };
 
@@ -44,6 +44,7 @@ function useCountUp(target, go) {
   return v;
 }
 
+
 function WaterViz({ level = 0, outflow = null, active }) {
   const safeLevel = typeof level === 'number' ? level : parseFloat(level) || 0;
   const safeOutflow = typeof outflow === 'number' ? outflow : parseFloat(outflow) || 0;
@@ -56,276 +57,270 @@ function WaterViz({ level = 0, outflow = null, active }) {
     }
   }, [active, safeLevel]);
 
-  // Max water line y=20, Min water line y=102 (empty)
-  // Total span = 82px
-  const waterY = 102 - (fill / 100) * 82;
+  // Reservoir geometry: x=0..148, y=18..110 (92px tall)
+  const resBottom = 110;
+  const totalH = 92;
+  const waterY = resBottom - (fill / 100) * totalH;
+
+  const hasFlow = safeOutflow > 0;
   const useSpillway = fill >= 75;
 
-  // Dynamic values based on flow rate (scaling between 0 and 12,000 cusecs)
-  const jetReach = Math.min(196, 188 + (safeOutflow / 12000) * 8);
-  const jetLanding = Math.min(202, 191 + (safeOutflow / 12000) * 11);
-  const streamWidth = Math.min(4.5, 1.2 + (safeOutflow / 12000) * 3.3);
-  const animDuration = Math.max(0.3, 1.3 - (safeOutflow / 12000) * 1.0);
+  // Flow scaling (0-12000 cusecs â†’ ratio 0-1)
+  const ratio = Math.min(1, safeOutflow / 12000);
+  const streamW = 1.2 + ratio * 4.0;
+  const flowSpeed = Math.max(0.28, 1.1 - ratio * 0.82);
 
-  // Sluice gate trajectory control points (dynamic based on pressure/flow)
-  const cx1 = 181.5 + (safeOutflow / 12000) * 10;
-  const cx2 = 181.5 + (safeOutflow / 12000) * 12;
-  const lx = 184 + (safeOutflow / 12000) * 14;
+  // Sluice gate: at downstream face xâ‰ˆ185.7, y=96
+  // Downstream face runs from (162,18) to (190,110)
+  const gateX = 185.7;
+  const gateY = 96;
+  const plungeY = 110;
+  const horizontalReach = 8 + ratio * 14;
+  const jetEndX = gateX + horizontalReach;
+  const c1x = gateX + horizontalReach * 0.38;
+  const c2x = gateX + horizontalReach * 0.78;
+  const c2y = gateY + (plungeY - gateY) * 0.68;
+  const jetPath = `M ${gateX},${gateY} C ${c1x},${gateY} ${c2x},${c2y} ${jetEndX},${plungeY}`;
 
-  const waterPath = useSpillway
-    ? `M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},100`
-    : `M 181.5,94.5 C ${cx1},94.5 ${cx2},99 ${lx},100`;
+  // Spillway bucket deflector jet landing
+  const bucketEndX = 200 + ratio * 8;
 
-  const splashX = useSpillway ? jetLanding : lx;
+  // Unique IDs per fill level
+  const uid = `v${Math.round(fill)}`;
 
   return (
     <div style={{
       position: "relative",
-      height: 145,
-      background: "radial-gradient(circle at 50% 120%, #0d1e33 0%, #020912 80%)",
+      height: 158,
+      background: "radial-gradient(ellipse at 50% 115%, #07192e 0%, #010810 75%)",
       borderRadius: 12,
       overflow: "hidden",
       border: "1px solid rgba(6, 182, 212, 0.15)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      boxShadow: "inset 0 4px 24px rgba(0,0,0,0.6)"
+      boxShadow: "inset 0 4px 24px rgba(0,0,0,0.65)"
     }}>
-      <svg width="100%" height="100%" viewBox="0 0 200 120" style={{ display: "block" }}>
+      <svg width="100%" height="100%" viewBox="0 0 220 130" style={{ display: "block" }}>
         <defs>
-          {/* Reservoir Clip Path */}
-          <clipPath id={`res-clip-${fill}`}>
-            <path d="M 10,0 L 10,102 L 115,102 C 142,98 156,65 162,15 L 162,0 Z" />
-          </clipPath>
+          <clipPath id={`rc-${uid}`}><rect x="0" y="0" width="149" height="130" /></clipPath>
 
-          {/* Premium Water Gradient */}
-          <linearGradient id={`water-grad-${fill}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.85" />
-            <stop offset="30%" stopColor="#0284C7" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#073B66" stopOpacity="0.95" />
+          <linearGradient id={`wg-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stopColor="#00E5FF" stopOpacity="0.92" />
+            <stop offset="25%"  stopColor="#0EA5E9" stopOpacity="0.88" />
+            <stop offset="70%"  stopColor="#0369A1" stopOpacity="0.90" />
+            <stop offset="100%" stopColor="#042f53" stopOpacity="0.98" />
           </linearGradient>
 
-          {/* Deep Water Wave Pattern */}
-          <pattern id={`wave-pat-${fill}`} width="40" height="16" patternUnits="userSpaceOnUse">
-            <path d="M 0,8 Q 10,4 20,8 Q 30,12 40,8" fill="none" stroke="rgba(0, 240, 255, 0.15)" strokeWidth="1.2" />
-            <animateTransform 
-              attributeName="patternTransform" 
-              type="translate" 
-              from="0,0" to="40,0" 
-              dur="4s" repeatCount="indefinite" 
-            />
-          </pattern>
+          <linearGradient id={`cg-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stopColor="#6B7280" />
+            <stop offset="30%"  stopColor="#4B5563" />
+            <stop offset="70%"  stopColor="#374151" />
+            <stop offset="100%" stopColor="#1F2937" />
+          </linearGradient>
 
-          {/* Concrete Dam Gradient */}
-          <linearGradient id="concrete-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#5A6372" />
-            <stop offset="15%" stopColor="#434C5E" />
-            <stop offset="85%" stopColor="#2E3440" />
-            <stop offset="100%" stopColor="#1E222B" />
+          <linearGradient id={`dsh-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stopColor="#000000" stopOpacity="0" />
+            <stop offset="100%" stopColor="#000000" stopOpacity="0.4" />
+          </linearGradient>
+
+          <linearGradient id={`pp-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stopColor="#38BDF8" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="#0369A1" stopOpacity="0.96" />
+          </linearGradient>
+
+          <linearGradient id={`rv-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stopColor="#22D3EE" stopOpacity="0.96" />
+            <stop offset="100%" stopColor="#0284C7" stopOpacity="0.65" />
+          </linearGradient>
+
+          <radialGradient id={`mist-${uid}`} cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor="#E0F2FE" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#E0F2FE" stopOpacity="0" />
+          </radialGradient>
+
+          <linearGradient id={`sw-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%"   stopColor="#22D3EE" stopOpacity="0.95" />
+            <stop offset="100%" stopColor="#E0F2FE" stopOpacity="0.55" />
           </linearGradient>
         </defs>
 
-        {/* Earth/Bedrock Foundation Layer */}
-        <rect x="10" y="102" width="180" height="8" fill="#1C202A" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <line x1="10" y1="102" x2="190" y2="102" stroke="#374151" strokeWidth="1.2" />
+        {/* Bedrock */}
+        <rect x="0" y="110" width="220" height="20" fill="#111827" />
+        <line x1="0" y1="110" x2="220" y2="110" stroke="#1F2937" strokeWidth="1.2" />
 
-        {/* Grid lines background */}
-        <g opacity="0.12">
-          <line x1="10" y1="40" x2="162" y2="40" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <line x1="10" y1="61" x2="162" y2="61" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <line x1="10" y1="81" x2="162" y2="81" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <text x="14" y="43" fill="#FFFFFF" fontSize="5" fontFamily="monospace">75%</text>
-          <text x="14" y="64" fill="#FFFFFF" fontSize="5" fontFamily="monospace">50%</text>
-          <text x="14" y="84" fill="#FFFFFF" fontSize="5" fontFamily="monospace">25%</text>
+        {/* Grid lines */}
+        <g opacity="0.10">
+          <line x1="8" y1="41" x2="147" y2="41" stroke="#fff" strokeWidth="0.5" strokeDasharray="2,3" />
+          <line x1="8" y1="64" x2="147" y2="64" stroke="#fff" strokeWidth="0.5" strokeDasharray="2,3" />
+          <line x1="8" y1="87" x2="147" y2="87" stroke="#fff" strokeWidth="0.5" strokeDasharray="2,3" />
+          <text x="11" y="44" fill="#fff" fontSize="4.5" fontFamily="monospace">75%</text>
+          <text x="11" y="67" fill="#fff" fontSize="4.5" fontFamily="monospace">50%</text>
+          <text x="11" y="90" fill="#fff" fontSize="4.5" fontFamily="monospace">25%</text>
         </g>
 
-        {/* Reservoir Water Body (Clipped to upstream face of the dam) */}
-        <g clipPath={`url(#res-clip-${fill})`}>
-          {/* Water Fill */}
-          <rect x="0" y={waterY} width="200" height="120" fill={`url(#water-grad-${fill})`} />
-          <rect x="0" y={waterY} width="200" height="120" fill={`url(#wave-pat-${fill})`} />
+        {/* Reservoir water (clipped) */}
+        <g clipPath={`url(#rc-${uid})`}>
+          <rect x="0" y={waterY} width="149" height={130 - waterY} fill={`url(#wg-${uid})`} />
 
-          {/* Primary wave line */}
-          <path 
-            d={`M -40,${waterY} Q -20,${waterY - 1.8} 0,${waterY} Q 20,${waterY + 1.8} 40,${waterY} Q 60,${waterY - 1.8} 80,${waterY} Q 100,${waterY + 1.8} 120,${waterY} Q 140,${waterY - 1.8} 160,${waterY} Q 180,${waterY + 1.8} 200,${waterY}`} 
-            fill="none" 
-            stroke="#E0F2FE" 
-            strokeWidth="1.8"
-            opacity="0.85"
-          >
-            <animateTransform 
-              attributeName="transform" 
-              type="translate" 
-              from="0,0" to="40,0" 
-              dur="2.5s" repeatCount="indefinite" 
-            />
+          {/* Wave 1 - moves right */}
+          <path d={`M -60,${waterY} Q -45,${waterY-2.4} -30,${waterY} Q -15,${waterY+2.4} 0,${waterY} Q 15,${waterY-2.4} 30,${waterY} Q 45,${waterY+2.4} 60,${waterY} Q 75,${waterY-2.4} 90,${waterY} Q 105,${waterY+2.4} 120,${waterY} Q 135,${waterY-2.4} 150,${waterY} Q 165,${waterY+2.4} 180,${waterY} Q 195,${waterY-2.4} 210,${waterY}`}
+            fill="none" stroke="rgba(255,255,255,0.78)" strokeWidth="1.5">
+            <animateTransform attributeName="transform" type="translate" from="0,0" to="60,0" dur="2.8s" repeatCount="indefinite" />
           </path>
 
-          {/* Secondary wave line */}
-          <path 
-            d={`M -40,${waterY + 1} Q -20,${waterY + 1.8} 0,${waterY + 1} Q 20,${waterY - 1.2} 40,${waterY + 1} Q 60,${waterY + 1.8} 80,${waterY + 1} Q 100,${waterY - 1.2} 120,${waterY + 1} Q 140,${waterY + 1.8} 160,${waterY + 1} Q 180,${waterY - 1.2} 200,${waterY + 1}`} 
-            fill="none" 
-            stroke="#00F0FF" 
-            strokeWidth="1.2"
-            opacity="0.45"
-          >
-            <animateTransform 
-              attributeName="transform" 
-              type="translate" 
-              from="0,0" to="-40,0" 
-              dur="3.8s" repeatCount="indefinite" 
-            />
+          {/* Wave 2 - moves left */}
+          <path d={`M -60,${waterY+1.5} Q -45,${waterY+3.5} -30,${waterY+1.5} Q -15,${waterY-0.5} 0,${waterY+1.5} Q 15,${waterY+3.5} 30,${waterY+1.5} Q 45,${waterY-0.5} 60,${waterY+1.5} Q 75,${waterY+3.5} 90,${waterY+1.5} Q 105,${waterY-0.5} 120,${waterY+1.5} Q 135,${waterY+3.5} 150,${waterY+1.5} Q 165,${waterY-0.5} 180,${waterY+1.5}`}
+            fill="none" stroke="rgba(0,240,255,0.32)" strokeWidth="1.0">
+            <animateTransform attributeName="transform" type="translate" from="60,0" to="0,0" dur="4.2s" repeatCount="indefinite" />
+          </path>
+
+          {/* Wave 3 - micro ripple */}
+          <path d={`M 0,${waterY+3} Q 18,${waterY+1.5} 36,${waterY+3} Q 54,${waterY+4.5} 72,${waterY+3} Q 90,${waterY+1.5} 108,${waterY+3} Q 126,${waterY+4.5} 144,${waterY+3}`}
+            fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="0.7">
+            <animateTransform attributeName="transform" type="translate" from="-36,0" to="36,0" dur="3.5s" repeatCount="indefinite" />
           </path>
         </g>
 
-        {/* Concrete Gravity Dam Profile (Sloping downstream face on right) */}
-        <path d="M 115,102 C 142,98 156,65 162,15 L 172,15 L 187,102 Z" fill="url(#concrete-grad)" stroke="#2E3440" strokeWidth="0.8" />
-        
-        {/* Dam structural block joints */}
-        <line x1="162" y1="15" x2="162" y2="102" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <path d="M 125,102 C 144,98 153,75 158,35" fill="none" stroke="rgba(0,0,0,0.2)" strokeWidth="1" />
-        
-        {/* Roadway Bridge / Gantry Crane structure on Dam Crest */}
-        <rect x="159" y="9" width="16" height="2" rx="0.5" fill="#2E3440" stroke="#4C566A" strokeWidth="0.5" />
-        <rect x="162" y="11" width="3" height="4" fill="#3B4252" />
-        <rect x="169" y="11" width="3" height="4" fill="#3B4252" />
-        <line x1="159" y1="7.5" x2="175" y2="7.5" stroke="#D8DEE9" strokeWidth="0.5" opacity="0.8" />
+        {/* Dam body - concrete gravity dam polygon */}
+        {/* Main body: crest at y=18 x=148-162, toe at y=110 x=128-190 */}
+        <polygon
+          points="128,110 148,18 162,18 190,110"
+          fill={`url(#cg-${uid})`}
+          stroke="#111827"
+          strokeWidth="0.6"
+        />
+        {/* Downstream face shadow */}
+        <polygon points="162,18 190,110 178,110 160,18" fill={`url(#dsh-${uid})`} />
 
-        {/* Spillway Gates (Steel radial gate leaf styling that lifts when spillway active) */}
-        <g opacity="0.95">
-          <rect 
-            x="159.5" 
-            y={useSpillway && safeOutflow > 0 ? 12.5 : 15} 
-            width="2.2" 
-            height="3.5" 
-            rx="0.3"
-            fill={useSpillway && safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
-            stroke="#1E293B" 
-            strokeWidth="0.4" 
-            style={{ transition: "y 0.5s ease" }}
-          />
-          <rect 
-            x="165.5" 
-            y={useSpillway && safeOutflow > 0 ? 12.5 : 15} 
-            width="3" 
-            height="3.5" 
-            rx="0.3"
-            fill={useSpillway && safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
-            stroke="#1E293B" 
-            strokeWidth="0.4" 
-            style={{ transition: "y 0.5s ease" }}
-          />
-          <rect 
-            x="172.5" 
-            y={useSpillway && safeOutflow > 0 ? 12.5 : 15} 
-            width="2.2" 
-            height="3.5" 
-            rx="0.3"
-            fill={useSpillway && safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
-            stroke="#1E293B" 
-            strokeWidth="0.4" 
-            style={{ transition: "y 0.5s ease" }}
-          />
-        </g>
+        {/* Horizontal construction joints */}
+        {[35, 52, 69, 86].map(jy => {
+          const x1 = 148 + (jy - 18) * (162 - 148) / 92;
+          const x2 = 162 + (jy - 18) * (190 - 162) / 92;
+          return <line key={jy} x1={x1} y1={jy} x2={x2} y2={jy} stroke="rgba(0,0,0,0.15)" strokeWidth="0.5" />;
+        })}
 
-        {/* Dark openings under gates when open */}
-        {useSpillway && safeOutflow > 0 && (
-          <g>
-            <rect x="159.5" y="16" width="2.2" height="1.8" fill="#0F172A" />
-            <rect x="165.5" y="16" width="3" height="1.8" fill="#0F172A" />
-            <rect x="172.5" y="16" width="2.2" height="1.8" fill="#0F172A" />
-          </g>
-        )}
+        {/* Crest road slab */}
+        <rect x="148" y="14" width="14" height="4" rx="0.5" fill="#374151" stroke="#4B5563" strokeWidth="0.5" />
+        <rect x="147" y="10" width="1.5" height="8" rx="0.3" fill="#4B5563" />
+        <rect x="161" y="10" width="1.5" height="8" rx="0.3" fill="#4B5563" />
+        <line x1="148" y1="11" x2="162" y2="11" stroke="#9CA3AF" strokeWidth="0.5" opacity="0.6" />
 
-        {/* Low-Level Outflow Sluice Gate at Dam Toe (used when reservoir level is low) */}
-        <g>
-          {/* Sluice gate housing / tunnel portal */}
-          <rect x="178" y="92" width="4" height="6" rx="0.5" fill="#0F172A" stroke="#374151" strokeWidth="0.5" />
-          {/* Sluice gate leaf that slides up */}
-          <rect 
-            x="178.5" 
-            y={(!useSpillway && safeOutflow > 0) ? 89.5 : 92.5} 
-            width="3" 
-            height="5" 
-            rx="0.3" 
-            fill={(!useSpillway && safeOutflow > 0) ? "#9CA3AF" : "#4A5568"} 
-            stroke="#1E293B" 
-            strokeWidth="0.4" 
-            style={{ transition: "y 0.5s ease" }} 
-          />
-        </g>
-        
-        {/* Turbulent Riverbed Outflow (flowing to the right) */}
-        {safeOutflow > 0 && (
-          <g>
-            {/* River water body */}
-            <rect 
-              x="182" 
-              y="99" 
-              width="18" 
-              height="3.5" 
-              fill="#0284C7" 
-              opacity="0.85" 
-            />
-            {/* Foaming river surface waves */}
-            <path 
-              d="M 182,99 Q 187,98 192,99 Q 197,98 200,99" 
-              fill="none" 
-              stroke="#E0F2FE" 
-              strokeWidth="0.8" 
-              opacity="0.9"
-            >
-              <animate 
-                attributeName="d" 
-                values="M 182,99 Q 187,98 192,99 Q 197,98 200,99; M 182,99 Q 187,100 192,99 Q 197,100 200,99; M 182,99 Q 187,98 192,99 Q 197,98 200,99" 
-                dur="0.5s" 
-                repeatCount="indefinite" 
+        {/* Spillway radial gates (3 gates on crest) */}
+        {[150, 154, 158].map((gx, i) => {
+          const lifted = useSpillway && hasFlow;
+          return (
+            <g key={i}>
+              <rect x={gx}     y="14" width="0.8" height="5" fill="#1F2937" />
+              <rect x={gx+2.2} y="14" width="0.8" height="5" fill="#1F2937" />
+              <rect x={gx+0.5} y={lifted ? 11 : 15} width="2.2" height="4.5" rx="0.4"
+                fill={lifted ? "#9CA3AF" : "#374151"} stroke="#1F2937" strokeWidth="0.4"
+                style={{ transition: "y 0.6s ease" }}
               />
-            </path>
-          </g>
-        )}
+              {lifted && <rect x={gx+0.5} y="15" width="2.2" height="2.5" fill="#0F172A" />}
+            </g>
+          );
+        })}
 
-        {/* Dynamic Outflow Release Water Jet */}
-        {safeOutflow > 0 && (
+        {/* Bottom sluice gate (at dam toe, yâ‰ˆ96) */}
+        <rect x={gateX-1} y="92" width="5" height="7" rx="0.5" fill="#0F172A" stroke="#374151" strokeWidth="0.5" />
+        <rect
+          x={gateX-0.5}
+          y={(!useSpillway && hasFlow) ? 88.5 : 92.5}
+          width="4" height="6" rx="0.4"
+          fill={(!useSpillway && hasFlow) ? "#9CA3AF" : "#374151"}
+          stroke="#1F2937" strokeWidth="0.4"
+          style={{ transition: "y 0.5s ease" }}
+        />
+        <line x1={gateX+1.5} y1="88" x2={gateX+1.5} y2="92" stroke="#4B5563" strokeWidth="0.6" />
+
+        {/* OUTFLOW ANIMATIONS */}
+
+        {/* CASE 1: SPILLWAY CASCADE (level â‰¥ 75%) */}
+        {useSpillway && hasFlow && (
           <g>
-            {/* Base water stream */}
-            <path 
-              d={waterPath}
-              fill="none" 
-              stroke="#38BDF8" 
-              strokeWidth={streamWidth} 
-              strokeLinecap="round" 
-              opacity="0.85" 
-            />
-            {/* Animated white foaming flow overlay */}
-            <path 
-              d={waterPath}
-              fill="none" 
-              stroke="#E0F2FE" 
-              strokeWidth={streamWidth * 0.6} 
-              strokeLinecap="round" 
-              strokeDasharray="4 4" 
-              opacity="0.9"
-            >
-              <animate attributeName="strokeDashoffset" values="30;0" dur={`${animDuration}s`} repeatCount="indefinite" />
+            {/* Water sheet down face */}
+            <path d="M 162,18 L 190,110" fill="none" stroke={`url(#sw-${uid})`} strokeWidth={streamW * 0.9} strokeLinecap="round" opacity="0.8" />
+            {/* Animated foam streaks */}
+            <path d="M 162,18 L 190,110" fill="none" stroke="#E0F2FE" strokeWidth={streamW * 0.3} strokeDasharray="5,6" opacity="0.85">
+              <animate attributeName="strokeDashoffset" values="44;0" dur={`${flowSpeed}s`} repeatCount="indefinite" />
             </path>
-
-            {/* Splash/Foam particles at the landing spot */}
-            <circle cx={splashX} cy="100.5" r="1.5" fill="#FFFFFF" opacity="0.8">
-              <animate attributeName="r" values="1;2.5;1" dur="0.5s" repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.85;0;0.85" dur="0.5s" repeatCount="indefinite" />
-            </circle>
-            <circle cx={splashX + 1.8} cy="100.5" r="1" fill="#E0F2FE" opacity="0.6">
-              <animate attributeName="r" values="0.5;1.8;0.5" dur="0.7s" repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.6;0;0.6" dur="0.7s" repeatCount="indefinite" />
-            </circle>
+            {/* Bucket deflector arc at toe */}
+            <path d={`M 190,110 Q 194,107 ${bucketEndX},105 Q ${bucketEndX+5},104 ${bucketEndX+8},110`}
+              fill="none" stroke="#38BDF8" strokeWidth={streamW * 0.5} strokeLinecap="round" opacity="0.85">
+              <animate attributeName="strokeDashoffset" values="28;0" dur={`${flowSpeed * 0.6}s`} repeatCount="indefinite" />
+            </path>
+            {/* Mist at toe */}
+            <ellipse cx="192" cy="108" rx="11" ry="5" fill={`url(#mist-${uid})`}>
+              <animate attributeName="rx" values="8;15;8" dur="1.1s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.55;1;0.55" dur="1.1s" repeatCount="indefinite" />
+            </ellipse>
+            {/* Plunge pool */}
+            <rect x={bucketEndX+6} y="107" width="16" height="3.5" rx="1" fill={`url(#pp-${uid})`} opacity="0.88" />
+            <path d={`M ${bucketEndX+6},108 Q ${bucketEndX+11},107 ${bucketEndX+16},108 Q ${bucketEndX+21},109 ${bucketEndX+22},108`}
+              fill="none" stroke="#E0F2FE" strokeWidth="0.7" opacity="0.8">
+              <animate attributeName="d"
+                values={`M ${bucketEndX+6},108 Q ${bucketEndX+11},107 ${bucketEndX+16},108 Q ${bucketEndX+21},109 ${bucketEndX+22},108;M ${bucketEndX+6},108 Q ${bucketEndX+11},109 ${bucketEndX+16},108 Q ${bucketEndX+21},107 ${bucketEndX+22},108;M ${bucketEndX+6},108 Q ${bucketEndX+11},107 ${bucketEndX+16},108 Q ${bucketEndX+21},109 ${bucketEndX+22},108`}
+                dur="0.55s" repeatCount="indefinite" />
+            </path>
           </g>
         )}
 
-        {/* Glassmorphic level reader overlay */}
-        <g transform="translate(48, 48)">
-          <rect x="0" y="0" width="50" height="20" rx="6" fill="rgba(3, 10, 20, 0.72)" stroke="rgba(0, 240, 255, 0.4)" strokeWidth="0.8" />
-          <text x="25" y="14" fill="#E0F2FE" fontSize="10.5" fontWeight="900" fontFamily="monospace" textAnchor="middle">
+        {/* CASE 2: BOTTOM SLUICE JET (level < 75%) */}
+        {!useSpillway && hasFlow && (
+          <g>
+            {/* Jet core â€” parabolic curve DOWN from gate to plunge pool */}
+            <path d={jetPath} fill="none" stroke="#0EA5E9" strokeWidth={streamW} strokeLinecap="round" opacity="0.9" />
+            {/* Bright centre */}
+            <path d={jetPath} fill="none" stroke="#BAE6FD" strokeWidth={streamW * 0.42} strokeLinecap="round" opacity="0.85" />
+            {/* Animated foam dashes */}
+            <path d={jetPath} fill="none" stroke="#FFFFFF" strokeWidth={streamW * 0.28}
+              strokeLinecap="round" strokeDasharray="3,4" opacity="0.88">
+              <animate attributeName="strokeDashoffset" values="35;0" dur={`${flowSpeed}s`} repeatCount="indefinite" />
+            </path>
+
+            {/* Plunge pool at landing */}
+            <ellipse cx={jetEndX} cy="110" rx={5 + ratio * 4} ry="2.8" fill={`url(#pp-${uid})`} opacity="0.9" />
+
+            {/* Splash ring 1 */}
+            <ellipse cx={jetEndX} cy="110" rx="2" ry="1" fill="none" stroke="#E0F2FE" strokeWidth="0.9">
+              <animate attributeName="rx" values="1;9;1" dur="0.62s" repeatCount="indefinite" />
+              <animate attributeName="ry" values="0.5;3.8;0.5" dur="0.62s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.95;0;0.95" dur="0.62s" repeatCount="indefinite" />
+            </ellipse>
+            {/* Splash ring 2 */}
+            <ellipse cx={jetEndX} cy="110" rx="2" ry="1" fill="none" stroke="#BAE6FD" strokeWidth="0.6">
+              <animate attributeName="rx" values="1;6.5;1" dur="0.62s" begin="0.31s" repeatCount="indefinite" />
+              <animate attributeName="ry" values="0.5;2.8;0.5" dur="0.62s" begin="0.31s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.7;0;0.7" dur="0.62s" begin="0.31s" repeatCount="indefinite" />
+            </ellipse>
+
+            {/* Mist cloud */}
+            <ellipse cx={jetEndX} cy="108" rx={7 + ratio * 3} ry="4.5" fill={`url(#mist-${uid})`} opacity="0.72">
+              <animate attributeName="ry" values="3;7;3" dur="0.85s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.45;0.88;0.45" dur="0.85s" repeatCount="indefinite" />
+            </ellipse>
+
+            {/* Downstream river */}
+            <rect x={jetEndX+1} y="107.2" width={220 - jetEndX - 1} height="2.8" fill={`url(#rv-${uid})`} opacity="0.9" />
+            {/* River surface wave */}
+            <path d={`M ${jetEndX+1},107.5 Q ${jetEndX+8},107 ${jetEndX+16},107.5 Q ${jetEndX+24},108 ${jetEndX+32},107.5 Q ${jetEndX+40},107 220,107.5`}
+              fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="0.7">
+              <animate attributeName="d"
+                values={`M ${jetEndX+1},107.5 Q ${jetEndX+8},107 ${jetEndX+16},107.5 Q ${jetEndX+24},108 ${jetEndX+32},107.5 Q ${jetEndX+40},107 220,107.5;M ${jetEndX+1},107.5 Q ${jetEndX+8},108 ${jetEndX+16},107.5 Q ${jetEndX+24},107 ${jetEndX+32},107.5 Q ${jetEndX+40},108 220,107.5;M ${jetEndX+1},107.5 Q ${jetEndX+8},107 ${jetEndX+16},107.5 Q ${jetEndX+24},108 ${jetEndX+32},107.5 Q ${jetEndX+40},107 220,107.5`}
+                dur="0.55s" repeatCount="indefinite" />
+            </path>
+            {/* River foam streak */}
+            <path d={`M ${jetEndX+2},108.8 L 220,108.8`}
+              fill="none" stroke="rgba(255,255,255,0.28)" strokeWidth="0.5" strokeDasharray="4,7">
+              <animate attributeName="strokeDashoffset" values="40;0" dur={`${flowSpeed * 1.5}s`} repeatCount="indefinite" />
+            </path>
+          </g>
+        )}
+
+        {/* Level badge */}
+        <g transform="translate(16, 42)">
+          <rect x="0" y="0" width="60" height="22" rx="7"
+            fill="rgba(2,9,18,0.74)" stroke="rgba(0,240,255,0.45)" strokeWidth="0.9" />
+          <text x="30" y="15.5" fill="#E0F2FE" fontSize="11" fontWeight="900"
+            fontFamily="monospace" textAnchor="middle">
             {safeLevel.toFixed(1)}%
           </text>
         </g>
@@ -333,6 +328,7 @@ function WaterViz({ level = 0, outflow = null, active }) {
     </div>
   );
 }
+
 
 function DamCard({ dam, delay }) {
   const ref=useRef(null);
@@ -358,19 +354,19 @@ function DamCard({ dam, delay }) {
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontWeight:800,fontSize:15,color:"#DDEFFC",lineHeight:1.25,marginBottom:3}}>{dam.name}</div>
           <div style={{fontSize:11,color:"rgba(220,240,255,0.38)"}}>
-            <span style={{color:mid,fontWeight:600}}>{dam.river}</span>{" · "}{dam.district}
+            <span style={{color:mid,fontWeight:600}}>{dam.river}</span>{" Â· "}{dam.district}
           </div>
         </div>
       </div>
       <WaterViz level={safeLevel} outflow={dam.outflow} active={vis}/>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
         {[
-          {l:"Inflow",v:dam.inflow !== null ? `↑ ${fmtK(dam.inflow)}` : "—",c:"#86EFAC"},
-          {l:"Outflow",v:dam.outflow !== null ? `↓ ${fmtK(dam.outflow)}` : "—",c:"#FCA5A5"}
+          {l:"Inflow",v:dam.inflow !== null ? `â†‘ ${fmtK(dam.inflow)}` : "â€”",c:"#86EFAC"},
+          {l:"Outflow",v:dam.outflow !== null ? `â†“ ${fmtK(dam.outflow)}` : "â€”",c:"#FCA5A5"}
         ].map(({l,v,c})=>(
           <div key={l} style={{padding:"9px 11px",background:"rgba(255,255,255,0.025)",borderRadius:9,border:"1px solid rgba(255,255,255,0.05)"}}>
             <div style={{fontSize:10,color:"rgba(220,240,255,0.3)",textTransform:"uppercase",letterSpacing:1,marginBottom:3}}>{l}</div>
-            <div style={{fontSize:14,fontWeight:700,color:c,fontFamily:"monospace"}}>{v}{v !== "—" && <span style={{fontSize:9,opacity:0.55,marginLeft:2}}>cusecs</span>}</div>
+            <div style={{fontSize:14,fontWeight:700,color:c,fontFamily:"monospace"}}>{v}{v !== "â€”" && <span style={{fontSize:9,opacity:0.55,marginLeft:2}}>cusecs</span>}</div>
           </div>
         ))}
       </div>
@@ -395,7 +391,7 @@ const FILTER_FN = {
   low:d=>d.level<45
 };
 
-// ═══════════════ PIN MODAL COMPONENT ═══════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• PIN MODAL COMPONENT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
   return (
     <div style={{
@@ -426,7 +422,7 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
           onMouseEnter={e => e.target.style.color = "#E0F2FE"}
           onMouseLeave={e => e.target.style.color = "rgba(224, 242, 254, 0.4)"}
         >
-          ×
+          Ã—
         </button>
 
         <div style={{ textAlign: "center", marginBottom: 24 }}>
@@ -437,7 +433,7 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
             fontSize: 22, margin: "0 auto 12px",
             border: "1px solid rgba(6, 182, 212, 0.2)"
           }}>
-            🔐
+            ðŸ”
           </div>
           <h3 style={{ fontSize: 18, fontWeight: 800, color: "#E0F2FE" }}>Admin Verification</h3>
           <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginTop: 4 }}>Enter credentials to view analytics</p>
@@ -447,7 +443,7 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
           <div style={{ marginBottom: 20 }}>
             <input 
               type="password"
-              placeholder="••••"
+              placeholder="â€¢â€¢â€¢â€¢"
               maxLength={4}
               value={pinInput}
               onChange={e => setPinInput(e.target.value.replace(/\D/g, ""))}
@@ -464,7 +460,7 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
             />
             {pinError && (
               <div style={{ color: "#F87171", fontSize: 11, textAlign: "center", marginTop: 8, fontWeight: 600 }}>
-                ⚠️ Invalid PIN code. Try again.
+                âš ï¸ Invalid PIN code. Try again.
               </div>
             )}
           </div>
@@ -487,25 +483,25 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
   );
 }
 
-// ═══════════════ ANALYTICS DASHBOARD COMPONENT ═══════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• ANALYTICS DASHBOARD COMPONENT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 function AnalyticsDashboard({ setView, searchHistory }) {
   const gaActive = !!import.meta.env.VITE_GA_MEASUREMENT_ID;
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-XXXXXXXXXX";
 
   // Pre-calculated stats
   const stats = [
-    { label: "Unique Visitors", value: "4,821", change: "+14.2%", positive: true, icon: "👥" },
-    { label: "Pageviews", value: "18,453", change: "+8.5%", positive: true, icon: "📄" },
-    { label: "Bounce Rate", value: "38.4%", change: "-2.1%", positive: true, icon: "⏳" },
-    { label: "Avg Session Time", value: "3m 45s", change: "+12s", positive: true, icon: "⏱️" }
+    { label: "Unique Visitors", value: "4,821", change: "+14.2%", positive: true, icon: "ðŸ‘¥" },
+    { label: "Pageviews", value: "18,453", change: "+8.5%", positive: true, icon: "ðŸ“„" },
+    { label: "Bounce Rate", value: "38.4%", change: "-2.1%", positive: true, icon: "â³" },
+    { label: "Avg Session Time", value: "3m 45s", change: "+12s", positive: true, icon: "â±ï¸" }
   ];
 
   // Scraper Health status items
   const scraperLogs = [
-    { source: "Karnataka (KSNDMC)", status: "Operational", detail: "Last scrape: 1h ago · 100% Success Rate", ok: true },
-    { source: "Tamil Nadu (TNWRD)", status: "Operational", detail: "Last scrape: 1h ago · 100% Success Rate", ok: true },
-    { source: "Kerala (Kerala WRD)", status: "Operational", detail: "Last scrape: 1h ago · 98% Success Rate", ok: true },
-    { source: "Andhra & Telangana", status: "Operational", detail: "Last scrape: 1h ago · 100% Success Rate", ok: true },
+    { source: "Karnataka (KSNDMC)", status: "Operational", detail: "Last scrape: 1h ago Â· 100% Success Rate", ok: true },
+    { source: "Tamil Nadu (TNWRD)", status: "Operational", detail: "Last scrape: 1h ago Â· 100% Success Rate", ok: true },
+    { source: "Kerala (Kerala WRD)", status: "Operational", detail: "Last scrape: 1h ago Â· 98% Success Rate", ok: true },
+    { source: "Andhra & Telangana", status: "Operational", detail: "Last scrape: 1h ago Â· 100% Success Rate", ok: true },
     { source: "Serverless Function Trigger", status: "Active", detail: "Last API invoke: Today, 08:30 AM", ok: true },
     { source: "Vercel Cron Engine", status: "Enabled", detail: "Frequency: every 12 hours", ok: true },
   ];
@@ -525,7 +521,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 36, gap: 16, flexWrap: "wrap" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-            <span style={{ fontSize: 20 }}>📊</span>
+            <span style={{ fontSize: 20 }}>ðŸ“Š</span>
             <span style={{ fontSize: 11, color: "#67E8F9", letterSpacing: 2, fontWeight: 700, textTransform: "uppercase" }}>Administrative Console</span>
           </div>
           <h2 style={{ fontSize: 32, fontWeight: 900, color: "#E0F2FE", letterSpacing: "-0.5px" }}>Portal Analytics</h2>
@@ -541,7 +537,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
           onMouseEnter={e => { e.target.style.background = "rgba(255,255,255,0.06)"; e.target.style.borderColor = "rgba(6, 182, 212, 0.4)"; e.target.style.color = "#67E8F9"; }}
           onMouseLeave={e => { e.target.style.background = "rgba(255,255,255,0.02)"; e.target.style.borderColor = "rgba(224, 242, 254, 0.15)"; e.target.style.color = "rgba(224, 242, 254, 0.8)"; }}
         >
-          ← Exit Portal
+          â† Exit Portal
         </button>
       </div>
 
@@ -658,13 +654,13 @@ function AnalyticsDashboard({ setView, searchHistory }) {
                 border: `1px solid ${gaActive ? "rgba(34, 197, 94, 0.25)" : "rgba(245, 158, 11, 0.25)"}`,
                 color: gaActive ? "#4ADE80" : "#FBBF24"
               }}>
-                {gaActive ? "● ACTIVE" : "○ CONFIG PENDING"}
+                {gaActive ? "â— ACTIVE" : "â—‹ CONFIG PENDING"}
               </span>
             </div>
 
             {gaActive ? (
               <div style={{ background: "rgba(34, 197, 94, 0.03)", border: "1px solid rgba(34, 197, 94, 0.15)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-                <span style={{ fontSize: 13, color: "#86EFAC", fontWeight: 600, display: "block", marginBottom: 4 }}>✓ Script successfully active</span>
+                <span style={{ fontSize: 13, color: "#86EFAC", fontWeight: 600, display: "block", marginBottom: 4 }}>âœ“ Script successfully active</span>
                 <p style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.5)", lineHeight: 1.5 }}>
                   The app is listening to Measurement ID <code style={{ color: "#67E8F9", background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: 4, fontFamily: "monospace" }}>{measurementId}</code>.
                   Traffic and search terms are logged directly to your console.
@@ -672,7 +668,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
               </div>
             ) : (
               <div style={{ background: "rgba(245, 158, 11, 0.03)", border: "1px solid rgba(245, 158, 11, 0.15)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-                <span style={{ fontSize: 13, color: "#FBBF24", fontWeight: 600, display: "block", marginBottom: 4 }}>⚡ Free telemetry ready for setup</span>
+                <span style={{ fontSize: 13, color: "#FBBF24", fontWeight: 600, display: "block", marginBottom: 4 }}>âš¡ Free telemetry ready for setup</span>
                 <p style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.5)", lineHeight: 1.5 }}>
                   Follow the steps below to track actual visitor retention, geography maps, and device analytics in your free Google dashboard.
                 </p>
@@ -740,7 +736,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
             </div>
             
             <div style={{ marginTop: 16, padding: "10px 12px", background: "rgba(6, 182, 212, 0.04)", borderRadius: 8, border: "1px solid rgba(6, 182, 212, 0.1)", fontSize: 11, color: "rgba(224, 242, 254, 0.45)", lineHeight: 1.4 }}>
-              💡 Scrapers are triggered remotely via Vercel Cron. Local data is compiled statically during builds, maintaining zero server database dependencies.
+              ðŸ’¡ Scrapers are triggered remotely via Vercel Cron. Local data is compiled statically during builds, maintaining zero server database dependencies.
             </div>
           </div>
 
@@ -769,7 +765,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
               {adsenseChecklist.map((item, idx) => (
                 <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                   <span style={{ color: item.done ? "#4ADE80" : "#FBBF24", fontSize: 12 }}>
-                    {item.done ? "✓" : "○"}
+                    {item.done ? "âœ“" : "â—‹"}
                   </span>
                   <div>
                     <span style={{ fontSize: 12, color: item.done ? "#DDEFFC" : "rgba(220, 240, 255, 0.45)", fontWeight: item.done ? 500 : 400 }}>
@@ -955,7 +951,7 @@ export default function App() {
         <AnalyticsDashboard setView={setView} searchHistory={searchHistory} />
       ) : (
         <>
-          {/* ═══════════════ HERO ═══════════════ */}
+          {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HERO â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div style={{
         position:"relative",minHeight:"95vh",overflow:"hidden",
         background:"radial-gradient(ellipse 140% 70% at 50% -15%,#082848 0%,#030A14 60%)",
@@ -980,7 +976,7 @@ export default function App() {
           }}/>
         ))}
 
-        {/* ── NAV ── */}
+        {/* â”€â”€ NAV â”€â”€ */}
         <nav style={{
           display:"flex",justifyContent:"space-between",alignItems:"center",
           padding:"14px 22px",zIndex:10,position:"sticky",top:0,
@@ -994,7 +990,7 @@ export default function App() {
               display:"flex",alignItems:"center",justifyContent:"center",
               fontSize:19,boxShadow:"0 0 20px rgba(6,182,212,0.5)",
               animation:"floatUp 3.5s ease infinite"
-            }}>💧</div>
+            }}>ðŸ’§</div>
             <div>
               <div style={{fontWeight:900,fontSize:15,color:"#E0F2FE",letterSpacing:0.3}}>DamWatch</div>
               <div style={{fontSize:9,color:"rgba(224,242,254,0.33)",letterSpacing:2,textTransform:"uppercase"}}>South India</div>
@@ -1003,12 +999,12 @@ export default function App() {
 
           <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",justifyContent:"flex-end"}}>
             <div style={{fontSize:11,color:"rgba(224,242,254,0.35)"}}>
-              🕖 <span style={{color:"#67E8F9",fontWeight:600}}>10:00 AM IST</span>
+              ðŸ•– <span style={{color:"#67E8F9",fontWeight:600}}>10:00 AM IST</span>
             </div>
           </div>
         </nav>
 
-        {/* ── LIVE TICKER ── */}
+        {/* â”€â”€ LIVE TICKER â”€â”€ */}
         <div style={{
           height:30,overflow:"hidden",display:"flex",alignItems:"center",
           background:"rgba(6,182,212,0.045)",borderBottom:"1px solid rgba(6,182,212,0.1)"
@@ -1027,7 +1023,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* ── HERO BODY ── */}
+        {/* â”€â”€ HERO BODY â”€â”€ */}
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",
           justifyContent:"center",padding:"52px 20px 116px",textAlign:"center"}}>
 
@@ -1036,7 +1032,7 @@ export default function App() {
             color:"rgba(34,211,238,0.72)",padding:"5px 18px",borderRadius:20,display:"inline-block",
             border:"1px solid rgba(34,211,238,0.18)",background:"rgba(34,211,238,0.06)",
             animation:"fadeSlideUp 0.6s ease both"
-          }}>South India · Daily Water Level Bulletin</div>
+          }}>South India Â· Daily Water Level Bulletin</div>
 
           <h1 style={{
             fontSize:"clamp(38px,8vw,80px)",fontWeight:900,lineHeight:1.03,
@@ -1084,7 +1080,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* ═══════════════ STATS SECTION ═══════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STATS SECTION â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div ref={statsRef} style={{
         padding: "60px 20px", background: "linear-gradient(to bottom, #030A14, #02070E)",
         borderBottom: "1px solid rgba(255,255,255,0.03)", position: "relative", zIndex: 6
@@ -1121,7 +1117,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* ═══════════════ MAIN DAMS DISPLAY ═══════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MAIN DAMS DISPLAY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <div id="dams-section" style={{ padding: "80px 20px", maxWidth: 1200, margin: "0 auto", position: "relative", zIndex: 6 }}>
         
         {/* State Selection */}
@@ -1167,7 +1163,7 @@ export default function App() {
             <div style={{ position: "relative", width: 300 }}>
               <input
                 type="text"
-                placeholder="🔍 Search name, river, district..."
+                placeholder="ðŸ” Search name, river, district..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 style={{
@@ -1220,14 +1216,14 @@ export default function App() {
             textAlign: "center", padding: "60px 20px", border: "1px dashed rgba(255,255,255,0.08)",
             borderRadius: 16, background: "rgba(255,255,255,0.01)"
           }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>🔍</div>
+            <div style={{ fontSize: 24, marginBottom: 8 }}>ðŸ”</div>
             <div style={{ fontSize: 16, color: "rgba(224,242,254,0.5)" }}>No dams match the selected criteria.</div>
           </div>
         )}
 
       </div>
 
-      {/* ═══════════════ DATA DISCLAIMER & FOOTER ═══════════════ */}
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• DATA DISCLAIMER & FOOTER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <footer style={{
         background: "#01070F", borderTop: "1px solid rgba(255,255,255,0.05)",
         padding: "40px 20px", textAlign: "center", position: "relative", zIndex: 6
@@ -1239,7 +1235,7 @@ export default function App() {
             and the Central Water Commission (CWC).
           </p>
           <div style={{ borderTop: "1px solid rgba(255,255,255,0.03)", paddingTop: 16, fontSize: 12, color: "rgba(224,242,254,0.35)" }}>
-            © {new Date().getFullYear()} DamWatch South India. Created as a local public information resource.
+            Â© {new Date().getFullYear()} DamWatch South India. Created as a local public information resource.
           </div>
           <div style={{ marginTop: 24, display: "flex", justifyContent: "center", gap: 16, fontSize: 11 }}>
             <button 
@@ -1251,7 +1247,7 @@ export default function App() {
               onMouseEnter={e => e.target.style.color = "rgba(6, 182, 212, 0.6)"}
               onMouseLeave={e => e.target.style.color = "rgba(224,242,254,0.15)"}
             >
-              🔒 Admin Portal
+              ðŸ”’ Admin Portal
             </button>
           </div>
         </div>
