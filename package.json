@@ -11,6 +11,7 @@
     "scrape": "python scripts/scrape_dams.py"
   },
   "dependencies": {
+    "mongodb": "^6.8.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },

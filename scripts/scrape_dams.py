@@ -88,6 +88,16 @@ def fetch_html(url):
         return None
 
 def main():
+    import time
+    start_time = time.time()
+
+    tb_ok = False
+    tn_ok = False
+    oi_ok = False
+    tb_count = 0
+    tn_count = 0
+    oi_count = 0
+
     scraped_dams = {}
     
     # --- 1. Scrape Tungabhadra (TB Board) ---
@@ -119,6 +129,8 @@ def main():
                 "inflow": inflow_val,
                 "outflow": outflow_val
             }
+            tb_ok = True
+            tb_count = 1
             print("  Tungabhadra updated successfully.")
 
     # --- 2. Scrape TN Agriculture ---
@@ -174,12 +186,16 @@ def main():
                 "inflow": inflow,
                 "outflow": outflow
             }
+        if len(tn_matches) > 0:
+            tn_ok = True
+            tn_count = len(tn_matches)
         print(f"  Scraped {len(tn_matches)} dams from TN Ag.")
 
     # --- 3. Scrape OneIndia ---
     print("Scraping OneIndia...")
     oi_html = fetch_html(URLS["oi"])
     if oi_html:
+        oi_ok = True
         # Split by states
         sections = re.split(r'<h2 class="oi-damwaterlevel-heading">Dam Water Level Today in ([^<]+)</?h2\s*>', oi_html)
         
@@ -232,6 +248,7 @@ def main():
                     "inflow": None,
                     "outflow": None
                 }
+            oi_count += len(rows)
             print(f"  Scraped {len(rows)} dams for State {state}.")
 
     # --- 4. Merge with existing static defaults and save ---
@@ -239,6 +256,15 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     json_path = os.path.join(script_dir, "..", "src", "data", "dams.json")
     
+    # Read existing dams.json to calculate changes
+    old_dams = []
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                old_dams = json.load(f)
+        except Exception as e:
+            print(f"Error reading pre-existing dams.json: {e}")
+
     # We will build a unified list of 37 dams
     # Let's define the final output list
     final_dams = []
@@ -324,6 +350,95 @@ def main():
         json.dump(final_dams, f, indent=2)
         
     print(f"Successfully wrote {len(final_dams)} dams to dams.json!")
+
+    # Calculate delta changes
+    old_map = {d["name"].lower(): d for d in old_dams}
+    dams_changed = 0
+    storage_delta_tmc = 0.0
+    inflow_delta_cusecs = 0
+    outflow_delta_cusecs = 0
+
+    for d in final_dams:
+        old_d = old_map.get(d["name"].lower())
+        if old_d:
+            # Check if any value changed significantly
+            changed = False
+            if (abs(d["level"] - old_d["level"]) > 0.01 or 
+                d["inflow"] != old_d["inflow"] or 
+                d["outflow"] != old_d["outflow"]):
+                changed = True
+                dams_changed += 1
+            
+            # Calculate storage change
+            old_storage = (old_d["level"] / 100.0) * old_d["capacity"]
+            new_storage = (d["level"] / 100.0) * d["capacity"]
+            storage_delta_tmc += (new_storage - old_storage)
+
+            if d["inflow"] is not None and old_d["inflow"] is not None:
+                inflow_delta_cusecs += (d["inflow"] - old_d["inflow"])
+            if d["outflow"] is not None and old_d["outflow"] is not None:
+                outflow_delta_cusecs += (d["outflow"] - old_d["outflow"])
+        else:
+            # New dam
+            dams_changed += 1
+            new_storage = (d["level"] / 100.0) * d["capacity"]
+            storage_delta_tmc += new_storage
+            if d["inflow"] is not None:
+                inflow_delta_cusecs += d["inflow"]
+            if d["outflow"] is not None:
+                outflow_delta_cusecs += d["outflow"]
+
+    storage_delta_tmc = round(storage_delta_tmc, 3)
+
+    # Write scraper logs
+    status_path = os.path.join(script_dir, "..", "src", "data", "scrape_status.json")
+    status_data = {}
+    history = []
+    if os.path.exists(status_path):
+        try:
+            with open(status_path, "r", encoding="utf-8") as f:
+                status_data = json.load(f)
+                history = status_data.get("history", [])
+        except Exception as e:
+            print(f"Error reading scrape_status.json: {e}")
+
+    import datetime
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %I:%M %p")
+    duration = round(time.time() - start_time, 2)
+
+    new_run = {
+        "timestamp": now_str,
+        "success": True,
+        "duration_seconds": duration,
+        "sources": {
+            "tungabhadra": { "status": "Operational" if tb_ok else "Down", "ok": tb_ok, "count": tb_count },
+            "tamil_nadu": { "status": "Operational" if tn_ok else "Down", "ok": tn_ok, "count": tn_count },
+            "oneindia": { "status": "Operational" if oi_ok else "Down", "ok": oi_ok, "count": oi_count }
+        },
+        "metrics": {
+            "dams_changed": dams_changed,
+            "storage_delta_tmc": storage_delta_tmc,
+            "inflow_delta_cusecs": inflow_delta_cusecs,
+            "outflow_delta_cusecs": outflow_delta_cusecs
+        }
+    }
+
+    history.insert(0, new_run)
+    history = history[:14]
+
+    status_data = {
+        "last_run_timestamp": now_str,
+        "success": True,
+        "duration_seconds": duration,
+        "sources": new_run["sources"],
+        "metrics": new_run["metrics"],
+        "history": history
+    }
+
+    with open(status_path, "w", encoding="utf-8") as f:
+        json.dump(status_data, f, indent=2)
+
+    print("Successfully updated scrape_status.json!")
 
 if __name__ == "__main__":
     main()

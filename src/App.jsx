@@ -1,5 +1,45 @@
 import { useState, useEffect, useRef } from "react";
 import DAMS from "./data/dams.json";
+import SCRAPE_STATUS from "./data/scrape_status.json";
+
+// ===================== MONGODB VERCEL SERVERLESS TELEMETRY API =====================
+const callMongo = async (action, collection, payload = {}) => {
+  try {
+    if (collection === "page_views") {
+      if (action === "insertOne") {
+        const res = await fetch("/api/page-views", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: payload.document?.session_id })
+        });
+        return res.ok ? await res.json() : null;
+      } else if (action === "aggregate") {
+        const res = await fetch("/api/page-views");
+        if (!res.ok) return null;
+        const data = await res.json();
+        return { documents: [{ total: data.total }] };
+      }
+    } else if (collection === "search_queries") {
+      if (action === "insertOne") {
+        const res = await fetch("/api/search-queries", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: payload.document?.query })
+        });
+        return res.ok ? await res.json() : null;
+      } else if (action === "find") {
+        const res = await fetch("/api/search-queries");
+        if (!res.ok) return null;
+        const data = await res.json();
+        return { documents: data.documents };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("Vercel Serverless call failed:", error);
+    return null;
+  }
+};
 
 const WAVE = "M0,12 C20,2 60,22 80,12 C100,2 140,22 160,12 C180,2 220,22 240,12 C260,2 300,22 320,12 C340,2 380,22 400,12 C420,2 460,22 480,12";
 const TICKER = DAMS.map(d=>`${d.name}: ${d.level}%`).join("  \u25c6  ");
@@ -43,7 +83,7 @@ function useCountUp(target, go) {
 }
 
 // ===================== WATER VIZ - REALISTIC DAM ANIMATION =====================
-function WaterViz({ level = 0, outflow = null, active }) {
+function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
   const safeLevel = typeof level === 'number' ? level : parseFloat(level) || 0;
   const safeOutflow = typeof outflow === 'number' ? outflow : parseFloat(outflow) || 0;
   const [fill, setFill] = useState(0);
@@ -56,9 +96,10 @@ function WaterViz({ level = 0, outflow = null, active }) {
   }, [active, safeLevel]);
 
   const hasFlow = safeOutflow > 0;
-  const ratio = Math.min(1, safeOutflow / 12000);
-  const flowSpeed = Math.max(0.3, 1.2 - ratio * 0.9);
-  const streamW = 2.5 + ratio * 5;
+  const ratio = safeOutflow > 0 ? Math.min(1, safeOutflow / 10000) : 0;
+  const ratioR = Math.pow(ratio, 0.5); // square root for better scale distribution
+  const flowSpeed = Math.max(0.25, 1.5 - ratioR * 1.25);
+  const streamW = 1.0 + ratioR * 8; // scales from 1.0px to 9.0px
 
   // ViewBox: 0 0 300 155
   // Dam: upstream vertical wall at x=168, crest at y=18, toe at x=198 y=138
@@ -68,21 +109,16 @@ function WaterViz({ level = 0, outflow = null, active }) {
 
   const crestY = 18;
   const baseY  = 138;
-  const upX    = 168;   // upstream face (vertical)
-  const crX2   = 182;   // crest right edge
-  const toeX   = 198;   // downstream toe
-  const resH   = baseY - crestY;  // 120 px
+  const upX    = 140;   // upstream face (vertical)
+  const crX2   = 160;   // crest right edge
+  const toeX   = 220;   // downstream toe
+  const resBaseY = 114;  // reservoir floor at y=114
+  const resH   = resBaseY - crestY;  // 96 px
 
-  const waterY = baseY - (fill / 100) * resH;
+  const waterY = resBaseY - (fill / 100) * resH;
 
-  // Sluice gate on downstream face near base
-  const gateY = 115;
-  // point on the downstream slope at gateY
-  const slopeT = (gateY - crestY) / (baseY - crestY);
-  const gateExitX = crX2 + slopeT * (toeX - crX2);
-
-  // Jet arc: exits from gate exit, parabolic to riverbed
-  const jetEndX = gateExitX + 20 + ratio * 22;
+  // Jet arc: exits from tunnel exit at 220, 132
+  const jetEndX = toeX + 16 + ratioR * 20;
 
   const uid = `d${Math.round(fill)}`;
 
@@ -123,7 +159,7 @@ function WaterViz({ level = 0, outflow = null, active }) {
             <stop offset="100%" stopColor="#e0f2fe" stopOpacity="0" />
           </radialGradient>
           <clipPath id={`res-clip-${uid}`}>
-            <rect x="0" y={crestY} width={upX} height={baseY - crestY + 1} />
+            <rect x="0" y={crestY} width={upX} height={resBaseY - crestY + 1} />
           </clipPath>
           <clipPath id={`down-clip-${uid}`}>
             <rect x={toeX} y="0" width={300 - toeX} height="155" />
@@ -134,12 +170,19 @@ function WaterViz({ level = 0, outflow = null, active }) {
         <rect x="0" y="0" width="300" height="155" fill="#020e1e" />
 
         {/* Ground / bedrock */}
-        <rect x="0" y={baseY} width="300" height={155 - baseY} fill="#0c1f35" />
-        <line x1="0" y1={baseY} x2="300" y2={baseY} stroke="#1e3a5f" strokeWidth="1.2" />
+        <polygon
+          points={`0,114 140,114 140,138 300,138 300,155 0,155`}
+          fill="#0c1f35"
+        />
+        {/* Bedrock surface lines */}
+        <path
+          d="M 0,114 L 140,114 M 140,138 L 300,138"
+          stroke="#1e3a5f" strokeWidth="1.2"
+        />
 
         {/* Reservoir water body (clipped to upstream zone) */}
         <g clipPath={`url(#res-clip-${uid})`}>
-          <rect x="0" y={waterY} width={upX} height={baseY - waterY} fill={`url(#res-${uid})`} />
+          <rect x="0" y={waterY} width={upX} height={resBaseY - waterY} fill={`url(#res-${uid})`} />
 
           {/* Subtle grid lines for reference */}
           {[0.25,0.5,0.75].map(f => (
@@ -199,87 +242,96 @@ function WaterViz({ level = 0, outflow = null, active }) {
         <rect x={upX} y={crestY - 5} width={crX2 - upX} height={5} rx="0.5" fill="#374151" stroke="#4b5563" strokeWidth="0.4" />
 
         {/* Parapet wall on crest */}
-        {[169,172,175,178,181].map(px => (
+        {[141,145,149,153,157].map(px => (
           <rect key={px} x={px} y={crestY - 11} width="1" height="7" rx="0.3" fill="#6b7280" />
         ))}
         <line x1={upX} y1={crestY - 10} x2={crX2} y2={crestY - 10} stroke="#9ca3af" strokeWidth="0.6" opacity="0.7" />
 
         {/* Radial flood gates on crest (closed, structural) */}
-        {[170,174,178].map((gx,i) => (
+        {[142,148,154].map((gx,i) => (
           <rect key={i} x={gx} y={crestY - 5} width="3" height="5" rx="0.5" fill="#1f2937" stroke="#374151" strokeWidth="0.3" />
         ))}
 
         {/* Upstream face: wet sheen line */}
-        <line x1={upX} y1={waterY > crestY ? waterY : crestY} x2={upX} y2={baseY}
+        <line x1={upX} y1={waterY > crestY ? waterY : crestY} x2={upX} y2={resBaseY}
           stroke="rgba(14,165,233,0.22)" strokeWidth="1.8" />
 
-        {/* ============ SLUICE GATE ============ */}
-        {/* Gate housing (frame) */}
-        <rect x={gateExitX - 2} y={gateY - 6} width={14} height={14} rx="1.5" fill="#0f172a" stroke="#475569" strokeWidth="0.7" />
-        {/* Gate door panel — slides up when open */}
+        {/* ============ TUNNEL INTERIOR ============ */}
+        {/* Slanted tunnel cut out through the dam body */}
+        <path
+          d="M 140,102 L 146,102 L 220,126 L 220,138 L 146,114 L 140,114 Z"
+          fill="#1e293b" stroke="#0f172a" strokeWidth="1"
+        />
+
+        {/* ============ TUNNEL GATE ============ */}
+        {/* Gate door that slides up/down */}
         <rect
-          x={gateExitX - 1}
-          y={hasFlow ? gateY - 9 : gateY - 2}
-          width={11} height={10} rx="1"
-          fill={hasFlow ? '#94a3b8' : '#374151'}
-          stroke="#1e293b" strokeWidth="0.5"
+          x="142" y={hasFlow ? 86 : 102}
+          width="3" height="12" fill="#475569" stroke="#0f172a" strokeWidth="0.5"
           style={{ transition: 'y 0.7s ease' }}
         />
-        {/* Actuator rod */}
-        <line x1={gateExitX + 4.5} y1={gateY - 13} x2={gateExitX + 4.5} y2={gateY - 6}
-          stroke="#64748b" strokeWidth="1.2" />
-        <rect x={gateExitX + 2} y={gateY - 16} width={5} height={4} rx="1" fill="#334155" stroke="#475569" strokeWidth="0.4" />
+        {/* Vertical gate shaft leading up to crest */}
+        <rect x="142" y={crestY} width="3" height="84" fill="#0f172a" />
 
         {/* ============ OUTFLOW ANIMATION ============ */}
         {hasFlow && (
           <g>
-            {/* Water jet exiting from gate — parabolic arc downward to riverbed */}
-            {/* Arc: starts at gate exit (gateExitX+9, gateY+2), curves down to (jetEndX, baseY) */}
+            {/* Water flowing through the tunnel */}
             <path
-              d={`M ${gateExitX + 10},${gateY + 2} C ${gateExitX + 20},${gateY + 4} ${jetEndX - 12},${baseY - 12} ${jetEndX},${baseY}`}
+              d="M 140,108 L 146,108 L 220,132"
+              fill="none" stroke="#0ea5e9" strokeWidth={streamW}
+              strokeLinejoin="round" opacity="0.95"
+            />
+            {/* Bright core in tunnel */}
+            <path
+              d="M 140,108 L 146,108 L 220,132"
+              fill="none" stroke="#bae6fd" strokeWidth={streamW * 0.4}
+              strokeLinejoin="round" opacity="0.9"
+            />
+
+            {/* Water jet exiting from tunnel and falling into river */}
+            <path
+              d={`M 220,132 C 228,132 ${jetEndX - 8},${baseY - 4} ${jetEndX},${baseY}`}
               fill="none" stroke="#0ea5e9" strokeWidth={streamW}
               strokeLinecap="round" opacity="0.93"
             />
-            {/* Bright core of jet */}
             <path
-              d={`M ${gateExitX + 10},${gateY + 2} C ${gateExitX + 20},${gateY + 4} ${jetEndX - 12},${baseY - 12} ${jetEndX},${baseY}`}
-              fill="none" stroke="#bae6fd" strokeWidth={streamW * 0.38}
+              d={`M 220,132 C 228,132 ${jetEndX - 8},${baseY - 4} ${jetEndX},${baseY}`}
+              fill="none" stroke="#bae6fd" strokeWidth={streamW * 0.4}
               strokeLinecap="round" opacity="0.9"
             />
-            {/* Moving foam dashes along jet */}
+            {/* Animated foam dashes on exterior jet */}
             <path
-              d={`M ${gateExitX + 10},${gateY + 2} C ${gateExitX + 20},${gateY + 4} ${jetEndX - 12},${baseY - 12} ${jetEndX},${baseY}`}
-              fill="none" stroke="white" strokeWidth={streamW * 0.22}
+              d={`M 220,132 C 228,132 ${jetEndX - 8},${baseY - 4} ${jetEndX},${baseY}`}
+              fill="none" stroke="white" strokeWidth={streamW * 0.25}
               strokeDasharray="4,5" opacity="0.82">
               <animate attributeName="strokeDashoffset" values="40;0" dur={`${flowSpeed}s`} repeatCount="indefinite" />
             </path>
 
             {/* Plunge pool (water pool where jet hits river) */}
-            <ellipse cx={jetEndX} cy={baseY} rx={7 + ratio * 7} ry="4" fill={`url(#pool-${uid})`} opacity="0.92" />
+            <ellipse cx={jetEndX} cy={baseY} rx={3 + ratioR * 10} ry={1.5 + ratioR * 3} fill={`url(#pool-${uid})`} opacity="0.92" />
 
-            {/* Expanding splash ring 1 */}
+            {/* Expanding splash rings */}
             <ellipse cx={jetEndX} cy={baseY} rx="2" ry="1" fill="none" stroke="#e0f2fe" strokeWidth="1.1">
-              <animate attributeName="rx" values="1;14;1" dur="0.72s" repeatCount="indefinite" />
-              <animate attributeName="ry" values="0.5;5.5;0.5" dur="0.72s" repeatCount="indefinite" />
+              <animate attributeName="rx" values={`1;${4 + ratioR * 12};1`} dur="0.72s" repeatCount="indefinite" />
+              <animate attributeName="ry" values={`0.5;${2 + ratioR * 4.5};0.5`} dur="0.72s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="1;0;1" dur="0.72s" repeatCount="indefinite" />
             </ellipse>
-            {/* Expanding splash ring 2 */}
             <ellipse cx={jetEndX} cy={baseY} rx="1" ry="0.8" fill="none" stroke="#7dd3fc" strokeWidth="0.75">
-              <animate attributeName="rx" values="1;9;1" dur="0.72s" begin="0.36s" repeatCount="indefinite" />
-              <animate attributeName="ry" values="0.5;3.8;0.5" dur="0.72s" begin="0.36s" repeatCount="indefinite" />
+              <animate attributeName="rx" values={`1;${2.5 + ratioR * 8};1`} dur="0.72s" begin="0.36s" repeatCount="indefinite" />
+              <animate attributeName="ry" values={`0.5;${1.2 + ratioR * 3};0.5`} dur="0.72s" begin="0.36s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.9;0;0.9" dur="0.72s" begin="0.36s" repeatCount="indefinite" />
             </ellipse>
 
             {/* Mist spray cloud */}
-            <ellipse cx={jetEndX} cy={baseY - 3} rx={10 + ratio * 5} ry="7" fill={`url(#mist-${uid})`}>
-              <animate attributeName="ry" values="5;11;5" dur="1.1s" repeatCount="indefinite" />
+            <ellipse cx={jetEndX} cy={baseY - 3} rx={5 + ratioR * 10} ry={3 + ratioR * 7} fill={`url(#mist-${uid})`}>
+              <animate attributeName="ry" values={`${2 + ratioR * 3};${4 + ratioR * 8};${2 + ratioR * 3}`} dur="1.1s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.5;1;0.5" dur="1.1s" repeatCount="indefinite" />
             </ellipse>
 
             {/* Downstream river flowing right */}
             <g clipPath={`url(#down-clip-${uid})`}>
               <rect x={toeX} y={baseY - 6} width={300 - toeX} height={7} fill={`url(#riv-${uid})`} opacity="0.9" />
-              {/* Animated river surface waves */}
               <path
                 d={`M ${toeX},${baseY-5} Q ${toeX+14},${baseY-7} ${toeX+28},${baseY-5} Q ${toeX+42},${baseY-3} ${toeX+56},${baseY-5} Q ${toeX+70},${baseY-7} 300,${baseY-5}`}
                 fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="0.9">
@@ -287,7 +339,6 @@ function WaterViz({ level = 0, outflow = null, active }) {
                   values={`M ${toeX},${baseY-5} Q ${toeX+14},${baseY-7} ${toeX+28},${baseY-5} Q ${toeX+42},${baseY-3} ${toeX+56},${baseY-5} Q ${toeX+70},${baseY-7} 300,${baseY-5};M ${toeX},${baseY-5} Q ${toeX+14},${baseY-3} ${toeX+28},${baseY-5} Q ${toeX+42},${baseY-7} ${toeX+56},${baseY-5} Q ${toeX+70},${baseY-3} 300,${baseY-5};M ${toeX},${baseY-5} Q ${toeX+14},${baseY-7} ${toeX+28},${baseY-5} Q ${toeX+42},${baseY-3} ${toeX+56},${baseY-5} Q ${toeX+70},${baseY-7} 300,${baseY-5}`}
                   dur="0.65s" repeatCount="indefinite" />
               </path>
-              {/* Foam streak */}
               <path d={`M ${toeX+5},${baseY-2.5} L 300,${baseY-2.5}`}
                 fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="0.6" strokeDasharray="6,9">
                 <animate attributeName="strokeDashoffset" values="60;0" dur={`${flowSpeed * 1.5}s`} repeatCount="indefinite" />
@@ -296,13 +347,15 @@ function WaterViz({ level = 0, outflow = null, active }) {
           </g>
         )}
 
-        {/* Water level percentage badge */}
-        <rect x="6" y="6" width="70" height="24" rx="7"
+        {/* Water level TMC badge */}
+        <rect x="6" y="6" width="76" height="24" rx="7"
           fill="rgba(2,10,24,0.8)" stroke="rgba(6,182,212,0.55)" strokeWidth="1" />
-        <text x="41" y="23" fill="#e0f2fe" fontSize="12.5" fontWeight="900"
+        <text x="44" y="22" fill="#e0f2fe" fontSize="11" fontWeight="900"
           fontFamily="monospace" textAnchor="middle">
-          {safeLevel.toFixed(1)}%
+          {((capacity * safeLevel) / 100).toFixed(2)} TMC
         </text>
+
+
       </svg>
     </div>
   );
@@ -337,7 +390,7 @@ function DamCard({ dam, delay }) {
           </div>
         </div>
       </div>
-      <WaterViz level={safeLevel} outflow={dam.outflow} active={vis}/>
+      <WaterViz level={safeLevel} outflow={dam.outflow} capacity={dam.capacity} active={vis}/>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
         {[
           {l:"Inflow",  v:dam.inflow  !== null ? `\u2191 ${fmtK(dam.inflow)}`  : "\u2014", c:"#86EFAC"},
@@ -354,6 +407,13 @@ function DamCard({ dam, delay }) {
         <span style={{fontSize:10,color:"rgba(220,240,255,0.3)",textTransform:"uppercase",letterSpacing:1}}>Storage</span>
         <span style={{fontSize:12,fontWeight:600,color:"#BAE6FD",fontFamily:"monospace"}}>
           {(dam.capacity*safeLevel/100).toFixed(2)}<span style={{opacity:0.38,margin:"0 4px"}}>/</span>{dam.capacity}<span style={{fontSize:9,opacity:0.45,marginLeft:3}}>TMC</span>
+        </span>
+      </div>
+      <div style={{marginTop:6,padding:"7px 12px",background:"rgba(255,255,255,0.02)",borderRadius:9,
+        border:"1px solid rgba(255,255,255,0.04)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span style={{fontSize:10,color:"rgba(220,240,255,0.3)",textTransform:"uppercase",letterSpacing:1}}>Filled Percentage</span>
+        <span style={{fontSize:12,fontWeight:600,color:"#38BDF8",fontFamily:"monospace"}}>
+          {safeLevel.toFixed(1)}%
         </span>
       </div>
     </div>
@@ -467,28 +527,157 @@ function AnalyticsDashboard({ setView, searchHistory }) {
   const gaActive = !!import.meta.env.VITE_GA_MEASUREMENT_ID;
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-XXXXXXXXXX";
 
+  // Check freshness of last scraper run
+  const checkFreshness = () => {
+    try {
+      const parts = SCRAPE_STATUS.last_run_timestamp.split(" ");
+      const datePart = parts[0];
+      const timePart = parts[1];
+      const ampm = parts[2];
+      
+      const [yr, mo, dy] = datePart.split("-").map(Number);
+      let [hr, min] = timePart.split(":").map(Number);
+      if (ampm === "PM" && hr < 12) hr += 12;
+      if (ampm === "AM" && hr === 12) hr = 0;
+      
+      const lastRunDate = new Date(yr, mo - 1, dy, hr, min);
+      const now = new Date();
+      const diffHours = (now - lastRunDate) / (1000 * 60 * 60);
+      return diffHours < 26; // fresh if updated in the last 26 hours
+    } catch (e) {
+      return true;
+    }
+  };
+  const isFresh = checkFreshness();
+
+  const totalDams = DAMS.length;
+  const activeAlerts = DAMS.filter(d => d.level >= 90).length;
+  const totalInflow = DAMS.reduce((sum, d) => sum + (d.inflow || 0), 0);
+  const totalOutflow = DAMS.reduce((sum, d) => sum + (d.outflow || 0), 0);
+
+  // MongoDB Telemetry State
+  const [telemetry, setTelemetry] = useState({
+    visits: null,
+    searches: [],
+    loading: true
+  });
+
+  const [mongoActive, setMongoActive] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const fetchTelemetry = async () => {
+      try {
+        const [visitsRes, searchesRes] = await Promise.all([
+          callMongo("aggregate", "page_views"),
+          callMongo("find", "search_queries")
+        ]);
+        if (!active) return;
+        if (visitsRes !== null || searchesRes !== null) {
+          setTelemetry({
+            visits: visitsRes?.documents?.[0]?.total ?? 0,
+            searches: searchesRes?.documents ?? [],
+            loading: false
+          });
+          setMongoActive(true);
+        } else {
+          setTelemetry({ visits: null, searches: [], loading: false });
+          setMongoActive(false);
+        }
+      } catch (err) {
+        console.error("Failed to load telemetry:", err);
+        if (active) {
+          setTelemetry({ visits: null, searches: [], loading: false });
+          setMongoActive(false);
+        }
+      }
+    };
+    fetchTelemetry();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const visitsVal = telemetry.loading
+    ? "Loading..."
+    : telemetry.visits !== null
+      ? telemetry.visits
+      : "Local Session";
+
   const stats = [
-    { label: "Unique Visitors", value: "4,821", change: "+14.2%", positive: true, icon: "\ud83d\udc65" },
-    { label: "Pageviews", value: "18,453", change: "+8.5%", positive: true, icon: "\ud83d\udcc4" },
-    { label: "Bounce Rate", value: "38.4%", change: "-2.1%", positive: true, icon: "\u23f3" },
-    { label: "Avg Session Time", value: "3m 45s", change: "+12s", positive: true, icon: "\u23f1" }
+    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: "Across 5 southern states", positive: true, icon: "🌊" },
+    { label: "Active Flood Alerts", value: activeAlerts, change: `${activeAlerts} Alerts`, subtext: "Dams ≥ 90% capacity", positive: activeAlerts === 0, icon: "🚨" },
+    { label: "Total Region Inflow", value: `${fmtK(totalInflow)}`, change: "cusecs", subtext: "Cumulative river inflows", positive: totalInflow >= totalOutflow, icon: "📥" },
+    { label: "Total Region Outflow", value: `${fmtK(totalOutflow)}`, change: "cusecs", subtext: "Cumulative released flow", positive: true, icon: "📤" },
+    { 
+      label: "Total Website Visits", 
+      value: visitsVal, 
+      change: mongoActive ? "Live (Atlas)" : "Session View", 
+      subtext: mongoActive ? "Global unique hits" : "Temporary fallback count", 
+      positive: true, 
+      icon: "📈" 
+    }
   ];
 
   const scraperLogs = [
-    { source: "Karnataka (KSNDMC)", status: "Operational", detail: "Last scrape: 1h ago \u00b7 100% Success Rate", ok: true },
-    { source: "Tamil Nadu (TNWRD)", status: "Operational", detail: "Last scrape: 1h ago \u00b7 100% Success Rate", ok: true },
-    { source: "Kerala (Kerala WRD)", status: "Operational", detail: "Last scrape: 1h ago \u00b7 98% Success Rate", ok: true },
-    { source: "Andhra & Telangana", status: "Operational", detail: "Last scrape: 1h ago \u00b7 100% Success Rate", ok: true },
-    { source: "Serverless Function Trigger", status: "Active", detail: "Last API invoke: Today, 08:30 AM", ok: true },
-    { source: "Vercel Cron Engine", status: "Enabled", detail: "Frequency: every 12 hours", ok: true },
+    { 
+      source: "Tungabhadra Board", 
+      status: SCRAPE_STATUS.sources.tungabhadra.status, 
+      detail: `Scraped ${SCRAPE_STATUS.sources.tungabhadra.count} reservoir records successfully.`, 
+      ok: SCRAPE_STATUS.sources.tungabhadra.ok 
+    },
+    { 
+      source: "Tamil Nadu Agriculture Dept", 
+      status: SCRAPE_STATUS.sources.tamil_nadu.status, 
+      detail: `Scraped ${SCRAPE_STATUS.sources.tamil_nadu.count} major reservoir records successfully.`, 
+      ok: SCRAPE_STATUS.sources.tamil_nadu.ok 
+    },
+    { 
+      source: "OneIndia Public Database", 
+      status: SCRAPE_STATUS.sources.oneindia.status, 
+      detail: `Scraped ${SCRAPE_STATUS.sources.oneindia.count} reservoirs (Kerala, AP, Telangana) successfully.`, 
+      ok: SCRAPE_STATUS.sources.oneindia.ok 
+    },
+    { 
+      source: "Daily Cron Trigger (10:00 AM IST)", 
+      status: isFresh ? "Active" : "Delayed", 
+      detail: `Frequency: Daily. Last run duration: ${SCRAPE_STATUS.duration_seconds}s.`, 
+      ok: isFresh 
+    }
   ];
 
+  const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
   const adsenseChecklist = [
-    { label: "Create high-quality bulletin updates", done: true },
-    { label: "Mobile-responsive layouts & SEO compliance", done: true },
-    { label: "Secure HTTPS Connection & Fast Load Times", done: true },
-    { label: "6-Month Domain Age requirement (India)", done: false, detail: "Domain active: 1 / 6 Months" }
+    { label: "Mobile-responsive layout & SEO structure", done: true },
+    { label: "Secure HTTPS SSL Connection", done: isHttps, detail: isHttps ? "Verified Secure" : "Local HTTP detected (Localhost)" },
+    { label: "Waterflow physics & SVG graphics optimization", done: true },
+    { label: "Live data refresh comparison engine active", done: !!SCRAPE_STATUS.success },
+    { label: "MongoDB Persistent Telemetry Active", done: mongoActive, detail: mongoActive ? "Connected to Atlas Data API" : "Inactive (Local fallback mode)" }
   ];
+
+  const completedChecks = adsenseChecklist.filter(c => c.done).length;
+  const checklistPercentage = Math.round((completedChecks / adsenseChecklist.length) * 100);
+
+  // Dynamic Chart calculations
+  const chartRuns = [...SCRAPE_STATUS.history].slice(0, 7).reverse();
+  const maxDelta = Math.max(...chartRuns.map(r => Math.abs(r.metrics.storage_delta_tmc)), 0.1);
+  
+  const points = chartRuns.map((r, idx) => {
+    const val = r.metrics.storage_delta_tmc;
+    const x = 40 + idx * 70; // 40, 110, 180, 250, 320, 390, 460
+    const y = 100 - (val / maxDelta) * 70;
+    let dateStr = "Run";
+    try {
+      const datePart = r.timestamp.split(" ")[0]; // "2026-06-13"
+      const [,,d] = datePart.split("-");
+      dateStr = d || "Run";
+    } catch(e) {}
+    return { x, y, val, label: dateStr };
+  });
+
+  const linePath = points.length > 0 
+    ? "M " + points.map(pt => `${pt.x},${pt.y}`).join(" L ") 
+    : "";
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "40px 20px 80px" }}>
@@ -496,7 +685,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 36, gap: 16, flexWrap: "wrap" }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-            <span style={{ fontSize: 20 }}>&#128202;</span>
+            <span style={{ fontSize: 20 }}>📊</span>
             <span style={{ fontSize: 11, color: "#67E8F9", letterSpacing: 2, fontWeight: 700, textTransform: "uppercase" }}>Administrative Console</span>
           </div>
           <h2 style={{ fontSize: 32, fontWeight: 900, color: "#E0F2FE", letterSpacing: "-0.5px" }}>Portal Analytics</h2>
@@ -512,8 +701,28 @@ function AnalyticsDashboard({ setView, searchHistory }) {
           onMouseEnter={e => { e.target.style.background = "rgba(255,255,255,0.06)"; e.target.style.borderColor = "rgba(6, 182, 212, 0.4)"; e.target.style.color = "#67E8F9"; }}
           onMouseLeave={e => { e.target.style.background = "rgba(255,255,255,0.02)"; e.target.style.borderColor = "rgba(224, 242, 254, 0.15)"; e.target.style.color = "rgba(224, 242, 254, 0.8)"; }}
         >
-          \u2190 Exit Portal
+          ← Exit Portal
         </button>
+      </div>
+
+      {/* Freshness Banner */}
+      <div style={{
+        padding: "12px 18px",
+        borderRadius: 12,
+        background: isFresh ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)",
+        border: `1px solid ${isFresh ? "rgba(34,197,94,0.25)" : "rgba(239,68,68,0.25)"}`,
+        color: isFresh ? "#4ADE80" : "#F87171",
+        display: "flex", alignItems: "center", gap: 10,
+        marginBottom: 28, fontSize: 13, fontWeight: 500
+      }}>
+        <span style={{ fontSize: 16 }}>{isFresh ? "🟢" : "🔴"}</span>
+        <span>
+          {isFresh ? (
+            <><strong>Operational:</strong> Daily data refresh at 10:00 AM IST succeeded. Last sync completed successfully on <strong>{SCRAPE_STATUS.last_run_timestamp}</strong>.</>
+          ) : (
+            <><strong>Alert:</strong> Data refresh is stale. Last successful scrape was on <strong>{SCRAPE_STATUS.last_run_timestamp}</strong>. Daily scheduler (10 AM IST) might be failing or inactive.</>
+          )}
+        </span>
       </div>
 
       {/* Summary Row */}
@@ -531,8 +740,8 @@ function AnalyticsDashboard({ setView, searchHistory }) {
             </div>
             <div style={{ fontSize: 26, fontWeight: 900, color: "#DDEFFC", fontFamily: "monospace", lineHeight: 1.2 }}>{s.value}</div>
             <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 8 }}>
-              <span style={{ color: "#86EFAC", fontSize: 11, fontWeight: 700 }}>{s.change}</span>
-              <span style={{ color: "rgba(220, 240, 255, 0.25)", fontSize: 10 }}>vs last week</span>
+              <span style={{ color: s.positive ? "#86EFAC" : "#FB923C", fontSize: 11, fontWeight: 700 }}>{s.change}</span>
+              <span style={{ color: "rgba(220, 240, 255, 0.25)", fontSize: 10 }}>{s.subtext}</span>
             </div>
           </div>
         ))}
@@ -552,39 +761,99 @@ function AnalyticsDashboard({ setView, searchHistory }) {
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <div>
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE" }}>Weekly Visitor Trends</h3>
-                <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginTop: 2 }}>Daily user session traffic logs</p>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE" }}>Net Storage Volume Trend</h3>
+                <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginTop: 2 }}>Daily storage capacity shift (Last 7 runs)</p>
               </div>
-              <span style={{ fontSize: 11, padding: "4px 10px", borderRadius: 12, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#67E8F9", fontWeight: 600 }}>Active Sessions</span>
+              <span style={{ fontSize: 11, padding: "4px 10px", borderRadius: 12, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.2)", color: "#67E8F9", fontWeight: 600 }}>TMC Delta</span>
             </div>
             <div style={{ position: "relative", width: "100%", height: 210 }}>
               <svg width="100%" height="100%" viewBox="0 0 500 200" preserveAspectRatio="none" style={{ display: "block", overflow: "visible" }}>
-                <defs>
-                  <linearGradient id="chart-area-grad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
-                <line x1="30" y1="60" x2="470" y2="60" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" strokeDasharray="3 3" />
-                <line x1="30" y1="100" x2="470" y2="100" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" strokeDasharray="3 3" />
-                <line x1="30" y1="140" x2="470" y2="140" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" strokeDasharray="3 3" />
-                <line x1="30" y1="180" x2="470" y2="180" stroke="rgba(255,255,255,0.1)" strokeWidth="0.8" />
-                <text x="20" y="64" fill="rgba(224,242,254,0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">1.5k</text>
-                <text x="20" y="104" fill="rgba(224,242,254,0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">1.0k</text>
-                <text x="20" y="144" fill="rgba(224,242,254,0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">0.5k</text>
-                <text x="20" y="184" fill="rgba(224,242,254,0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">0</text>
-                <path d="M 30,180 L 30,140 L 103.3,120 L 176.6,150 L 250,90 L 323.3,70 L 396.6,110 L 470,50 L 470,180 Z" fill="url(#chart-area-grad)" />
-                <path d="M 30,140 L 103.3,120 L 176.6,150 L 250,90 L 323.3,70 L 396.6,110 L 470,50" fill="none" stroke="#22D3EE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                {[{x:30,y:140,val:"520"},{x:103.3,y:120,val:"680"},{x:176.6,y:150,val:"490"},{x:250,y:90,val:"950"},{x:323.3,y:70,val:"1.2k"},{x:396.6,y:110,val:"820"},{x:470,y:50,val:"1.4k"}].map((pt,i)=>(
-                  <g key={i}>
-                    <circle cx={pt.x} cy={pt.y} r="5" fill="#030a14" stroke="#22D3EE" strokeWidth="2" />
-                    <text x={pt.x} y={pt.y-10} fill="#E0F2FE" fontSize="9" fontFamily="monospace" fontWeight="bold" textAnchor="middle">{pt.val}</text>
-                  </g>
-                ))}
-                {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((day,idx)=>(
-                  <text key={day} x={30+idx*73.3} y="196" fill="rgba(224,242,254,0.35)" fontSize="9" textAnchor="middle">{day}</text>
-                ))}
+                {/* Horizontal reference lines */}
+                <line x1="30" y1="30" x2="470" y2="30" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" strokeDasharray="3 3" />
+                <line x1="30" y1="100" x2="470" y2="100" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" />
+                <line x1="30" y1="170" x2="470" y2="170" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" strokeDasharray="3 3" />
+
+                <text x="20" y="34" fill="rgba(224,242,254,0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">+{maxDelta.toFixed(2)} TMC</text>
+                <text x="20" y="104" fill="rgba(224,242,254,0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">0.00</text>
+                <text x="20" y="174" fill="rgba(224,242,254,0.25)" fontSize="9" fontFamily="monospace" textAnchor="end">-{maxDelta.toFixed(2)} TMC</text>
+
+                {/* Path connecting points */}
+                {linePath && (
+                  <path d={linePath} fill="none" stroke="#22D3EE" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                )}
+
+                {/* Interactive Points */}
+                {points.map((pt, i) => {
+                  const dotColor = pt.val > 0 ? "#86EFAC" : pt.val < 0 ? "#FCA5A5" : "#22D3EE";
+                  const valStr = (pt.val > 0 ? "+" : "") + pt.val.toFixed(3);
+                  return (
+                    <g key={i}>
+                      <circle cx={pt.x} cy={pt.y} r="5" fill="#030a14" stroke={dotColor} strokeWidth="2.5" />
+                      <text x={pt.x} y={pt.y - 10} fill="#E0F2FE" fontSize="9" fontFamily="monospace" fontWeight="bold" textAnchor="middle">
+                        {valStr}
+                      </text>
+                      <text x={pt.x} y="194" fill="rgba(224,242,254,0.4)" fontSize="9" textAnchor="middle">
+                        {pt.label}
+                      </text>
+                    </g>
+                  );
+                })}
               </svg>
+            </div>
+          </div>
+
+          {/* Daily Refresh & Value Change Verification Log */}
+          <div style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(6, 182, 212, 0.15)",
+            borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>Daily Refresh & Value Change Log</h3>
+            <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginBottom: 20 }}>
+              Verifies if data refreshed successfully daily at 10 AM IST and if values changed.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, maxHeight: 400, overflowY: "auto", paddingRight: 4 }}>
+              {SCRAPE_STATUS.history.map((run, idx) => {
+                const hasChanges = run.metrics.dams_changed > 0;
+                const deltaColor = run.metrics.storage_delta_tmc > 0 ? "#86EFAC" : run.metrics.storage_delta_tmc < 0 ? "#FCA5A5" : "rgba(224, 242, 254, 0.8)";
+                const deltaSign = run.metrics.storage_delta_tmc > 0 ? "+" : "";
+                return (
+                  <div key={idx} style={{
+                    padding: 14, background: "rgba(255,255,255,0.015)",
+                    border: "1px solid rgba(255,255,255,0.04)", borderRadius: 12
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#BAE6FD", fontFamily: "monospace" }}>{run.timestamp}</span>
+                      <span style={{
+                        fontSize: 10, padding: "2px 8px", borderRadius: 6, fontWeight: 700,
+                        background: run.success ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)",
+                        color: run.success ? "#4ADE80" : "#F87171"
+                      }}>
+                        {run.success ? "✓ Sync Succeeded" : "✗ Failed"}
+                      </span>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 12px", fontSize: 11, color: "rgba(224, 242, 254, 0.45)" }}>
+                      <div>
+                        Dams Changed: <span style={{ color: hasChanges ? "#E0F2FE" : "#FBBF24", fontWeight: 700 }}>{run.metrics.dams_changed}</span>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        Storage Delta: <span style={{ color: deltaColor, fontWeight: 700 }}>{deltaSign}{run.metrics.storage_delta_tmc} TMC</span>
+                      </div>
+                      <div>
+                        Inflow: <span style={{ color: "#E0F2FE", fontFamily: "monospace" }}>{run.metrics.inflow_delta_cusecs > 0 ? "+" : ""}{run.metrics.inflow_delta_cusecs} cusecs</span>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                        Outflow: <span style={{ color: "#E0F2FE", fontFamily: "monospace" }}>{run.metrics.outflow_delta_cusecs > 0 ? "+" : ""}{run.metrics.outflow_delta_cusecs} cusecs</span>
+                      </div>
+                    </div>
+                    {run.metrics.dams_changed === 0 && (
+                      <div style={{ marginTop: 8, fontSize: 10, color: "#FBBF24", display: "flex", alignItems: "center", gap: 4 }}>
+                        <span>⚠️</span> No water level changes detected. Source values might be static today.
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -605,19 +874,19 @@ function AnalyticsDashboard({ setView, searchHistory }) {
                 border: `1px solid ${gaActive ? "rgba(34,197,94,0.25)" : "rgba(245,158,11,0.25)"}`,
                 color: gaActive ? "#4ADE80" : "#FBBF24"
               }}>
-                {gaActive ? "\u25cf ACTIVE" : "\u25cb CONFIG PENDING"}
+                {gaActive ? "● ACTIVE" : "○ CONFIG PENDING"}
               </span>
             </div>
             {gaActive ? (
               <div style={{ background: "rgba(34,197,94,0.03)", border: "1px solid rgba(34,197,94,0.15)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-                <span style={{ fontSize: 13, color: "#86EFAC", fontWeight: 600, display: "block", marginBottom: 4 }}>&#10004; Script successfully active</span>
+                <span style={{ fontSize: 13, color: "#86EFAC", fontWeight: 600, display: "block", marginBottom: 4 }}>✔ Script successfully active</span>
                 <p style={{ fontSize: 11, color: "rgba(224,242,254,0.5)", lineHeight: 1.5 }}>
                   The app is listening to Measurement ID <code style={{ color: "#67E8F9", background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: 4, fontFamily: "monospace" }}>{measurementId}</code>.
                 </p>
               </div>
             ) : (
               <div style={{ background: "rgba(245,158,11,0.03)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-                <span style={{ fontSize: 13, color: "#FBBF24", fontWeight: 600, display: "block", marginBottom: 4 }}>&#9889; Free telemetry ready for setup</span>
+                <span style={{ fontSize: 13, color: "#FBBF24", fontWeight: 600, display: "block", marginBottom: 4 }}>⚡ Free telemetry ready for setup</span>
                 <p style={{ fontSize: 11, color: "rgba(224,242,254,0.5)", lineHeight: 1.5 }}>
                   Follow the steps below to track visitor retention, geography maps, and device analytics.
                 </p>
@@ -668,7 +937,9 @@ function AnalyticsDashboard({ setView, searchHistory }) {
                   </div>
                   <div style={{
                     padding: "4px 8px", borderRadius: 8, fontSize: 10, fontWeight: 700,
-                    background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", color: "#4ADE80"
+                    background: log.ok ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)",
+                    border: `1px solid ${log.ok ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`,
+                    color: log.ok ? "#4ADE80" : "#F87171"
                   }}>
                     {log.status}
                   </div>
@@ -676,7 +947,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
               ))}
             </div>
             <div style={{ marginTop: 16, padding: "10px 12px", background: "rgba(6,182,212,0.04)", borderRadius: 8, border: "1px solid rgba(6,182,212,0.1)", fontSize: 11, color: "rgba(224,242,254,0.45)", lineHeight: 1.4 }}>
-              &#128161; Scrapers are triggered remotely via Vercel Cron. Local data is compiled statically during builds.
+              💡 Scrapers are triggered remotely via Vercel Cron. Local data is compiled statically during builds.
             </div>
           </div>
 
@@ -686,22 +957,22 @@ function AnalyticsDashboard({ setView, searchHistory }) {
             border: "1px solid rgba(255,255,255,0.05)",
             borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
           }}>
-            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>AdSense Earnings Target</h3>
-            <p style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", marginBottom: 16 }}>Compliance criteria tracker for Google monetization</p>
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>AdSense Monetization Readiness</h3>
+            <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginBottom: 16 }}>Compliance criteria tracker for Google monetization</p>
             <div style={{ marginBottom: 20 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, fontSize: 11 }}>
-                <span style={{ color: "rgba(224,242,254,0.5)", fontWeight: 600 }}>Domain Eligibility Age</span>
-                <span style={{ color: "#67E8F9", fontWeight: 700 }}>17% Complete</span>
+                <span style={{ color: "rgba(224, 242, 254, 0.5)", fontWeight: 600 }}>Completed Setup Checkpoints</span>
+                <span style={{ color: "#67E8F9", fontWeight: 700 }}>{checklistPercentage}% Complete</span>
               </div>
               <div style={{ width: "100%", height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
-                <div style={{ width: "17%", height: "100%", background: "linear-gradient(to right, #0284C7, #06B6D4)", borderRadius: 3 }} />
+                <div style={{ width: `${checklistPercentage}%`, height: "100%", background: "linear-gradient(to right, #0284C7, #06B6D4)", borderRadius: 3 }} />
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {adsenseChecklist.map((item, idx) => (
                 <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                   <span style={{ color: item.done ? "#4ADE80" : "#FBBF24", fontSize: 12 }}>
-                    {item.done ? "\u2713" : "\u25cb"}
+                    {item.done ? "✓" : "○"}
                   </span>
                   <div>
                     <span style={{ fontSize: 12, color: item.done ? "#DDEFFC" : "rgba(220,240,255,0.45)", fontWeight: item.done ? 500 : 400 }}>
@@ -722,27 +993,117 @@ function AnalyticsDashboard({ setView, searchHistory }) {
             border: "1px solid rgba(255,255,255,0.05)",
             borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
           }}>
-            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>Session Search Queries</h3>
-            <p style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", marginBottom: 16 }}>Live terms searched in this browser session</p>
-            {searchHistory.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {searchHistory.map((item, idx) => (
-                  <div key={idx} style={{
-                    padding: "10px 12px", background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(255,255,255,0.04)", borderRadius: 8,
-                    display: "flex", justifyContent: "space-between", alignItems: "center"
-                  }}>
-                    <span style={{ fontSize: 12, color: "#67E8F9", fontFamily: "monospace" }}>"{item.query}"</span>
-                    <span style={{ fontSize: 10, color: "rgba(224,242,254,0.3)" }}>{item.time}</span>
+            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>
+              {mongoActive ? "Global Search Trends" : "Session Search Queries"}
+            </h3>
+            <p style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", marginBottom: 16 }}>
+              {mongoActive ? "Live query analysis from MongoDB Atlas" : "Live terms searched in this browser session"}
+            </p>
+
+            {mongoActive ? (
+              telemetry.loading ? (
+                <div style={{ padding: "24px 12px", textAlign: "center", color: "rgba(224,242,254,0.4)", fontSize: 12 }}>
+                  Loading telemetry from Atlas...
+                </div>
+              ) : telemetry.searches.length > 0 ? (
+                <div>
+                  {/* Top Search Keywords */}
+                  <div style={{ marginBottom: 20 }}>
+                    <span style={{ fontSize: 11, color: "#67E8F9", letterSpacing: 1, fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: 10 }}>
+                      🔥 Top Keywords
+                    </span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {(() => {
+                        const counts = {};
+                        telemetry.searches.forEach(s => {
+                          const q = s.query ? s.query.trim().toLowerCase() : "";
+                          if (q) counts[q] = (counts[q] || 0) + 1;
+                        });
+                        const sorted = Object.entries(counts)
+                          .map(([q, count]) => ({ q, count }))
+                          .sort((a, b) => b.count - a.count)
+                          .slice(0, 5);
+
+                        return sorted.length > 0 ? sorted.map((item, idx) => (
+                          <div key={idx} style={{
+                            padding: "6px 10px", borderRadius: 8, background: "rgba(6, 182, 212, 0.06)",
+                            border: "1px solid rgba(6, 182, 212, 0.15)", fontSize: 11, display: "flex", alignItems: "center", gap: 6
+                          }}>
+                            <span style={{ color: "#E0F2FE", fontWeight: 600 }}>{item.q}</span>
+                            <span style={{ color: "#67E8F9", fontSize: 10, background: "rgba(6, 182, 212, 0.12)", padding: "1px 5px", borderRadius: 4, fontWeight: 700 }}>{item.count}</span>
+                          </div>
+                        )) : (
+                          <span style={{ fontSize: 11, color: "rgba(224,242,254,0.35)" }}>No keyword data yet</span>
+                        );
+                      })()}
+                    </div>
                   </div>
-                ))}
-              </div>
+
+                  {/* Live Feed */}
+                  <span style={{ fontSize: 11, color: "#67E8F9", letterSpacing: 1, fontWeight: 700, textTransform: "uppercase", display: "block", marginBottom: 10 }}>
+                    🕒 Recent Searches (Database)
+                  </span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 250, overflowY: "auto" }}>
+                    {telemetry.searches.slice(0, 10).map((item, idx) => {
+                      let timeStr = "Just now";
+                      try {
+                        const dateVal = item.timestamp?.$date || item.timestamp;
+                        const d = new Date(dateVal);
+                        if (!isNaN(d.getTime())) {
+                          timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + 
+                                    " (" + d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ")";
+                        }
+                      } catch (e) {}
+                      return (
+                        <div key={idx} style={{
+                          padding: "10px 12px", background: "rgba(255,255,255,0.02)",
+                          border: "1px solid rgba(255,255,255,0.04)", borderRadius: 8,
+                          display: "flex", justifyContent: "space-between", alignItems: "center"
+                        }}>
+                          <span style={{ fontSize: 12, color: "#BAE6FD", fontFamily: "monospace" }}>"{item.query}"</span>
+                          <span style={{ fontSize: 10, color: "rgba(224,242,254,0.3)" }}>{timeStr}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: "24px 12px", border: "1px dashed rgba(255,255,255,0.08)", borderRadius: 8, textAlign: "center", background: "rgba(255,255,255,0.01)" }}>
+                  <span style={{ fontSize: 11, color: "rgba(224,242,254,0.35)", lineHeight: 1.4, display: "block" }}>
+                    No global searches logged in database yet.
+                  </span>
+                </div>
+              )
             ) : (
-              <div style={{ padding: "24px 12px", border: "1px dashed rgba(255,255,255,0.08)", borderRadius: 8, textAlign: "center", background: "rgba(255,255,255,0.01)" }}>
-                <span style={{ fontSize: 11, color: "rgba(224,242,254,0.35)", lineHeight: 1.4, display: "block" }}>
-                  No searches captured in this session yet.<br/>
-                  (Return to the main page and search, then log back in to see logs!)
-                </span>
+              <div>
+                <div style={{
+                  padding: "10px 12px", background: "rgba(245,158,11,0.04)",
+                  border: "1px solid rgba(245,158,11,0.15)", borderRadius: 8,
+                  fontSize: 11, color: "#FBBF24", marginBottom: 16, lineHeight: 1.4
+                }}>
+                  ⚠️ MongoDB Atlas data source is not configured. Telemetry is currently running in local-only session mode.
+                </div>
+                {searchHistory.length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {searchHistory.map((item, idx) => (
+                      <div key={idx} style={{
+                        padding: "10px 12px", background: "rgba(255,255,255,0.02)",
+                        border: "1px solid rgba(255,255,255,0.04)", borderRadius: 8,
+                        display: "flex", justifyContent: "space-between", alignItems: "center"
+                      }}>
+                        <span style={{ fontSize: 12, color: "#67E8F9", fontFamily: "monospace" }}>"{item.query}"</span>
+                        <span style={{ fontSize: 10, color: "rgba(224,242,254,0.3)" }}>{item.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ padding: "24px 12px", border: "1px dashed rgba(255,255,255,0.08)", borderRadius: 8, textAlign: "center", background: "rgba(255,255,255,0.01)" }}>
+                    <span style={{ fontSize: 11, color: "rgba(224,242,254,0.35)", lineHeight: 1.4, display: "block" }}>
+                      No searches captured in this session yet.<br/>
+                      (Return to the main page and search, then log back in to see logs!)
+                    </span>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -778,6 +1139,30 @@ export default function App() {
     document.head.appendChild(script2);
   }, []);
 
+  // Track MongoDB Page View on Site Load
+  useEffect(() => {
+    const trackPageView = async () => {
+      if (sessionStorage.getItem("damwatch_visited")) return;
+
+      let visitorId = localStorage.getItem("damwatch_visitor_id");
+      if (!visitorId) {
+        visitorId = "usr_" + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+        localStorage.setItem("damwatch_visitor_id", visitorId);
+      }
+
+      const res = await callMongo("insertOne", "page_views", {
+        document: {
+          timestamp: { "$date": new Date().toISOString() },
+          session_id: visitorId
+        }
+      });
+      if (res) {
+        sessionStorage.setItem("damwatch_visited", "true");
+      }
+    };
+    trackPageView();
+  }, []);
+
   useEffect(() => {
     if (!searchQuery.trim()) return;
     const timer = setTimeout(() => {
@@ -786,6 +1171,15 @@ export default function App() {
         const filtered = prev.filter(item => item.query.toLowerCase() !== term.toLowerCase());
         return [{ query: term, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) }, ...filtered].slice(0, 10);
       });
+
+      // Log search query in MongoDB Atlas
+      callMongo("insertOne", "search_queries", {
+        document: {
+          timestamp: { "$date": new Date().toISOString() },
+          query: term
+        }
+      });
+
       if (window.gtag) window.gtag("event", "search", { search_term: term });
     }, 1000);
     return () => clearTimeout(timer);
@@ -793,7 +1187,7 @@ export default function App() {
 
   const handlePinSubmit = (e) => {
     e.preventDefault();
-    if (pinInput === "2026") {
+    if (pinInput === "9197") {
       setView("analytics");
       setShowPinModal(false);
       setPinInput("");
