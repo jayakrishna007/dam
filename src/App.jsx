@@ -44,8 +44,9 @@ function useCountUp(target, go) {
   return v;
 }
 
-function WaterViz({ level = 0, active }) {
+function WaterViz({ level = 0, outflow = null, active }) {
   const safeLevel = typeof level === 'number' ? level : parseFloat(level) || 0;
+  const safeOutflow = typeof outflow === 'number' ? outflow : parseFloat(outflow) || 0;
   const [fill, setFill] = useState(0);
 
   useEffect(() => {
@@ -58,6 +59,12 @@ function WaterViz({ level = 0, active }) {
   // Max water line y=20, Min water line y=102 (empty)
   // Total span = 82px
   const waterY = 102 - (fill / 100) * 82;
+
+  // Dynamic values based on flow rate (scaling between 0 and 12,000 cusecs)
+  const jetReach = Math.min(192, 183 + (safeOutflow / 12000) * 9);
+  const jetLanding = Math.min(198, 186 + (safeOutflow / 12000) * 12);
+  const streamWidth = Math.min(3.5, 0.8 + (safeOutflow / 12000) * 2.7);
+  const animDuration = Math.max(0.35, 1.4 - (safeOutflow / 12000) * 1.05);
 
   return (
     <div style={{
@@ -176,11 +183,42 @@ function WaterViz({ level = 0, active }) {
         <circle cx="180" cy="95" r="2" fill="#1E222B" stroke="#434C5E" strokeWidth="0.5" />
         <path d="M 180,95 Q 186,95 188,102 L 190,102" fill="none" stroke="#4C566A" strokeWidth="1.2" strokeLinecap="round" />
         
-        {/* Animated Discharge Stream */}
-        <path d="M 180,95 Q 186,95 188,102 L 195,102" fill="none" stroke="#38BDF8" strokeWidth="1.8" strokeLinecap="round" opacity="0.85" />
-        <path d="M 180,95 Q 186,95 188,102 L 195,102" fill="none" stroke="#E0F2FE" strokeWidth="1" strokeLinecap="round" strokeDasharray="3 3" opacity="0.9">
-          <animate attributeName="strokeDashoffset" values="20;0" dur="0.8s" repeatCount="indefinite" />
-        </path>
+        {/* Dynamic Outflow Release Water Jet */}
+        {safeOutflow > 0 && (
+          <g>
+            {/* Base water stream */}
+            <path 
+              d={`M 180,95 Q ${jetReach},95 ${jetReach + 2},102 L ${jetLanding},102`} 
+              fill="none" 
+              stroke="#38BDF8" 
+              strokeWidth={streamWidth} 
+              strokeLinecap="round" 
+              opacity="0.85" 
+            />
+            {/* Animated white foaming flow overlay */}
+            <path 
+              d={`M 180,95 Q ${jetReach},95 ${jetReach + 2},102 L ${jetLanding},102`} 
+              fill="none" 
+              stroke="#E0F2FE" 
+              strokeWidth={streamWidth * 0.5} 
+              strokeLinecap="round" 
+              strokeDasharray="4 4" 
+              opacity="0.9"
+            >
+              <animate attributeName="strokeDashoffset" values="30;0" dur={`${animDuration}s`} repeatCount="indefinite" />
+            </path>
+
+            {/* Splash/Foam particles at the landing spot */}
+            <circle cx={jetReach + 2} cy="101" r="1.5" fill="#FFFFFF" opacity="0.8">
+              <animate attributeName="r" values="1;2.5;1" dur="0.5s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.85;0;0.85" dur="0.5s" repeatCount="indefinite" />
+            </circle>
+            <circle cx={jetReach + 4} cy="101" r="1" fill="#E0F2FE" opacity="0.6">
+              <animate attributeName="r" values="0.5;1.8;0.5" dur="0.7s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.6;0;0.6" dur="0.7s" repeatCount="indefinite" />
+            </circle>
+          </g>
+        )}
 
         {/* Glassmorphic level reader overlay */}
         <g transform="translate(48, 48)">
@@ -222,7 +260,7 @@ function DamCard({ dam, delay }) {
           </div>
         </div>
       </div>
-      <WaterViz level={safeLevel} active={vis}/>
+      <WaterViz level={safeLevel} outflow={dam.outflow} active={vis}/>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
         {[
           {l:"Inflow",v:dam.inflow !== null ? `↑ ${fmtK(dam.inflow)}` : "—",c:"#86EFAC"},
