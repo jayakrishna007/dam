@@ -64,8 +64,19 @@ function WaterViz({ level = 0, outflow = null, active }) {
   // Dynamic values based on flow rate (scaling between 0 and 12,000 cusecs)
   const jetReach = Math.min(196, 188 + (safeOutflow / 12000) * 8);
   const jetLanding = Math.min(202, 191 + (safeOutflow / 12000) * 11);
-  const streamWidth = Math.min(3.5, 0.8 + (safeOutflow / 12000) * 2.7);
-  const animDuration = Math.max(0.35, 1.4 - (safeOutflow / 12000) * 1.05);
+  const streamWidth = Math.min(4.5, 1.2 + (safeOutflow / 12000) * 3.3);
+  const animDuration = Math.max(0.3, 1.3 - (safeOutflow / 12000) * 1.0);
+
+  // Sluice gate trajectory control points (dynamic based on pressure/flow)
+  const cx1 = 181.5 + (safeOutflow / 12000) * 10;
+  const cx2 = 181.5 + (safeOutflow / 12000) * 12;
+  const lx = 184 + (safeOutflow / 12000) * 14;
+
+  const waterPath = useSpillway
+    ? `M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},100`
+    : `M 181.5,94.5 C ${cx1},94.5 ${cx2},99 ${lx},100`;
+
+  const splashX = useSpillway ? jetLanding : lx;
 
   return (
     <div style={{
@@ -244,15 +255,42 @@ function WaterViz({ level = 0, outflow = null, active }) {
           />
         </g>
         
+        {/* Turbulent Riverbed Outflow (flowing to the right) */}
+        {safeOutflow > 0 && (
+          <g>
+            {/* River water body */}
+            <rect 
+              x="182" 
+              y="99" 
+              width="18" 
+              height="3.5" 
+              fill="#0284C7" 
+              opacity="0.85" 
+            />
+            {/* Foaming river surface waves */}
+            <path 
+              d="M 182,99 Q 187,98 192,99 Q 197,98 200,99" 
+              fill="none" 
+              stroke="#E0F2FE" 
+              strokeWidth="0.8" 
+              opacity="0.9"
+            >
+              <animate 
+                attributeName="d" 
+                values="M 182,99 Q 187,98 192,99 Q 197,98 200,99; M 182,99 Q 187,100 192,99 Q 197,100 200,99; M 182,99 Q 187,98 192,99 Q 197,98 200,99" 
+                dur="0.5s" 
+                repeatCount="indefinite" 
+              />
+            </path>
+          </g>
+        )}
+
         {/* Dynamic Outflow Release Water Jet */}
         {safeOutflow > 0 && (
           <g>
             {/* Base water stream */}
             <path 
-              d={useSpillway 
-                ? `M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},102` 
-                : `M 180,94.5 Q ${jetReach},94.5 ${jetLanding},102`
-              }
+              d={waterPath}
               fill="none" 
               stroke="#38BDF8" 
               strokeWidth={streamWidth} 
@@ -261,13 +299,10 @@ function WaterViz({ level = 0, outflow = null, active }) {
             />
             {/* Animated white foaming flow overlay */}
             <path 
-              d={useSpillway 
-                ? `M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},102` 
-                : `M 180,94.5 Q ${jetReach},94.5 ${jetLanding},102`
-              }
+              d={waterPath}
               fill="none" 
               stroke="#E0F2FE" 
-              strokeWidth={streamWidth * 0.5} 
+              strokeWidth={streamWidth * 0.6} 
               strokeLinecap="round" 
               strokeDasharray="4 4" 
               opacity="0.9"
@@ -276,11 +311,11 @@ function WaterViz({ level = 0, outflow = null, active }) {
             </path>
 
             {/* Splash/Foam particles at the landing spot */}
-            <circle cx={jetLanding} cy="101" r="1.5" fill="#FFFFFF" opacity="0.8">
+            <circle cx={splashX} cy="100.5" r="1.5" fill="#FFFFFF" opacity="0.8">
               <animate attributeName="r" values="1;2.5;1" dur="0.5s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.85;0;0.85" dur="0.5s" repeatCount="indefinite" />
             </circle>
-            <circle cx={jetLanding + 1.8} cy="101" r="1" fill="#E0F2FE" opacity="0.6">
+            <circle cx={splashX + 1.8} cy="100.5" r="1" fill="#E0F2FE" opacity="0.6">
               <animate attributeName="r" values="0.5;1.8;0.5" dur="0.7s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.6;0;0.6" dur="0.7s" repeatCount="indefinite" />
             </circle>
