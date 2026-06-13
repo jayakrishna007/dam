@@ -55,103 +55,119 @@ function WaterViz({ level = 0, active }) {
     }
   }, [active, safeLevel]);
 
-  // Max water line y=22, Min water line y=102 (empty)
-  // Total span = 80px
-  const waterY = 102 - (fill / 100) * 80;
+  // Max water line y=15, Min water line y=105 (empty)
+  // Total span = 90px
+  const waterY = 105 - (fill / 100) * 90;
 
   return (
     <div style={{
       position: "relative",
       height: 145,
-      background: "#020912",
-      borderRadius: 10,
+      background: "radial-gradient(circle at 50% 120%, #0d1e33 0%, #020912 80%)",
+      borderRadius: 12,
       overflow: "hidden",
-      border: "1px solid rgba(255, 255, 255, 0.05)",
+      border: "1px solid rgba(6, 182, 212, 0.15)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      padding: 2
+      boxShadow: "inset 0 4px 24px rgba(0,0,0,0.6)"
     }}>
       <svg width="100%" height="100%" viewBox="0 0 200 120" style={{ display: "block" }}>
         <defs>
           {/* Reservoir Clip Path */}
           <clipPath id={`res-clip-${fill}`}>
-            <path d="M 10,15 L 10,102 L 115,102 C 142,98 156,65 162,15 Z" />
+            <path d="M 0,0 L 0,110 L 125,110 C 148,105 160,70 165,0 Z" />
           </clipPath>
 
-          {/* Water Gradient */}
+          {/* Premium Water Gradient */}
           <linearGradient id={`water-grad-${fill}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#0284C7" stopOpacity="0.95" />
+            <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.8" />
+            <stop offset="30%" stopColor="#0284C7" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#073B66" stopOpacity="0.95" />
           </linearGradient>
 
-          {/* Wave Pattern overlay */}
-          <pattern id={`wave-pat-${fill}`} width="30" height="12" patternUnits="userSpaceOnUse">
-            <path d="M 0,6 Q 7.5,3 15,6 Q 22.5,9 30,6" fill="none" stroke="#E0F2FE" strokeWidth="1.0" opacity="0.3" />
+          {/* Deep Water Wave Pattern */}
+          <pattern id={`wave-pat-${fill}`} width="40" height="16" patternUnits="userSpaceOnUse">
+            <path d="M 0,8 Q 10,4 20,8 Q 30,12 40,8" fill="none" stroke="rgba(0, 240, 255, 0.15)" strokeWidth="1.2" />
             <animateTransform 
               attributeName="patternTransform" 
               type="translate" 
-              from="0,0" to="30,0" 
-              dur="3s" repeatCount="indefinite" 
+              from="0,0" to="40,0" 
+              dur="4s" repeatCount="indefinite" 
             />
           </pattern>
 
-          {/* Dam Concrete Gradient */}
-          <linearGradient id="dam-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#9CA3AF" />
-            <stop offset="100%" stopColor="#4B5563" />
+          {/* Concrete Dam Gradient */}
+          <linearGradient id="concrete-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#4B5563" />
+            <stop offset="15%" stopColor="#374151" />
+            <stop offset="85%" stopColor="#1F2937" />
+            <stop offset="100%" stopColor="#111827" />
           </linearGradient>
         </defs>
 
         {/* Grid lines background */}
         <g opacity="0.12">
-          <line x1="10" y1="32" x2="162" y2="32" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <line x1="10" y1="52" x2="162" y2="52" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <line x1="10" y1="72" x2="162" y2="72" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <line x1="10" y1="92" x2="162" y2="92" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <text x="14" y="35" fill="#FFFFFF" fontSize="5" fontFamily="monospace">75%</text>
-          <text x="14" y="55" fill="#FFFFFF" fontSize="5" fontFamily="monospace">50%</text>
-          <text x="14" y="75" fill="#FFFFFF" fontSize="5" fontFamily="monospace">25%</text>
+          <line x1="0" y1="37" x2="165" y2="37" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <line x1="0" y1="60" x2="165" y2="60" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <line x1="0" y1="82" x2="165" y2="82" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <text x="6" y="40" fill="#FFFFFF" fontSize="5" fontFamily="monospace">75%</text>
+          <text x="6" y="63" fill="#FFFFFF" fontSize="5" fontFamily="monospace">50%</text>
+          <text x="6" y="85" fill="#FFFFFF" fontSize="5" fontFamily="monospace">25%</text>
         </g>
 
         {/* Reservoir Water Body (Clipped to curved dam shape) */}
         <g clipPath={`url(#res-clip-${fill})`}>
-          {/* Water Fill Gradient */}
+          {/* Water Fill */}
           <rect x="0" y={waterY} width="200" height="120" fill={`url(#water-grad-${fill})`} />
-          {/* Wave Pattern */}
           <rect x="0" y={waterY} width="200" height="120" fill={`url(#wave-pat-${fill})`} />
 
-          {/* Animating Wave Line at Water Surface */}
+          {/* Primary wave line */}
           <path 
-            d={`M -20,${waterY} Q -10,${waterY - 1.5} 0,${waterY} Q 10,${waterY + 1.5} 20,${waterY} Q 30,${waterY - 1.5} 40,${waterY} Q 50,${waterY + 1.5} 60,${waterY} Q 70,${waterY - 1.5} 80,${waterY} Q 90,${waterY + 1.5} 100,${waterY} Q 110,${waterY - 1.5} 120,${waterY} Q 130,${waterY + 1.5} 140,${waterY} Q 150,${waterY - 1.5} 160,${waterY} Q 170,${waterY + 1.5} 180,${waterY}`} 
+            d={`M -40,${waterY} Q -20,${waterY - 2} 0,${waterY} Q 20,${waterY + 2} 40,${waterY} Q 60,${waterY - 2} 80,${waterY} Q 100,${waterY + 2} 120,${waterY} Q 140,${waterY - 2} 160,${waterY} Q 180,${waterY + 2} 200,${waterY}`} 
             fill="none" 
             stroke="#E0F2FE" 
-            strokeWidth="1.2"
-            opacity="0.8"
+            strokeWidth="1.8"
+            opacity="0.85"
           >
             <animateTransform 
               attributeName="transform" 
               type="translate" 
-              from="0,0" to="20,0" 
-              dur="2s" repeatCount="indefinite" 
+              from="0,0" to="40,0" 
+              dur="2.5s" repeatCount="indefinite" 
+            />
+          </path>
+
+          {/* Secondary wave line (offset for depth) */}
+          <path 
+            d={`M -40,${waterY + 1} Q -20,${waterY + 2} 0,${waterY + 1} Q 20,${waterY - 1} 40,${waterY + 1} Q 60,${waterY + 2} 80,${waterY + 1} Q 100,${waterY - 1} 120,${waterY + 1} Q 140,${waterY + 2} 160,${waterY + 1} Q 180,${waterY - 1} 200,${waterY + 1}`} 
+            fill="none" 
+            stroke="#00F0FF" 
+            strokeWidth="1.2"
+            opacity="0.45"
+          >
+            <animateTransform 
+              attributeName="transform" 
+              type="translate" 
+              from="0,0" to="-40,0" 
+              dur="3.8s" repeatCount="indefinite" 
             />
           </path>
         </g>
 
-        {/* Dam Structure */}
-        <path d="M 115,102 C 142,98 156,65 162,15 L 190,15 L 190,102 Z" fill="url(#dam-grad)" stroke="#374151" strokeWidth="1" />
+        {/* Dam Structure (Curved face matching clip path) */}
+        <path d="M 125,110 C 148,105 160,70 165,0 L 205,0 L 205,110 Z" fill="url(#concrete-grad)" stroke="#4B5563" strokeWidth="0.8" />
+        
+        {/* Dam structural joints/details */}
+        <line x1="165" y1="0" x2="165" y2="110" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+        <line x1="185" y1="0" x2="185" y2="110" stroke="rgba(0,0,0,0.25)" strokeWidth="1.5" />
+        <path d="M 125,110 C 148,105 160,70 165,0" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <path d="M 127,110 C 149,105 161,70 166,0" fill="none" stroke="rgba(0,0,0,0.3)" strokeWidth="1" />
 
-        {/* Outer diagram boundary box */}
-        <rect x="10" y="15" width="180" height="87" fill="none" stroke="#4B5563" strokeWidth="1" opacity="0.4" />
-
-        {/* Text Labels matching the user's sketch */}
-        <text x="60" y="26" fill="#67E8F9" fontSize="8" fontWeight="bold" fontFamily="sans-serif" letterSpacing="0.4" textAnchor="middle" opacity="0.8">Reservoir</text>
-        <text x="176" y="76" fill="#111827" fontSize="9" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">Dam</text>
-
-        {/* Centered glassmorphic percentage readout overlay */}
-        <g>
-          <rect x="38" y="46" width="46" height="18" rx="4" fill="rgba(3, 10, 20, 0.82)" stroke="rgba(6, 182, 212, 0.4)" strokeWidth="0.5" />
-          <text x="61" y="58" fill="#FFFFFF" fontSize="10" fontWeight="900" fontFamily="monospace" textAnchor="middle">
+        {/* Glassmorphic level reader overlay */}
+        <g transform="translate(50, 48)">
+          <rect x="0" y="0" width="50" height="20" rx="6" fill="rgba(3, 10, 20, 0.72)" stroke="rgba(0, 240, 255, 0.4)" strokeWidth="0.8" />
+          <text x="25" y="14" fill="#E0F2FE" fontSize="10.5" fontWeight="900" fontFamily="monospace" textAnchor="middle">
             {safeLevel.toFixed(1)}%
           </text>
         </g>
@@ -329,32 +345,6 @@ export default function App() {
               <div style={{fontWeight:900,fontSize:15,color:"#E0F2FE",letterSpacing:0.3}}>DamWatch</div>
               <div style={{fontSize:9,color:"rgba(224,242,254,0.33)",letterSpacing:2,textTransform:"uppercase"}}>South India</div>
             </div>
-          </div>
-
-          {/* Sticky Nav Search Bar */}
-          <div className="nav-search-container" style={{ position: "relative", flex: "1 1 auto", maxWidth: 280, margin: "0 12px" }}>
-            <input
-              type="text"
-              placeholder="🔍 Search reservoirs..."
-              value={searchQuery}
-              onChange={e => {
-                setSearchQuery(e.target.value);
-                const sec = document.getElementById("dams-section");
-                if (sec) {
-                  sec.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-              style={{
-                width: "100%", padding: "8px 12px 8px 34px", borderRadius: 20,
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                background: "rgba(255, 255, 255, 0.03)",
-                color: "#E0F2FE", fontSize: 13, outline: "none",
-                transition: "all 0.2s",
-                backdropFilter: "blur(4px)"
-              }}
-              onFocus={e => { e.target.style.borderColor = "rgba(6, 182, 212, 0.5)"; e.target.style.background = "rgba(255, 255, 255, 0.06)"; }}
-              onBlur={e => { e.target.style.borderColor = "rgba(255, 255, 255, 0.08)"; e.target.style.background = "rgba(255, 255, 255, 0.03)"; }}
-            />
           </div>
 
           <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",justifyContent:"flex-end"}}>
