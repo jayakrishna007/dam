@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import DAMS from "./data/dams.json";
 
 // Wave path: period=80, viewBox=480, seamless at -50% translateX
@@ -63,7 +63,6 @@ function WaterViz({ level = 0, outflow = null, active }) {
   const waterY = resBottom - (fill / 100) * totalH;
 
   const hasFlow = safeOutflow > 0;
-  const useSpillway = fill >= 75;
 
   // Flow scaling (0-12000 cusecs â†’ ratio 0-1)
   const ratio = Math.min(1, safeOutflow / 12000);
@@ -203,70 +202,35 @@ function WaterViz({ level = 0, outflow = null, active }) {
         <rect x="161" y="10" width="1.5" height="8" rx="0.3" fill="#4B5563" />
         <line x1="148" y1="11" x2="162" y2="11" stroke="#9CA3AF" strokeWidth="0.5" opacity="0.6" />
 
-        {/* Spillway radial gates (3 gates on crest) */}
+        {/* Spillway radial gates (3 gates on crest) - kept static/closed as water releases from below */}
         {[150, 154, 158].map((gx, i) => {
-          const lifted = useSpillway && hasFlow;
           return (
             <g key={i}>
               <rect x={gx}     y="14" width="0.8" height="5" fill="#1F2937" />
               <rect x={gx+2.2} y="14" width="0.8" height="5" fill="#1F2937" />
-              <rect x={gx+0.5} y={lifted ? 11 : 15} width="2.2" height="4.5" rx="0.4"
-                fill={lifted ? "#9CA3AF" : "#374151"} stroke="#1F2937" strokeWidth="0.4"
-                style={{ transition: "y 0.6s ease" }}
+              <rect x={gx+0.5} y="15" width="2.2" height="4.5" rx="0.4"
+                fill="#374151" stroke="#1F2937" strokeWidth="0.4"
               />
-              {lifted && <rect x={gx+0.5} y="15" width="2.2" height="2.5" fill="#0F172A" />}
             </g>
           );
         })}
 
-        {/* Bottom sluice gate (at dam toe, yâ‰ˆ96) */}
+        {/* Bottom sluice gate (at dam toe, y≈96) - opens for all outflow */}
         <rect x={gateX-1} y="92" width="5" height="7" rx="0.5" fill="#0F172A" stroke="#374151" strokeWidth="0.5" />
         <rect
           x={gateX-0.5}
-          y={(!useSpillway && hasFlow) ? 88.5 : 92.5}
+          y={hasFlow ? 88.5 : 92.5}
           width="4" height="6" rx="0.4"
-          fill={(!useSpillway && hasFlow) ? "#9CA3AF" : "#374151"}
+          fill={hasFlow ? "#9CA3AF" : "#374151"}
           stroke="#1F2937" strokeWidth="0.4"
           style={{ transition: "y 0.5s ease" }}
         />
         <line x1={gateX+1.5} y1="88" x2={gateX+1.5} y2="92" stroke="#4B5563" strokeWidth="0.6" />
 
-        {/* OUTFLOW ANIMATIONS */}
-
-        {/* CASE 1: SPILLWAY CASCADE (level â‰¥ 75%) */}
-        {useSpillway && hasFlow && (
+        {/* OUTFLOW ANIMATIONS - WATER RELEASES FROM BELOW */}
+        {hasFlow && (
           <g>
-            {/* Water sheet down face */}
-            <path d="M 162,18 L 190,110" fill="none" stroke={`url(#sw-${uid})`} strokeWidth={streamW * 0.9} strokeLinecap="round" opacity="0.8" />
-            {/* Animated foam streaks */}
-            <path d="M 162,18 L 190,110" fill="none" stroke="#E0F2FE" strokeWidth={streamW * 0.3} strokeDasharray="5,6" opacity="0.85">
-              <animate attributeName="strokeDashoffset" values="44;0" dur={`${flowSpeed}s`} repeatCount="indefinite" />
-            </path>
-            {/* Bucket deflector arc at toe */}
-            <path d={`M 190,110 Q 194,107 ${bucketEndX},105 Q ${bucketEndX+5},104 ${bucketEndX+8},110`}
-              fill="none" stroke="#38BDF8" strokeWidth={streamW * 0.5} strokeLinecap="round" opacity="0.85">
-              <animate attributeName="strokeDashoffset" values="28;0" dur={`${flowSpeed * 0.6}s`} repeatCount="indefinite" />
-            </path>
-            {/* Mist at toe */}
-            <ellipse cx="192" cy="108" rx="11" ry="5" fill={`url(#mist-${uid})`}>
-              <animate attributeName="rx" values="8;15;8" dur="1.1s" repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.55;1;0.55" dur="1.1s" repeatCount="indefinite" />
-            </ellipse>
-            {/* Plunge pool */}
-            <rect x={bucketEndX+6} y="107" width="16" height="3.5" rx="1" fill={`url(#pp-${uid})`} opacity="0.88" />
-            <path d={`M ${bucketEndX+6},108 Q ${bucketEndX+11},107 ${bucketEndX+16},108 Q ${bucketEndX+21},109 ${bucketEndX+22},108`}
-              fill="none" stroke="#E0F2FE" strokeWidth="0.7" opacity="0.8">
-              <animate attributeName="d"
-                values={`M ${bucketEndX+6},108 Q ${bucketEndX+11},107 ${bucketEndX+16},108 Q ${bucketEndX+21},109 ${bucketEndX+22},108;M ${bucketEndX+6},108 Q ${bucketEndX+11},109 ${bucketEndX+16},108 Q ${bucketEndX+21},107 ${bucketEndX+22},108;M ${bucketEndX+6},108 Q ${bucketEndX+11},107 ${bucketEndX+16},108 Q ${bucketEndX+21},109 ${bucketEndX+22},108`}
-                dur="0.55s" repeatCount="indefinite" />
-            </path>
-          </g>
-        )}
-
-        {/* CASE 2: BOTTOM SLUICE JET (level < 75%) */}
-        {!useSpillway && hasFlow && (
-          <g>
-            {/* Jet core â€” parabolic curve DOWN from gate to plunge pool */}
+            {/* Jet core — parabolic curve DOWN from gate to plunge pool */}
             <path d={jetPath} fill="none" stroke="#0EA5E9" strokeWidth={streamW} strokeLinecap="round" opacity="0.9" />
             {/* Bright centre */}
             <path d={jetPath} fill="none" stroke="#BAE6FD" strokeWidth={streamW * 0.42} strokeLinecap="round" opacity="0.85" />
