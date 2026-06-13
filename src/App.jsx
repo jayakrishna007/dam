@@ -55,9 +55,9 @@ function WaterViz({ level = 0, active }) {
     }
   }, [active, safeLevel]);
 
-  // Max water line y=15, Min water line y=105 (empty)
-  // Total span = 90px
-  const waterY = 105 - (fill / 100) * 90;
+  // Max water line y=20, Min water line y=102 (empty)
+  // Total span = 82px
+  const waterY = 102 - (fill / 100) * 82;
 
   return (
     <div style={{
@@ -76,12 +76,12 @@ function WaterViz({ level = 0, active }) {
         <defs>
           {/* Reservoir Clip Path */}
           <clipPath id={`res-clip-${fill}`}>
-            <path d="M 0,0 L 0,110 L 125,110 C 148,105 160,70 165,0 Z" />
+            <path d="M 10,0 L 10,102 L 115,102 C 142,98 156,65 162,15 L 162,0 Z" />
           </clipPath>
 
           {/* Premium Water Gradient */}
           <linearGradient id={`water-grad-${fill}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.8" />
+            <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.85" />
             <stop offset="30%" stopColor="#0284C7" stopOpacity="0.85" />
             <stop offset="100%" stopColor="#073B66" stopOpacity="0.95" />
           </linearGradient>
@@ -99,24 +99,28 @@ function WaterViz({ level = 0, active }) {
 
           {/* Concrete Dam Gradient */}
           <linearGradient id="concrete-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#4B5563" />
-            <stop offset="15%" stopColor="#374151" />
-            <stop offset="85%" stopColor="#1F2937" />
-            <stop offset="100%" stopColor="#111827" />
+            <stop offset="0%" stopColor="#5A6372" />
+            <stop offset="15%" stopColor="#434C5E" />
+            <stop offset="85%" stopColor="#2E3440" />
+            <stop offset="100%" stopColor="#1E222B" />
           </linearGradient>
         </defs>
 
+        {/* Earth/Bedrock Foundation Layer */}
+        <rect x="10" y="102" width="180" height="8" fill="#1C202A" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <line x1="10" y1="102" x2="190" y2="102" stroke="#374151" strokeWidth="1.2" />
+
         {/* Grid lines background */}
         <g opacity="0.12">
-          <line x1="0" y1="37" x2="165" y2="37" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <line x1="0" y1="60" x2="165" y2="60" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <line x1="0" y1="82" x2="165" y2="82" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
-          <text x="6" y="40" fill="#FFFFFF" fontSize="5" fontFamily="monospace">75%</text>
-          <text x="6" y="63" fill="#FFFFFF" fontSize="5" fontFamily="monospace">50%</text>
-          <text x="6" y="85" fill="#FFFFFF" fontSize="5" fontFamily="monospace">25%</text>
+          <line x1="10" y1="40" x2="162" y2="40" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <line x1="10" y1="61" x2="162" y2="61" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <line x1="10" y1="81" x2="162" y2="81" stroke="#FFFFFF" strokeWidth="0.5" strokeDasharray="2 2" />
+          <text x="14" y="43" fill="#FFFFFF" fontSize="5" fontFamily="monospace">75%</text>
+          <text x="14" y="64" fill="#FFFFFF" fontSize="5" fontFamily="monospace">50%</text>
+          <text x="14" y="84" fill="#FFFFFF" fontSize="5" fontFamily="monospace">25%</text>
         </g>
 
-        {/* Reservoir Water Body (Clipped to curved dam shape) */}
+        {/* Reservoir Water Body (Clipped to upstream face of the dam) */}
         <g clipPath={`url(#res-clip-${fill})`}>
           {/* Water Fill */}
           <rect x="0" y={waterY} width="200" height="120" fill={`url(#water-grad-${fill})`} />
@@ -124,7 +128,7 @@ function WaterViz({ level = 0, active }) {
 
           {/* Primary wave line */}
           <path 
-            d={`M -40,${waterY} Q -20,${waterY - 2} 0,${waterY} Q 20,${waterY + 2} 40,${waterY} Q 60,${waterY - 2} 80,${waterY} Q 100,${waterY + 2} 120,${waterY} Q 140,${waterY - 2} 160,${waterY} Q 180,${waterY + 2} 200,${waterY}`} 
+            d={`M -40,${waterY} Q -20,${waterY - 1.8} 0,${waterY} Q 20,${waterY + 1.8} 40,${waterY} Q 60,${waterY - 1.8} 80,${waterY} Q 100,${waterY + 1.8} 120,${waterY} Q 140,${waterY - 1.8} 160,${waterY} Q 180,${waterY + 1.8} 200,${waterY}`} 
             fill="none" 
             stroke="#E0F2FE" 
             strokeWidth="1.8"
@@ -138,9 +142,9 @@ function WaterViz({ level = 0, active }) {
             />
           </path>
 
-          {/* Secondary wave line (offset for depth) */}
+          {/* Secondary wave line */}
           <path 
-            d={`M -40,${waterY + 1} Q -20,${waterY + 2} 0,${waterY + 1} Q 20,${waterY - 1} 40,${waterY + 1} Q 60,${waterY + 2} 80,${waterY + 1} Q 100,${waterY - 1} 120,${waterY + 1} Q 140,${waterY + 2} 160,${waterY + 1} Q 180,${waterY - 1} 200,${waterY + 1}`} 
+            d={`M -40,${waterY + 1} Q -20,${waterY + 1.8} 0,${waterY + 1} Q 20,${waterY - 1.2} 40,${waterY + 1} Q 60,${waterY + 1.8} 80,${waterY + 1} Q 100,${waterY - 1.2} 120,${waterY + 1} Q 140,${waterY + 1.8} 160,${waterY + 1} Q 180,${waterY - 1.2} 200,${waterY + 1}`} 
             fill="none" 
             stroke="#00F0FF" 
             strokeWidth="1.2"
@@ -155,17 +159,31 @@ function WaterViz({ level = 0, active }) {
           </path>
         </g>
 
-        {/* Dam Structure (Curved face matching clip path) */}
-        <path d="M 125,110 C 148,105 160,70 165,0 L 205,0 L 205,110 Z" fill="url(#concrete-grad)" stroke="#4B5563" strokeWidth="0.8" />
+        {/* Concrete Gravity Dam Profile (Sloping downstream face on right) */}
+        <path d="M 115,102 C 142,98 156,65 162,15 L 172,15 L 187,102 Z" fill="url(#concrete-grad)" stroke="#2E3440" strokeWidth="0.8" />
         
-        {/* Dam structural joints/details */}
-        <line x1="165" y1="0" x2="165" y2="110" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-        <line x1="185" y1="0" x2="185" y2="110" stroke="rgba(0,0,0,0.25)" strokeWidth="1.5" />
-        <path d="M 125,110 C 148,105 160,70 165,0" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-        <path d="M 127,110 C 149,105 161,70 166,0" fill="none" stroke="rgba(0,0,0,0.3)" strokeWidth="1" />
+        {/* Dam structural block joints */}
+        <line x1="162" y1="15" x2="162" y2="102" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <path d="M 125,102 C 144,98 153,75 158,35" fill="none" stroke="rgba(0,0,0,0.2)" strokeWidth="1" />
+        
+        {/* Roadway Bridge / Gantry Crane structure on Dam Crest */}
+        <rect x="159" y="9" width="16" height="2" rx="0.5" fill="#2E3440" stroke="#4C566A" strokeWidth="0.5" />
+        <rect x="162" y="11" width="3" height="4" fill="#3B4252" />
+        <rect x="169" y="11" width="3" height="4" fill="#3B4252" />
+        <line x1="159" y1="7.5" x2="175" y2="7.5" stroke="#D8DEE9" strokeWidth="0.5" opacity="0.8" />
+
+        {/* Water Release / Outflow Tunnel at Dam Toe */}
+        <circle cx="180" cy="95" r="2" fill="#1E222B" stroke="#434C5E" strokeWidth="0.5" />
+        <path d="M 180,95 Q 186,95 188,102 L 190,102" fill="none" stroke="#4C566A" strokeWidth="1.2" strokeLinecap="round" />
+        
+        {/* Animated Discharge Stream */}
+        <path d="M 180,95 Q 186,95 188,102 L 195,102" fill="none" stroke="#38BDF8" strokeWidth="1.8" strokeLinecap="round" opacity="0.85" />
+        <path d="M 180,95 Q 186,95 188,102 L 195,102" fill="none" stroke="#E0F2FE" strokeWidth="1" strokeLinecap="round" strokeDasharray="3 3" opacity="0.9">
+          <animate attributeName="strokeDashoffset" values="20;0" dur="0.8s" repeatCount="indefinite" />
+        </path>
 
         {/* Glassmorphic level reader overlay */}
-        <g transform="translate(50, 48)">
+        <g transform="translate(48, 48)">
           <rect x="0" y="0" width="50" height="20" rx="6" fill="rgba(3, 10, 20, 0.72)" stroke="rgba(0, 240, 255, 0.4)" strokeWidth="0.8" />
           <text x="25" y="14" fill="#E0F2FE" fontSize="10.5" fontWeight="900" fontFamily="monospace" textAnchor="middle">
             {safeLevel.toFixed(1)}%
