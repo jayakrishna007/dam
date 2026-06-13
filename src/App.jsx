@@ -59,6 +59,7 @@ function WaterViz({ level = 0, outflow = null, active }) {
   // Max water line y=20, Min water line y=102 (empty)
   // Total span = 82px
   const waterY = 102 - (fill / 100) * 82;
+  const useSpillway = fill >= 75;
 
   // Dynamic values based on flow rate (scaling between 0 and 12,000 cusecs)
   const jetReach = Math.min(196, 188 + (safeOutflow / 12000) * 8);
@@ -179,37 +180,37 @@ function WaterViz({ level = 0, outflow = null, active }) {
         <rect x="169" y="11" width="3" height="4" fill="#3B4252" />
         <line x1="159" y1="7.5" x2="175" y2="7.5" stroke="#D8DEE9" strokeWidth="0.5" opacity="0.8" />
 
-        {/* Spillway Gates (Steel radial gate leaf styling that lifts when outflow active) */}
+        {/* Spillway Gates (Steel radial gate leaf styling that lifts when spillway active) */}
         <g opacity="0.95">
           <rect 
             x="159.5" 
-            y={safeOutflow > 0 ? 12.5 : 15} 
+            y={useSpillway && safeOutflow > 0 ? 12.5 : 15} 
             width="2.2" 
             height="3.5" 
             rx="0.3"
-            fill={safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
+            fill={useSpillway && safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
             stroke="#1E293B" 
             strokeWidth="0.4" 
             style={{ transition: "y 0.5s ease" }}
           />
           <rect 
             x="165.5" 
-            y={safeOutflow > 0 ? 12.5 : 15} 
+            y={useSpillway && safeOutflow > 0 ? 12.5 : 15} 
             width="3" 
             height="3.5" 
             rx="0.3"
-            fill={safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
+            fill={useSpillway && safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
             stroke="#1E293B" 
             strokeWidth="0.4" 
             style={{ transition: "y 0.5s ease" }}
           />
           <rect 
             x="172.5" 
-            y={safeOutflow > 0 ? 12.5 : 15} 
+            y={useSpillway && safeOutflow > 0 ? 12.5 : 15} 
             width="2.2" 
             height="3.5" 
             rx="0.3"
-            fill={safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
+            fill={useSpillway && safeOutflow > 0 ? "#9CA3AF" : "#4A5568"} 
             stroke="#1E293B" 
             strokeWidth="0.4" 
             style={{ transition: "y 0.5s ease" }}
@@ -217,7 +218,7 @@ function WaterViz({ level = 0, outflow = null, active }) {
         </g>
 
         {/* Dark openings under gates when open */}
-        {safeOutflow > 0 && (
+        {useSpillway && safeOutflow > 0 && (
           <g>
             <rect x="159.5" y="16" width="2.2" height="1.8" fill="#0F172A" />
             <rect x="165.5" y="16" width="3" height="1.8" fill="#0F172A" />
@@ -225,16 +226,33 @@ function WaterViz({ level = 0, outflow = null, active }) {
           </g>
         )}
 
-        {/* Closed/Low-Level Outflow Sluice Tunnel at Dam Toe */}
-        <circle cx="180" cy="95" r="2" fill="#1E222B" stroke="#434C5E" strokeWidth="0.5" />
-        <path d="M 180,95 Q 186,95 188,102 L 190,102" fill="none" stroke="#4C566A" strokeWidth="1.2" strokeLinecap="round" />
+        {/* Low-Level Outflow Sluice Gate at Dam Toe (used when reservoir level is low) */}
+        <g>
+          {/* Sluice gate housing / tunnel portal */}
+          <rect x="178" y="92" width="4" height="6" rx="0.5" fill="#0F172A" stroke="#374151" strokeWidth="0.5" />
+          {/* Sluice gate leaf that slides up */}
+          <rect 
+            x="178.5" 
+            y={(!useSpillway && safeOutflow > 0) ? 89.5 : 92.5} 
+            width="3" 
+            height="5" 
+            rx="0.3" 
+            fill={(!useSpillway && safeOutflow > 0) ? "#9CA3AF" : "#4A5568"} 
+            stroke="#1E293B" 
+            strokeWidth="0.4" 
+            style={{ transition: "y 0.5s ease" }} 
+          />
+        </g>
         
-        {/* Dynamic Outflow Release Water Jet (Cascading down the spillway slope and launching into air) */}
+        {/* Dynamic Outflow Release Water Jet */}
         {safeOutflow > 0 && (
           <g>
             {/* Base water stream */}
             <path 
-              d={`M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},102`} 
+              d={useSpillway 
+                ? `M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},102` 
+                : `M 180,94.5 Q ${jetReach},94.5 ${jetLanding},102`
+              }
               fill="none" 
               stroke="#38BDF8" 
               strokeWidth={streamWidth} 
@@ -243,7 +261,10 @@ function WaterViz({ level = 0, outflow = null, active }) {
             />
             {/* Animated white foaming flow overlay */}
             <path 
-              d={`M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},102`} 
+              d={useSpillway 
+                ? `M 172,16 L 182,76 Q 183.8,86 186.2,87.5 Q ${jetReach},87.5 ${jetLanding},102` 
+                : `M 180,94.5 Q ${jetReach},94.5 ${jetLanding},102`
+              }
               fill="none" 
               stroke="#E0F2FE" 
               strokeWidth={streamWidth * 0.5} 
