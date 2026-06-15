@@ -389,10 +389,10 @@
     "name": "Bhakra (Gobind Sagar)",
     "river": "Sutlej",
     "district": "Bilaspur",
-    "level": 26.78,
+    "level": 26.52,
     "capacity": 197.7,
-    "inflow": 17523,
-    "outflow": 26338,
+    "inflow": 17771,
+    "outflow": 28482,
     "state": "Himachal Pradesh"
   },
   {
@@ -400,10 +400,10 @@
     "name": "Pong (Maharana Pratap Sagar)",
     "river": "Beas",
     "district": "Kangra",
-    "level": 24.86,
+    "level": 24.72,
     "capacity": 257.0,
-    "inflow": 2342,
-    "outflow": 12004,
+    "inflow": 2484,
+    "outflow": 12146,
     "state": "Himachal Pradesh"
   },
   {

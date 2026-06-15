@@ -527,13 +527,48 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
 
 // ===================== ANALYTICS DASHBOARD =====================
 function AnalyticsDashboard({ navigate, setView, searchHistory }) {
+  const [scrapeStatus, setScrapeStatus] = useState(SCRAPE_STATUS);
+  const [isScraping, setIsScraping] = useState(false);
+  const [scrapeOutput, setScrapeOutput] = useState(null);
+  const [scrapeError, setScrapeError] = useState(null);
+
+  const runScraperLive = async () => {
+    setIsScraping(true);
+    setScrapeOutput(null);
+    setScrapeError(null);
+    try {
+      const res = await fetch("/api/run-scraper", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin: "9197" })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setScrapeOutput(data.stdout || "Scraper ran successfully.");
+        if (data.status) {
+          setScrapeStatus(data.status);
+        }
+      } else {
+        setScrapeError(data.error || "Scraper execution failed.");
+        if (data.stdout || data.stderr) {
+          setScrapeOutput((data.stdout || "") + "\n" + (data.stderr || ""));
+        }
+      }
+    } catch (err) {
+      setScrapeError("Failed to trigger scraper API. Make sure Vercel dev is running ('vercel dev') to serve the API locally. Alternatively, run 'npm run scrape' in your terminal.");
+      console.error(err);
+    } finally {
+      setIsScraping(false);
+    }
+  };
+
   const gaActive = !!import.meta.env.VITE_GA_MEASUREMENT_ID;
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-XXXXXXXXXX";
 
   // Check freshness of last scraper run
   const checkFreshness = () => {
     try {
-      const parts = SCRAPE_STATUS.last_run_timestamp.split(" ");
+      const parts = scrapeStatus.last_run_timestamp.split(" ");
       const datePart = parts[0];
       const timePart = parts[1];
       const ampm = parts[2];
@@ -625,26 +660,32 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   const scraperLogs = [
     { 
       source: "Tungabhadra Board", 
-      status: SCRAPE_STATUS.sources.tungabhadra.status, 
-      detail: `Scraped ${SCRAPE_STATUS.sources.tungabhadra.count} reservoir records successfully.`, 
-      ok: SCRAPE_STATUS.sources.tungabhadra.ok 
+      status: scrapeStatus.sources.tungabhadra?.status || "Unknown", 
+      detail: `Scraped ${scrapeStatus.sources.tungabhadra?.count || 0} reservoir records successfully.`, 
+      ok: scrapeStatus.sources.tungabhadra?.ok || false 
     },
     { 
       source: "Tamil Nadu Agriculture Dept", 
-      status: SCRAPE_STATUS.sources.tamil_nadu.status, 
-      detail: `Scraped ${SCRAPE_STATUS.sources.tamil_nadu.count} major reservoir records successfully.`, 
-      ok: SCRAPE_STATUS.sources.tamil_nadu.ok 
+      status: scrapeStatus.sources.tamil_nadu?.status || "Unknown", 
+      detail: `Scraped ${scrapeStatus.sources.tamil_nadu?.count || 0} major reservoir records successfully.`, 
+      ok: scrapeStatus.sources.tamil_nadu?.ok || false 
     },
     { 
       source: "OneIndia Public Database", 
-      status: SCRAPE_STATUS.sources.oneindia.status, 
-      detail: `Scraped ${SCRAPE_STATUS.sources.oneindia.count} reservoirs (Kerala, AP, Telangana) successfully.`, 
-      ok: SCRAPE_STATUS.sources.oneindia.ok 
+      status: scrapeStatus.sources.oneindia?.status || "Unknown", 
+      detail: `Scraped ${scrapeStatus.sources.oneindia?.count || 0} reservoirs (Kerala, AP, Telangana) successfully.`, 
+      ok: scrapeStatus.sources.oneindia?.ok || false 
+    },
+    { 
+      source: "BBMB (Bhakra/Pong)", 
+      status: scrapeStatus.sources.bbmb?.status || "Unknown", 
+      detail: `Scraped ${scrapeStatus.sources.bbmb?.count || 0} reservoir records (Himachal Pradesh) successfully.`, 
+      ok: scrapeStatus.sources.bbmb?.ok || false 
     },
     { 
       source: "Daily Cron Trigger (10:00 AM IST)", 
       status: isFresh ? "Active" : "Delayed", 
-      detail: `Frequency: Daily. Last run duration: ${SCRAPE_STATUS.duration_seconds}s.`, 
+      detail: `Frequency: Daily. Last run duration: ${scrapeStatus.duration_seconds}s.`, 
       ok: isFresh 
     }
   ];
@@ -654,7 +695,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
     { label: "Mobile-responsive layout & SEO structure", done: true },
     { label: "Secure HTTPS SSL Connection", done: isHttps, detail: isHttps ? "Verified Secure" : "Local HTTP detected (Localhost)" },
     { label: "Waterflow physics & SVG graphics optimization", done: true },
-    { label: "Live data refresh comparison engine active", done: !!SCRAPE_STATUS.success },
+    { label: "Live data refresh comparison engine active", done: !!scrapeStatus.success },
     { label: "MongoDB Persistent Telemetry Active", done: mongoActive, detail: mongoActive ? "Connected to Atlas Data API" : "Inactive (Local fallback mode)" }
   ];
 
@@ -662,7 +703,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   const checklistPercentage = Math.round((completedChecks / adsenseChecklist.length) * 100);
 
   // Dynamic Chart calculations
-  const chartRuns = [...SCRAPE_STATUS.history].slice(0, 7).reverse();
+  const chartRuns = [...scrapeStatus.history].slice(0, 7).reverse();
   const maxDelta = Math.max(...chartRuns.map(r => Math.abs(r.metrics.storage_delta_tmc)), 0.1);
   
   const points = chartRuns.map((r, idx) => {
@@ -721,9 +762,9 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
         <span style={{ fontSize: 16 }}>{isFresh ? "🟢" : "🔴"}</span>
         <span>
           {isFresh ? (
-            <><strong>Operational:</strong> Daily data refresh at 10:00 AM IST succeeded. Last sync completed successfully on <strong>{SCRAPE_STATUS.last_run_timestamp}</strong>.</>
+            <><strong>Operational:</strong> Daily data refresh at 10:00 AM IST succeeded. Last sync completed successfully on <strong>{scrapeStatus.last_run_timestamp}</strong>.</>
           ) : (
-            <><strong>Alert:</strong> Data refresh is stale. Last successful scrape was on <strong>{SCRAPE_STATUS.last_run_timestamp}</strong>. Daily scheduler (10 AM IST) might be failing or inactive.</>
+            <><strong>Alert:</strong> Data refresh is stale. Last successful scrape was on <strong>{scrapeStatus.last_run_timestamp}</strong>. Daily scheduler (10 AM IST) might be failing or inactive.</>
           )}
         </span>
       </div>
@@ -816,7 +857,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
               Verifies if data refreshed successfully daily at 10 AM IST and if values changed.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, maxHeight: 400, overflowY: "auto", paddingRight: 4 }}>
-              {SCRAPE_STATUS.history.map((run, idx) => {
+              {scrapeStatus.history.map((run, idx) => {
                 const hasChanges = run.metrics.dams_changed > 0;
                 const deltaColor = run.metrics.storage_delta_tmc > 0 ? "#86EFAC" : run.metrics.storage_delta_tmc < 0 ? "#FCA5A5" : "rgba(224, 242, 254, 0.8)";
                 const deltaSign = run.metrics.storage_delta_tmc > 0 ? "+" : "";
@@ -951,7 +992,63 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
               ))}
             </div>
             <div style={{ marginTop: 16, padding: "10px 12px", background: "rgba(6,182,212,0.04)", borderRadius: 8, border: "1px solid rgba(6,182,212,0.1)", fontSize: 11, color: "rgba(224,242,254,0.45)", lineHeight: 1.4 }}>
-              💡 Scrapers are triggered remotely via Vercel Cron. Local data is compiled statically during builds.
+              💡 Scrapers are triggered remotely via GitHub Actions. Local data is compiled statically during builds.
+            </div>
+
+            {/* Manual Scraper Trigger Panel */}
+            <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+              <button
+                onClick={runScraperLive}
+                disabled={isScraping}
+                style={{
+                  width: "100%", padding: "10px 16px", borderRadius: 10,
+                  background: isScraping ? "rgba(255,255,255,0.05)" : "linear-gradient(135deg, #0891B2, #0284C7)",
+                  border: "none", color: isScraping ? "rgba(224,242,254,0.3)" : "#FFFFFF",
+                  fontSize: 12, fontWeight: 700, cursor: isScraping ? "not-allowed" : "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  boxShadow: "0 4px 12px rgba(6,182,212,0.2)", transition: "all 0.2s"
+                }}
+                onMouseEnter={e => { if(!isScraping) e.target.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { if(!isScraping) e.target.style.transform = "translateY(0)"; }}
+              >
+                {isScraping ? (
+                  <>
+                    <span className="spinner" style={{
+                      width: 14, height: 14, border: "2px solid rgba(255,255,255,0.2)",
+                      borderTopColor: "#FFFFFF", borderRadius: "50%",
+                      animation: "spin 1s linear infinite"
+                    }} />
+                    Running Scrapers...
+                  </>
+                ) : "⚡ Run Web Scrapers Now"}
+              </button>
+
+              {scrapeError && (
+                <div style={{ marginTop: 12, padding: 10, borderRadius: 8, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", fontSize: 11, color: "#FCA5A5" }}>
+                  <strong>Error:</strong> {scrapeError}
+                </div>
+              )}
+
+              {scrapeOutput && (
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "rgba(224,242,254,0.4)", textTransform: "uppercase" }}>Scraper Output Log</span>
+                    <button 
+                      onClick={() => setScrapeOutput(null)}
+                      style={{ background: "none", border: "none", color: "rgba(224,242,254,0.4)", fontSize: 10, cursor: "pointer" }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  <pre style={{
+                    maxHeight: 180, overflowY: "auto", padding: 10, background: "#01070F",
+                    border: "1px solid rgba(255,255,255,0.05)", borderRadius: 8,
+                    fontSize: 10, fontFamily: "monospace", color: "#67E8F9", whiteSpace: "pre-wrap"
+                  }}>
+                    {scrapeOutput}
+                  </pre>
+                </div>
+              )}
             </div>
           </div>
 
@@ -2748,6 +2845,7 @@ export default function App() {
         @keyframes glowPulse{0%,100%{opacity:0.65}50%{opacity:1}}
         @keyframes blink{0%,100%{opacity:1}50%{opacity:0.55}}
         @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
         @media (max-width:768px){.nav-search-container{display:none!important}}
 
         .dam-detail-grid {
