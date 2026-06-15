@@ -386,6 +386,28 @@
   },
   {
     "id": 36,
+    "name": "Bhakra (Gobind Sagar)",
+    "river": "Sutlej",
+    "district": "Bilaspur",
+    "level": 26.78,
+    "capacity": 197.7,
+    "inflow": 17523,
+    "outflow": 26338,
+    "state": "Himachal Pradesh"
+  },
+  {
+    "id": 37,
+    "name": "Pong (Maharana Pratap Sagar)",
+    "river": "Beas",
+    "district": "Kangra",
+    "level": 24.86,
+    "capacity": 257.0,
+    "inflow": 2342,
+    "outflow": 12004,
+    "state": "Himachal Pradesh"
+  },
+  {
+    "id": 38,
     "name": "Bhadra",
     "river": "Bhadra",
     "district": "Chikkamagaluru",
@@ -396,7 +418,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 37,
+    "id": 39,
     "name": "Almatti",
     "river": "Krishna",
     "district": "Vijayapura",
@@ -407,7 +429,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 38,
+    "id": 40,
     "name": "Linganamakki",
     "river": "Sharavathi",
     "district": "Shivamogga",
@@ -418,7 +440,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 39,
+    "id": 41,
     "name": "Supa",
     "river": "Kali",
     "district": "Uttara Kannada",
@@ -429,7 +451,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 40,
+    "id": 42,
     "name": "Malaprabha",
     "river": "Malaprabha",
     "district": "Belagavi",
@@ -440,7 +462,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 41,
+    "id": 43,
     "name": "Ghataprabha",
     "river": "Ghataprabha",
     "district": "Belagavi",
@@ -451,7 +473,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 42,
+    "id": 44,
     "name": "Varahi",
     "river": "Varahi",
     "district": "Udupi",
@@ -460,5 +482,60 @@
     "inflow": 3900,
     "outflow": 2100,
     "state": "Karnataka"
+  },
+  {
+    "id": 45,
+    "name": "Sardar Sarovar",
+    "river": "Narmada",
+    "district": "Narmada",
+    "level": 48.5,
+    "capacity": 334.8,
+    "inflow": 1200,
+    "outflow": 1800,
+    "state": "Gujarat"
+  },
+  {
+    "id": 46,
+    "name": "Indira Sagar",
+    "river": "Narmada",
+    "district": "Khandwa",
+    "level": 55.4,
+    "capacity": 342.9,
+    "inflow": 2500,
+    "outflow": 3200,
+    "state": "Madhya Pradesh"
+  },
+  {
+    "id": 47,
+    "name": "Hirakud",
+    "river": "Mahanadi",
+    "district": "Sambalpur",
+    "level": 38.6,
+    "capacity": 205.1,
+    "inflow": 4100,
+    "outflow": 5000,
+    "state": "Odisha"
+  },
+  {
+    "id": 48,
+    "name": "Rihand",
+    "river": "Rihand",
+    "district": "Sonbhadra",
+    "level": 42.1,
+    "capacity": 374.0,
+    "inflow": 1500,
+    "outflow": 2000,
+    "state": "Uttar Pradesh"
+  },
+  {
+    "id": 49,
+    "name": "Maithon",
+    "river": "Barakar",
+    "district": "Dhanbad",
+    "level": 60.2,
+    "capacity": 47.1,
+    "inflow": 800,
+    "outflow": 1200,
+    "state": "Jharkhand"
   }
 ]

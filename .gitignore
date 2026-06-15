@@ -24,3 +24,11 @@ dist
 *.njsproj
 *.sln
 *.sw?
+
+# Python
+__pycache__/
+*.pyc
+
+# Scraper temp files
+*.pdf
+*.html

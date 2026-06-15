@@ -69,7 +69,11 @@ DAM_METADATA = {
     "himayathsagar": {"river": "Esi", "district": "Hyderabad", "state": "Telangana"},
     "manjira": {"river": "Manjira", "district": "Medak", "state": "Telangana"},
     "nagarjunsagar": {"river": "Krishna", "district": "Nalgonda", "state": "Telangana"},
-    "osmansagar": {"river": "Musi", "district": "Hyderabad", "state": "Telangana"}
+    "osmansagar": {"river": "Musi", "district": "Hyderabad", "state": "Telangana"},
+
+    # Himachal Pradesh (BBMB)
+    "bhakra": {"river": "Sutlej", "district": "Bilaspur", "state": "Himachal Pradesh"},
+    "pong": {"river": "Beas", "district": "Kangra", "state": "Himachal Pradesh"}
 }
 
 def clean_number(s):
@@ -94,9 +98,11 @@ def main():
     tb_ok = False
     tn_ok = False
     oi_ok = False
+    bbmb_ok = False
     tb_count = 0
     tn_count = 0
     oi_count = 0
+    bbmb_count = 0
 
     scraped_dams = {}
     
@@ -251,6 +257,22 @@ def main():
             oi_count += len(rows)
             print(f"  Scraped {len(rows)} dams for State {state}.")
 
+    # --- 3.5 Scrape BBMB (Bhakra/Pong) ---
+    print("Scraping BBMB (Bhakra/Pong)...")
+    try:
+        import sys
+        sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+        from scrape_bbmb import scrape_bbmb
+        bbmb_res = scrape_bbmb()
+        if bbmb_res:
+            for k, val in bbmb_res.items():
+                scraped_dams[k] = val
+            bbmb_ok = True
+            bbmb_count = len(bbmb_res)
+            print(f"  Scraped {len(bbmb_res)} dams from BBMB.")
+    except Exception as e:
+        print(f"  Error running BBMB scraper: {e}")
+
     # --- 4. Merge with existing static defaults and save ---
     # We want to keep all 12 Karnataka dams, even if some Almatti/Varahi are not scraped
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -277,7 +299,12 @@ def main():
         {"id": 9,  "name": "Supa", "river": "Kali", "district": "Uttara Kannada", "level": 91.2, "capacity": 155.0, "inflow": 11800, "outflow": 14200, "state": "Karnataka"},
         {"id": 10, "name": "Malaprabha", "river": "Malaprabha", "district": "Belagavi", "level": 38.4, "capacity": 37.65, "inflow": 3100, "outflow": 800, "state": "Karnataka"},
         {"id": 11, "name": "Ghataprabha", "river": "Ghataprabha", "district": "Belagavi", "level": 52.1, "capacity": 42.07, "inflow": 4800, "outflow": 1200, "state": "Karnataka"},
-        {"id": 12, "name": "Varahi", "river": "Varahi", "district": "Udupi", "level": 67.8, "capacity": 21.66, "inflow": 3900, "outflow": 2100, "state": "Karnataka"}
+        {"id": 12, "name": "Varahi", "river": "Varahi", "district": "Udupi", "level": 67.8, "capacity": 21.66, "inflow": 3900, "outflow": 2100, "state": "Karnataka"},
+        {"id": 13, "name": "Sardar Sarovar", "river": "Narmada", "district": "Narmada", "level": 48.5, "capacity": 334.8, "inflow": 1200, "outflow": 1800, "state": "Gujarat"},
+        {"id": 14, "name": "Indira Sagar", "river": "Narmada", "district": "Khandwa", "level": 55.4, "capacity": 342.9, "inflow": 2500, "outflow": 3200, "state": "Madhya Pradesh"},
+        {"id": 15, "name": "Hirakud", "river": "Mahanadi", "district": "Sambalpur", "level": 38.6, "capacity": 205.1, "inflow": 4100, "outflow": 5000, "state": "Odisha"},
+        {"id": 16, "name": "Rihand", "river": "Rihand", "district": "Sonbhadra", "level": 42.1, "capacity": 374.0, "inflow": 1500, "outflow": 2000, "state": "Uttar Pradesh"},
+        {"id": 17, "name": "Maithon", "river": "Barakar", "district": "Dhanbad", "level": 60.2, "capacity": 47.1, "inflow": 800, "outflow": 1200, "state": "Jharkhand"}
     ]
     
     # We will iterate through all metadata items and map scraped data
@@ -445,7 +472,8 @@ def main():
         "sources": {
             "tungabhadra": { "status": "Operational" if tb_ok else "Down", "ok": tb_ok, "count": tb_count },
             "tamil_nadu": { "status": "Operational" if tn_ok else "Down", "ok": tn_ok, "count": tn_count },
-            "oneindia": { "status": "Operational" if oi_ok else "Down", "ok": oi_ok, "count": oi_count }
+            "oneindia": { "status": "Operational" if oi_ok else "Down", "ok": oi_ok, "count": oi_count },
+            "bbmb": { "status": "Operational" if bbmb_ok else "Down", "ok": bbmb_ok, "count": bbmb_count }
         },
         "metrics": {
             "dams_changed": dams_changed,

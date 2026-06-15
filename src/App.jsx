@@ -42,16 +42,14 @@ const callMongo = async (action, collection, payload = {}) => {
 };
 
 const WAVE = "M0,12 C20,2 60,22 80,12 C100,2 140,22 160,12 C180,2 220,22 240,12 C260,2 300,22 320,12 C340,2 380,22 400,12 C420,2 460,22 480,12";
-const TICKER = DAMS.map(d=>`${d.name}: ${d.level}%`).join("  \u25c6  ");
+const TICKER = DAMS.map(d => {
+  const cap = typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0;
+  const lvl = typeof d.level === 'number' ? d.level : parseFloat(d.level) || 0;
+  const tmc = (cap * lvl / 100).toFixed(2);
+  return `${d.name}: ${tmc} TMC`;
+}).join("  ◆  ");
 
-function statusOf(l = 0) {
-  const level = typeof l === 'number' ? l : parseFloat(l) || 0;
-  if(level>=90) return {label:"Flood Alert", c:"#FB923C", bg:"rgba(251,146,60,0.14)",  pulse:true};
-  if(level>=70) return {label:"Excellent",   c:"#22D3EE", bg:"rgba(34,211,238,0.1)"};
-  if(level>=45) return {label:"Normal",      c:"#60A5FA", bg:"rgba(96,165,250,0.1)"};
-  if(level>=25) return {label:"Below Avg",   c:"#FBBF24", bg:"rgba(251,191,36,0.1)"};
-  return           {label:"Critical",    c:"#F87171", bg:"rgba(248,113,113,0.1)",   pulse:true};
-}
+
 
 function waterTheme(l = 0) {
   const level = typeof l === 'number' ? l : parseFloat(l) || 0;
@@ -366,7 +364,6 @@ function DamCard({ dam, delay, onClick }) {
   const ref=useRef(null);
   const [vis,setVis]=useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
-  const st=statusOf(safeLevel);
   const {mid}=waterTheme(safeLevel);
   useEffect(()=>{
     const obs=new IntersectionObserver(([e])=>{ if(e.isIntersecting) setVis(true); },{threshold:0.1});
@@ -374,13 +371,18 @@ function DamCard({ dam, delay, onClick }) {
     return()=>obs.disconnect();
   },[]);
   return (
-    <div ref={ref} style={{
+    <a ref={ref} href={`/dam/${getDamSlug(dam.name)}`} style={{
+      display: "block",
+      textDecoration: "none",
       background:"linear-gradient(148deg,#081829 0%,#050F1E 100%)",
       border:"1px solid rgba(255,255,255,0.07)",borderRadius:14,padding:18,cursor:"pointer",
       opacity:vis?1:0,transform:vis?"translateY(0)":"translateY(28px)",
       transition:`opacity 0.5s ease ${delay}ms,transform 0.5s ease ${delay}ms`
     }}
-    onClick={onClick}
+    onClick={e=>{
+      e.preventDefault();
+      onClick();
+    }}
     onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 14px 44px rgba(0,0,0,0.55),0 0 0 1px ${mid}30`;}}
     onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,gap:8}}>
@@ -417,7 +419,7 @@ function DamCard({ dam, delay, onClick }) {
           {safeLevel.toFixed(1)}%
         </span>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -524,7 +526,7 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
 }
 
 // ===================== ANALYTICS DASHBOARD =====================
-function AnalyticsDashboard({ setView, searchHistory }) {
+function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   const gaActive = !!import.meta.env.VITE_GA_MEASUREMENT_ID;
   const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-XXXXXXXXXX";
 
@@ -606,7 +608,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
       : "Local Session";
 
   const stats = [
-    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: "Across 5 southern states", positive: true, icon: "🌊" },
+    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: "Across 11 Indian states", positive: true, icon: "🌊" },
     { label: "Active Flood Alerts", value: activeAlerts, change: `${activeAlerts} Alerts`, subtext: "Dams ≥ 90% capacity", positive: activeAlerts === 0, icon: "🚨" },
     { label: "Total Region Inflow", value: `${fmtK(totalInflow)}`, change: "cusecs", subtext: "Cumulative river inflows", positive: totalInflow >= totalOutflow, icon: "📥" },
     { label: "Total Region Outflow", value: `${fmtK(totalOutflow)}`, change: "cusecs", subtext: "Cumulative released flow", positive: true, icon: "📤" },
@@ -693,7 +695,7 @@ function AnalyticsDashboard({ setView, searchHistory }) {
         </div>
 
         <button
-          onClick={() => setView("main")}
+          onClick={() => navigate("/")}
           style={{
             padding: "10px 20px", borderRadius: 20, border: "1px solid rgba(224, 242, 254, 0.15)",
             background: "rgba(255, 255, 255, 0.02)", color: "rgba(224, 242, 254, 0.8)",
@@ -821,7 +823,8 @@ function AnalyticsDashboard({ setView, searchHistory }) {
                 return (
                   <div key={idx} style={{
                     padding: 14, background: "rgba(255,255,255,0.015)",
-                    border: "1px solid rgba(255,255,255,0.04)", borderRadius: 12
+                    border: "1px solid rgba(255,255,255,0.04)", borderRadius: 12,
+                    flexShrink: 0
                   }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                       <span style={{ fontSize: 12, fontWeight: 700, color: "#BAE6FD", fontFamily: "monospace" }}>{run.timestamp}</span>
@@ -1059,7 +1062,8 @@ function AnalyticsDashboard({ setView, searchHistory }) {
                         <div key={idx} style={{
                           padding: "10px 12px", background: "rgba(255,255,255,0.02)",
                           border: "1px solid rgba(255,255,255,0.04)", borderRadius: 8,
-                          display: "flex", justifyContent: "space-between", alignItems: "center"
+                          display: "flex", justifyContent: "space-between", alignItems: "center",
+                          flexShrink: 0
                         }}>
                           <span style={{ fontSize: 12, color: "#BAE6FD", fontFamily: "monospace" }}>"{item.query}"</span>
                           <span style={{ fontSize: 10, color: "rgba(224,242,254,0.3)" }}>{timeStr}</span>
@@ -1116,18 +1120,21 @@ function AnalyticsDashboard({ setView, searchHistory }) {
 }
 
 // ===================== DAM DETAIL PAGE =====================
-function DamDetailPage({ dam, setView }) {
+function DamDetailPage({ dam, navigate, setView }) {
   const [period, setPeriod] = useState("30D");
   const [loading, setLoading] = useState(true);
   const [historyData, setHistoryData] = useState([]);
   const [hoveredPoint, setHoveredPoint] = useState(null);
+  const [activeTab, setActiveTab] = useState("level"); // "level" or "flow"
 
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
-  const statusInfo = statusOf(safeLevel);
   const theme = waterTheme(safeLevel);
 
   useEffect(() => {
     setLoading(true);
+    const currentInflow = typeof dam.inflow === 'number' ? dam.inflow : parseFloat(dam.inflow) || 0;
+    const currentOutflow = typeof dam.outflow === 'number' ? dam.outflow : parseFloat(dam.outflow) || 0;
+
     fetch(`/api/dam-history?dam_id=${dam.id}`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to load historical data");
@@ -1139,7 +1146,9 @@ function DamDetailPage({ dam, setView }) {
         if (docs.length === 0) {
           setHistoryData([{
             timestamp: new Date().toISOString(),
-            level: safeLevel
+            level: safeLevel,
+            inflow: currentInflow,
+            outflow: currentOutflow
           }]);
         } else {
           setHistoryData(docs);
@@ -1150,7 +1159,9 @@ function DamDetailPage({ dam, setView }) {
         console.error(err);
         setHistoryData([{
           timestamp: new Date().toISOString(),
-          level: safeLevel
+          level: safeLevel,
+          inflow: currentInflow,
+          outflow: currentOutflow
         }]);
         setLoading(false);
       });
@@ -1245,16 +1256,145 @@ function DamDetailPage({ dam, setView }) {
     setHoveredPoint(null);
   };
 
+  const [hoveredInflowPoint, setHoveredInflowPoint] = useState(null);
+  const [hoveredOutflowPoint, setHoveredOutflowPoint] = useState(null);
+
+  // Inflow chart calculations
+  const {
+    inflowPoints,
+    inflowAreaPoints,
+    inflowXCoords,
+    inflowYCoords,
+    maxInflowVal
+  } = useMemo(() => {
+    if (filteredData.length === 0) {
+      return { inflowPoints: "", inflowAreaPoints: "", inflowXCoords: [], inflowYCoords: [], maxInflowVal: 100 };
+    }
+    const inflows = filteredData.map(d => typeof d.inflow === 'number' ? d.inflow : parseFloat(d.inflow) || 0);
+    const maxVal = Math.max(100, ...inflows) * 1.15;
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+    const coords = filteredData.map((d, i) => {
+      const x = margin.left + (i / (filteredData.length - 1 || 1)) * chartWidth;
+      const val = typeof d.inflow === 'number' ? d.inflow : parseFloat(d.inflow) || 0;
+      const y = margin.top + (1 - val / maxVal) * chartHeight;
+      return { x, y };
+    });
+    const pointsStr = coords.map(c => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
+    const bottomY = margin.top + chartHeight;
+    const areaStr = coords.length > 0
+      ? `${coords[0].x.toFixed(1)},${bottomY.toFixed(1)} ${pointsStr} ${coords[coords.length - 1].x.toFixed(1)},${bottomY.toFixed(1)}`
+      : "";
+    return {
+      inflowPoints: pointsStr,
+      inflowAreaPoints: areaStr,
+      inflowXCoords: coords.map(c => c.x),
+      inflowYCoords: coords.map(c => c.y),
+      maxInflowVal: maxVal
+    };
+  }, [filteredData, margin.left, margin.right, margin.top, margin.bottom]);
+
+  // Outflow chart calculations
+  const {
+    outflowPoints,
+    outflowAreaPoints,
+    outflowXCoords,
+    outflowYCoords,
+    maxOutflowVal
+  } = useMemo(() => {
+    if (filteredData.length === 0) {
+      return { outflowPoints: "", outflowAreaPoints: "", outflowXCoords: [], outflowYCoords: [], maxOutflowVal: 100 };
+    }
+    const outflows = filteredData.map(d => typeof d.outflow === 'number' ? d.outflow : parseFloat(d.outflow) || 0);
+    const maxVal = Math.max(100, ...outflows) * 1.15;
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+    const coords = filteredData.map((d, i) => {
+      const x = margin.left + (i / (filteredData.length - 1 || 1)) * chartWidth;
+      const val = typeof d.outflow === 'number' ? d.outflow : parseFloat(d.outflow) || 0;
+      const y = margin.top + (1 - val / maxVal) * chartHeight;
+      return { x, y };
+    });
+    const pointsStr = coords.map(c => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
+    const bottomY = margin.top + chartHeight;
+    const areaStr = coords.length > 0
+      ? `${coords[0].x.toFixed(1)},${bottomY.toFixed(1)} ${pointsStr} ${coords[coords.length - 1].x.toFixed(1)},${bottomY.toFixed(1)}`
+      : "";
+    return {
+      outflowPoints: pointsStr,
+      outflowAreaPoints: areaStr,
+      outflowXCoords: coords.map(c => c.x),
+      outflowYCoords: coords.map(c => c.y),
+      maxOutflowVal: maxVal
+    };
+  }, [filteredData, margin.left, margin.right, margin.top, margin.bottom]);
+
+  const handleInflowMouseMove = (e) => {
+    if (!filteredData || filteredData.length === 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const chartWidth = rect.width * ((width - margin.left - margin.right) / width);
+    const chartLeft = rect.width * (margin.left / width);
+    
+    const relativeX = clientX - chartLeft;
+    const pct = Math.max(0, Math.min(1, relativeX / chartWidth));
+    const index = Math.round(pct * (filteredData.length - 1));
+    const point = filteredData[index];
+    if (point && inflowXCoords[index] !== undefined && inflowYCoords[index] !== undefined) {
+      setHoveredInflowPoint({
+        ...point,
+        index,
+        x: inflowXCoords[index],
+        y: inflowYCoords[index],
+        value: typeof point.inflow === 'number' ? point.inflow : parseFloat(point.inflow) || 0
+      });
+    }
+  };
+
+  const handleInflowMouseLeave = () => {
+    setHoveredInflowPoint(null);
+  };
+
+  const handleOutflowMouseMove = (e) => {
+    if (!filteredData || filteredData.length === 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const chartWidth = rect.width * ((width - margin.left - margin.right) / width);
+    const chartLeft = rect.width * (margin.left / width);
+    
+    const relativeX = clientX - chartLeft;
+    const pct = Math.max(0, Math.min(1, relativeX / chartWidth));
+    const index = Math.round(pct * (filteredData.length - 1));
+    const point = filteredData[index];
+    if (point && outflowXCoords[index] !== undefined && outflowYCoords[index] !== undefined) {
+      setHoveredOutflowPoint({
+        ...point,
+        index,
+        x: outflowXCoords[index],
+        y: outflowYCoords[index],
+        value: typeof point.outflow === 'number' ? point.outflow : parseFloat(point.outflow) || 0
+      });
+    }
+  };
+
+  const handleOutflowMouseLeave = () => {
+    setHoveredOutflowPoint(null);
+  };
+
   const netFlowCusecs = (dam.inflow || 0) - (dam.outflow || 0);
   const netFlowTmcPerDay = netFlowCusecs * 0.0000864;
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px", animation: "fadeSlideUp 0.5s ease" }}>
-      {/* Back navigation */}
-      <button 
-        onClick={() => setView("main")}
+      <a 
+        href={dam.state ? `/state/${getStateSlug(dam.state)}` : "/"}
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(dam.state ? `/state/${getStateSlug(dam.state)}` : "/");
+        }}
         style={{
-          display: "flex", alignItems: "center", gap: 8,
+          display: "inline-flex", alignItems: "center", gap: 8,
+          textDecoration: "none",
           background: "transparent", border: "none", color: "rgba(224,242,254,0.6)",
           fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 20,
           padding: "6px 12px", borderRadius: 8, transition: "all 0.2s",
@@ -1263,59 +1403,71 @@ function DamDetailPage({ dam, setView }) {
         onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
         onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
       >
-        &larr; Back to Karnataka Reservoirs
-      </button>
+        &larr; Back to {dam.state || "Karnataka"} Reservoirs
+      </a>
 
       {/* Main Grid Layout */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
         
         {/* Top Header Card */}
-        <div className="dam-detail-header">
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-              <h1 style={{ fontSize: "clamp(20px, 4.5vw, 28px)", fontWeight: 900, color: "#fff", margin: 0 }}>{dam.name}</h1>
-              <span style={{
-                color: statusInfo.c, background: statusInfo.bg,
-                fontSize: 12, fontWeight: 700, padding: "4px 10px", borderRadius: 20,
-                border: `1px solid ${statusInfo.c}30`, textTransform: "uppercase", letterSpacing: 0.5
-              }}>
-                {statusInfo.label}
-              </span>
+        <div className="dam-detail-header" style={{ flexDirection: "column", alignItems: "flex-start", gap: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+                <h1 style={{ fontSize: "clamp(20px, 4.5vw, 28px)", fontWeight: 900, color: "#fff", margin: 0 }}>
+                  {dam.name} Water Level Today
+                </h1>
+              </div>
+              <div style={{ fontSize: 14, color: "rgba(224,242,254,0.5)" }}>
+                {dam.river} River &middot; {dam.district} District, {dam.state || "Karnataka"} &middot; Live Reservoir Storage Status
+              </div>
             </div>
-            <div style={{ fontSize: 14, color: "rgba(224,242,254,0.5)" }}>
-              {dam.river} River &middot; {dam.district} District, Karnataka
-            </div>
-          </div>
-          
-          <div style={{ display: "flex", gap: 16 }}>
-            {netFlowCusecs !== 0 && (
+            
+            <div style={{ display: "flex", gap: 16 }}>
+              {netFlowCusecs !== 0 && (
+                <div style={{
+                  display: "flex", flexDirection: "column", alignItems: "flex-end",
+                  background: netFlowCusecs > 0 ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)",
+                  border: `1px solid ${netFlowCusecs > 0 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"}`,
+                  padding: "8px 16px", borderRadius: 12
+                }}>
+                  <span style={{ fontSize: 10, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
+                    Daily Accumulation
+                  </span>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: netFlowCusecs > 0 ? "#4ade80" : "#f87171" }}>
+                    {netFlowCusecs > 0 ? "+" : ""}{netFlowTmcPerDay.toFixed(3)} TMC/day
+                  </span>
+                </div>
+              )}
+              
               <div style={{
                 display: "flex", flexDirection: "column", alignItems: "flex-end",
-                background: netFlowCusecs > 0 ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)",
-                border: `1px solid ${netFlowCusecs > 0 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"}`,
+                background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.15)",
                 padding: "8px 16px", borderRadius: 12
               }}>
                 <span style={{ fontSize: 10, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
-                  Daily Accumulation
+                  Storage Status
                 </span>
-                <span style={{ fontSize: 16, fontWeight: 800, color: netFlowCusecs > 0 ? "#4ade80" : "#f87171" }}>
-                  {netFlowCusecs > 0 ? "+" : ""}{netFlowTmcPerDay.toFixed(3)} TMC/day
+                <span style={{ fontSize: 16, fontWeight: 800, color: "#38bdf8" }}>
+                  {safeLevel.toFixed(1)}% Full
                 </span>
               </div>
-            )}
-            
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "flex-end",
-              background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.15)",
-              padding: "8px 16px", borderRadius: 12
-            }}>
-              <span style={{ fontSize: 10, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
-                Storage Status
-              </span>
-              <span style={{ fontSize: 16, fontWeight: 800, color: "#38bdf8" }}>
-                {safeLevel.toFixed(1)}% Full
-              </span>
             </div>
+          </div>
+
+          {/* SEO Paragraph Block */}
+          <div style={{
+            background: "rgba(6, 182, 212, 0.03)",
+            border: "1px solid rgba(6, 182, 212, 0.1)",
+            borderRadius: 12,
+            padding: "16px 20px",
+            fontSize: 13,
+            lineHeight: 1.6,
+            color: "rgba(224, 242, 254, 0.65)",
+            width: "100%",
+            boxSizing: "border-box"
+          }}>
+            Welcome to the live daily report for the <strong>{dam.name.replace(/\s*\(.*\)\s*/g, "").trim()} water level today</strong>. Located in the <strong>{dam.district}</strong> district of <strong>{dam.state || "Karnataka"}</strong> on the <strong>{dam.river} River</strong> system, this reservoir plays a key role in regional agricultural irrigation and flood control. Today's telemetry monitoring indicates the storage is at <strong>{safeLevel.toFixed(1)}%</strong> of its maximum capacity. Monitor the charts below for live daily inflows and outflows in cusecs, historical capacity trends in TMC, and accumulation analytics to stay informed.
           </div>
         </div>
 
@@ -1358,12 +1510,45 @@ function DamDetailPage({ dam, setView }) {
               border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16,
               padding: "20px 24px"
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                <div>
-                  <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0 }}>Water Level Trend</h3>
-                  <p style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", margin: "2px 0 0 0" }}>
-                    Reservoir filled percentage history
-                  </p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
+                {/* Switch Tabs */}
+                <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10 }}>
+                  <button
+                    onClick={() => setActiveTab("level")}
+                    style={{
+                      padding: "6px 14px", borderRadius: 8, border: "none",
+                      background: activeTab === "level" ? "rgba(14,165,233,0.15)" : "transparent",
+                      color: activeTab === "level" ? "#38bdf8" : "rgba(224,242,254,0.5)",
+                      fontSize: 12, fontWeight: activeTab === "level" ? 700 : 500, cursor: "pointer",
+                      transition: "all 0.15s"
+                    }}
+                  >
+                    Water Level
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("inflow")}
+                    style={{
+                      padding: "6px 14px", borderRadius: 8, border: "none",
+                      background: activeTab === "inflow" ? "rgba(34,197,94,0.15)" : "transparent",
+                      color: activeTab === "inflow" ? "#4ade80" : "rgba(224,242,254,0.5)",
+                      fontSize: 12, fontWeight: activeTab === "inflow" ? 700 : 500, cursor: "pointer",
+                      transition: "all 0.15s"
+                    }}
+                  >
+                    Inflow
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("outflow")}
+                    style={{
+                      padding: "6px 14px", borderRadius: 8, border: "none",
+                      background: activeTab === "outflow" ? "rgba(239,68,68,0.15)" : "transparent",
+                      color: activeTab === "outflow" ? "#f87171" : "rgba(224,242,254,0.5)",
+                      fontSize: 12, fontWeight: activeTab === "outflow" ? 700 : 500, cursor: "pointer",
+                      transition: "all 0.15s"
+                    }}
+                  >
+                    Outflow
+                  </button>
                 </div>
                 
                 {/* Period Selectors */}
@@ -1394,7 +1579,8 @@ function DamDetailPage({ dam, setView }) {
                 <div style={{ height: 240, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(224,242,254,0.3)" }}>
                   No historical data found.
                 </div>
-              ) : (
+              ) : activeTab === "level" ? (
+                /* Water Level Chart */
                 <div style={{ position: "relative" }}>
                   <svg
                     width="100%"
@@ -1544,6 +1730,262 @@ function DamDetailPage({ dam, setView }) {
                     </div>
                   )}
                 </div>
+              ) : activeTab === "inflow" ? (
+                /* Inflow Chart */
+                <div style={{ position: "relative" }}>
+                  <svg
+                    width="100%"
+                    height={height}
+                    viewBox={`0 0 ${width} ${height}`}
+                    style={{ overflow: "visible", cursor: "crosshair" }}
+                    onMouseMove={handleInflowMouseMove}
+                    onMouseLeave={handleInflowMouseLeave}
+                  >
+                    <defs>
+                      <linearGradient id="inflowGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#22c55e" stopOpacity="0.25" />
+                        <stop offset="100%" stopColor="#22c55e" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Grid Lines */}
+                    {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+                      const val = ratio * maxInflowVal;
+                      const y = margin.top + (1 - ratio) * (height - margin.top - margin.bottom);
+                      return (
+                        <g key={i}>
+                          <line
+                            x1={margin.left}
+                            y1={y}
+                            x2={width - margin.right}
+                            y2={y}
+                            stroke="rgba(255,255,255,0.04)"
+                            strokeDasharray="4 4"
+                          />
+                          <text
+                            x={margin.left - 10}
+                            y={y + 4}
+                            textAnchor="end"
+                            fill="rgba(224,242,254,0.35)"
+                            style={{ fontSize: 10, fontFamily: "monospace" }}
+                          >
+                            {fmtK(val)}
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Gradient Area under line */}
+                    <polygon
+                      points={inflowAreaPoints}
+                      fill="url(#inflowGrad)"
+                    />
+
+                    {/* Line Path */}
+                    <polyline
+                      fill="none"
+                      stroke="#22c55e"
+                      strokeWidth="2.5"
+                      points={inflowPoints}
+                    />
+
+                    {/* Hover vertical line and tooltip marker */}
+                    {hoveredInflowPoint && (
+                      <g>
+                        <line
+                          x1={hoveredInflowPoint.x}
+                          y1={margin.top}
+                          x2={hoveredInflowPoint.x}
+                          y2={height - margin.bottom}
+                          stroke="rgba(34,197,94,0.25)"
+                          strokeWidth="1.5"
+                          strokeDasharray="3 3"
+                        />
+                        <circle
+                          cx={hoveredInflowPoint.x}
+                          cy={hoveredInflowPoint.y}
+                          r="6"
+                          fill="#22c55e"
+                          stroke="#fff"
+                          strokeWidth="2"
+                        />
+                      </g>
+                    )}
+
+                    {/* X-Axis Dates */}
+                    {filteredData.length > 0 && (
+                      <g>
+                        <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                          {new Date(filteredData[0].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </text>
+                        <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                          {new Date(filteredData[Math.floor(filteredData.length / 2)].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </text>
+                        <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                          {new Date(filteredData[filteredData.length - 1].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </text>
+                      </g>
+                    )}
+                  </svg>
+
+                  {/* Tooltip Overlay */}
+                  {hoveredInflowPoint && (
+                    <div style={{
+                      position: "absolute",
+                      top: 10,
+                      left: hoveredInflowPoint.x > width / 2 ? hoveredInflowPoint.x * 0.9 - 140 : hoveredInflowPoint.x * 1.1 + 10,
+                      background: "rgba(11, 22, 42, 0.95)",
+                      border: "1px solid rgba(34,197,94,0.25)",
+                      borderRadius: 10,
+                      padding: "8px 12px",
+                      boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
+                      pointerEvents: "none",
+                      zIndex: 10,
+                      color: "#fff",
+                      fontSize: 12
+                    }}>
+                      <div style={{ color: "rgba(224,242,254,0.5)", marginBottom: 4, fontSize: 10 }}>
+                        {new Date(hoveredInflowPoint.timestamp).toLocaleDateString(undefined, {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </div>
+                      <div style={{ display: "flex", gap: 12, justifyContent: "space-between" }}>
+                        <span>Inflow:</span>
+                        <strong style={{ color: "#86efac" }}>{hoveredInflowPoint.value.toLocaleString()} cusecs</strong>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Outflow Chart */
+                <div style={{ position: "relative" }}>
+                  <svg
+                    width="100%"
+                    height={height}
+                    viewBox={`0 0 ${width} ${height}`}
+                    style={{ overflow: "visible", cursor: "crosshair" }}
+                    onMouseMove={handleOutflowMouseMove}
+                    onMouseLeave={handleOutflowMouseLeave}
+                  >
+                    <defs>
+                      <linearGradient id="outflowGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#ef4444" stopOpacity="0.25" />
+                        <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Grid Lines */}
+                    {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+                      const val = ratio * maxOutflowVal;
+                      const y = margin.top + (1 - ratio) * (height - margin.top - margin.bottom);
+                      return (
+                        <g key={i}>
+                          <line
+                            x1={margin.left}
+                            y1={y}
+                            x2={width - margin.right}
+                            y2={y}
+                            stroke="rgba(255,255,255,0.04)"
+                            strokeDasharray="4 4"
+                          />
+                          <text
+                            x={margin.left - 10}
+                            y={y + 4}
+                            textAnchor="end"
+                            fill="rgba(224,242,254,0.35)"
+                            style={{ fontSize: 10, fontFamily: "monospace" }}
+                          >
+                            {fmtK(val)}
+                          </text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Gradient Area under line */}
+                    <polygon
+                      points={outflowAreaPoints}
+                      fill="url(#outflowGrad)"
+                    />
+
+                    {/* Line Path */}
+                    <polyline
+                      fill="none"
+                      stroke="#ef4444"
+                      strokeWidth="2.5"
+                      points={outflowPoints}
+                    />
+
+                    {/* Hover vertical line and tooltip marker */}
+                    {hoveredOutflowPoint && (
+                      <g>
+                        <line
+                          x1={hoveredOutflowPoint.x}
+                          y1={margin.top}
+                          x2={hoveredOutflowPoint.x}
+                          y2={height - margin.bottom}
+                          stroke="rgba(239,68,68,0.25)"
+                          strokeWidth="1.5"
+                          strokeDasharray="3 3"
+                        />
+                        <circle
+                          cx={hoveredOutflowPoint.x}
+                          cy={hoveredOutflowPoint.y}
+                          r="6"
+                          fill="#ef4444"
+                          stroke="#fff"
+                          strokeWidth="2"
+                        />
+                      </g>
+                    )}
+
+                    {/* X-Axis Dates */}
+                    {filteredData.length > 0 && (
+                      <g>
+                        <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                          {new Date(filteredData[0].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </text>
+                        <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                          {new Date(filteredData[Math.floor(filteredData.length / 2)].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </text>
+                        <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                          {new Date(filteredData[filteredData.length - 1].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </text>
+                      </g>
+                    )}
+                  </svg>
+
+                  {/* Tooltip Overlay */}
+                  {hoveredOutflowPoint && (
+                    <div style={{
+                      position: "absolute",
+                      top: 10,
+                      left: hoveredOutflowPoint.x > width / 2 ? hoveredOutflowPoint.x * 0.9 - 140 : hoveredOutflowPoint.x * 1.1 + 10,
+                      background: "rgba(11, 22, 42, 0.95)",
+                      border: "1px solid rgba(239,68,68,0.25)",
+                      borderRadius: 10,
+                      padding: "8px 12px",
+                      boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
+                      pointerEvents: "none",
+                      zIndex: 10,
+                      color: "#fff",
+                      fontSize: 12
+                    }}>
+                      <div style={{ color: "rgba(224,242,254,0.5)", marginBottom: 4, fontSize: 10 }}>
+                        {new Date(hoveredOutflowPoint.timestamp).toLocaleDateString(undefined, {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </div>
+                      <div style={{ display: "flex", gap: 12, justifyContent: "space-between" }}>
+                        <span>Outflow:</span>
+                        <strong style={{ color: "#fca5a5" }}>{hoveredOutflowPoint.value.toLocaleString()} cusecs</strong>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -1596,12 +2038,11 @@ function DamDetailPage({ dam, setView }) {
                   { label: "River System", value: dam.river },
                   { label: "District Location", value: dam.district },
                   { label: "State", value: dam.state || "Karnataka" },
-                  { label: "Design Capacity", value: `${dam.capacity} TMC (Thousand Million Cubic feet)` },
-                  { label: "Status Alert Level", value: statusInfo.label, valueColor: statusInfo.c }
+                  { label: "Design Capacity", value: `${dam.capacity} TMC (Thousand Million Cubic feet)` }
                 ].map((item, i) => (
                   <div key={i} style={{
                     display: "flex", justifyContent: "space-between", alignItems: "center",
-                    paddingBottom: 8, borderBottom: i === 4 ? "none" : "1px solid rgba(255,255,255,0.04)"
+                    paddingBottom: 8, borderBottom: i === 3 ? "none" : "1px solid rgba(255,255,255,0.04)"
                   }}>
                     <span style={{ fontSize: 12, color: "rgba(224,242,254,0.4)" }}>{item.label}</span>
                     <span style={{ fontSize: 13, fontWeight: 600, color: item.valueColor || "#fff", textAlign: "right" }}>{item.value}</span>
@@ -1644,8 +2085,348 @@ function DamDetailPage({ dam, setView }) {
   );
 }
 
+// ===================== ABOUT US PAGE =====================
+function AboutUsPage({ navigate, setView }) {
+  return (
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 16px", animation: "fadeSlideUp 0.5s ease" }}>
+      <button 
+        onClick={() => navigate("/")}
+        style={{
+          display: "flex", alignItems: "center", gap: 8,
+          background: "transparent", border: "none", color: "rgba(224,242,254,0.6)",
+          fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 24,
+          padding: "6px 12px", borderRadius: 8, transition: "all 0.2s",
+          border: "1px solid rgba(255,255,255,0.06)",
+        }}
+        onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
+        onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
+      >
+        &larr; Back to Dashboard
+      </button>
+
+      <div style={{
+        background: "linear-gradient(135deg, #091a2f 0%, #040c17 100%)",
+        border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
+        padding: "32px 40px", marginBottom: 24
+      }}>
+        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>About Damtoday</h1>
+        <p style={{ fontSize: 15, color: "rgba(224,242,254,0.6)", lineHeight: 1.7, marginBottom: 20 }}>
+          Damtoday is an independent, public-service telemetry monitoring platform dedicated to providing daily updates on major reservoir water levels, storage capacities, inflows, and outflows across India.
+        </p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24, marginTop: 32 }}>
+          <div style={{ borderLeft: "3px solid #38bdf8", paddingLeft: 16 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Our Mission</h3>
+            <p style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
+              Water is one of our most critical resources. Our mission is to make reservoir data open, transparent, and easy to interpret for farmers, agricultural consultants, hydrologists, and citizens. By providing clear visual indicators, historical trends, and daily accumulation analysis, we help individuals make informed decisions about water conservation and crop planning.
+            </p>
+          </div>
+
+          <div style={{ borderLeft: "3px solid #67e8f9", paddingLeft: 16 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Transparency & Data Sources</h3>
+            <p style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
+              Damtoday is committed to absolute data integrity. We do not manufacture or alter water level records. All metrics shown are parsed daily from official publications and bulletins released by state irrigation and disaster monitoring authorities, including:
+            </p>
+            <ul style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.8, marginTop: 8, paddingLeft: 20 }}>
+              <li>Karnataka State Natural Disaster Monitoring Centre (KSNDMC)</li>
+              <li>Tamil Nadu Water Resources Department (TNWRD)</li>
+              <li>Andhra Pradesh Water Resources Department (APWRD)</li>
+              <li>Bhakra Beas Management Board (BBMB)</li>
+              <li>Sardar Sarovar Narmada Nigam Ltd (SSNNL)</li>
+              <li>Central Water Commission (CWC) & State WRDs</li>
+            </ul>
+          </div>
+
+          <div style={{ borderLeft: "3px solid #86efac", paddingLeft: 16 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Understanding the Metrics</h3>
+            <p style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
+              * **TMC (Thousand Million Cubic feet)**: The unit used to describe the volume of water stored in reservoirs. One TMC is equal to approximately 28.3 billion liters of water.
+              <br/>
+              * **Cusecs (Cubic feet per second)**: The rate used to describe flow velocity. 1 cusec equals 28.3 liters of water passing a point every second.
+              <br/>
+              * **Flow Balance**: When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ===================== CONTACT US PAGE =====================
+function ContactUsPage({ navigate, setView }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name || !email || !message) return;
+    setSubmitted(true);
+  };
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: "40px 16px", animation: "fadeSlideUp 0.5s ease" }}>
+      <button 
+        onClick={() => navigate("/")}
+        style={{
+          display: "flex", alignItems: "center", gap: 8,
+          background: "transparent", border: "none", color: "rgba(224,242,254,0.6)",
+          fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 24,
+          padding: "6px 12px", borderRadius: 8, transition: "all 0.2s",
+          border: "1px solid rgba(255,255,255,0.06)",
+        }}
+        onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
+        onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
+      >
+        &larr; Back to Dashboard
+      </button>
+
+      <div style={{
+        background: "linear-gradient(135deg, #091a2f 0%, #040c17 100%)",
+        border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
+        padding: "32px 40px"
+      }}>
+        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>Contact Us</h1>
+        <p style={{ fontSize: 14, color: "rgba(224,242,254,0.5)", lineHeight: 1.6, marginBottom: 28 }}>
+          Have any feedback, noticed a data discrepancy, or want to partner with us? Fill out the form below or write to us directly at **damtoday4@gmail.com**.
+        </p>
+
+        {submitted ? (
+          <div style={{
+            background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)",
+            padding: "24px 20px", borderRadius: 12, textAlign: "center", margin: "20px 0"
+          }}>
+            <span style={{ fontSize: 32, display: "block", marginBottom: 12 }}>&check;</span>
+            <h3 style={{ color: "#4ade80", fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Message Sent Successfully!</h3>
+            <p style={{ fontSize: 13, color: "rgba(224,242,254,0.6)", lineHeight: 1.5 }}>
+              Thank you for reaching out. We have received your submission and will get in touch with you at **{email}** if necessary.
+            </p>
+            <button 
+              onClick={() => { setSubmitted(false); setName(""); setEmail(""); setMessage(""); }}
+              style={{
+                marginTop: 16, padding: "8px 16px", borderRadius: 8, border: "none",
+                background: "rgba(34,197,94,0.15)", color: "#4ade80", fontWeight: 600, cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              Send Another Message
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>Your Name</label>
+              <input 
+                type="text" 
+                required
+                value={name}
+                onChange={e => setName(e.target.value)}
+                style={{
+                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 14, outline: "none"
+                }}
+              />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>Your Email</label>
+              <input 
+                type="email" 
+                required
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                style={{
+                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 14, outline: "none"
+                }}
+              />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>Message</label>
+              <textarea 
+                required
+                rows="5"
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                style={{
+                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 14, outline: "none",
+                  resize: "vertical", fontFamily: "inherit"
+                }}
+              />
+            </div>
+
+            <button 
+              type="submit"
+              style={{
+                background: "linear-gradient(135deg, #0369A1, #06B6D4)",
+                color: "#fff", border: "none", borderRadius: 8, padding: "12px 20px",
+                fontWeight: 700, fontSize: 14, cursor: "pointer", marginTop: 8,
+                transition: "transform 0.2s, box-shadow 0.2s"
+              }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 15px rgba(6,182,212,0.4)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; }}
+            >
+              Send Message
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ===================== PRIVACY POLICY PAGE =====================
+function PrivacyPolicyPage({ navigate, setView }) {
+  return (
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 16px", animation: "fadeSlideUp 0.5s ease" }}>
+      <button 
+        onClick={() => navigate("/")}
+        style={{
+          display: "flex", alignItems: "center", gap: 8,
+          background: "transparent", border: "none", color: "rgba(224,242,254,0.6)",
+          fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 24,
+          padding: "6px 12px", borderRadius: 8, transition: "all 0.2s",
+          border: "1px solid rgba(255,255,255,0.06)",
+        }}
+        onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
+        onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
+      >
+        &larr; Back to Dashboard
+      </button>
+
+      <div style={{
+        background: "linear-gradient(135deg, #091a2f 0%, #040c17 100%)",
+        border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
+        padding: "32px 40px", color: "rgba(224,242,254,0.6)", fontSize: 13, lineHeight: 1.7
+      }}>
+        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 20 }}>Privacy Policy</h1>
+        
+        <p style={{ marginBottom: 16 }}>
+          At Damtoday, accessible from our website, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Damtoday and how we use it.
+        </p>
+
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Consent</h3>
+        <p style={{ marginBottom: 16 }}>
+          By using our website, you hereby consent to our Privacy Policy and agree to its terms.
+        </p>
+
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Information We Collect</h3>
+        <p style={{ marginBottom: 16 }}>
+          Damtoday does not require user registration. We do not collect personal identifying information like name, address, or phone number unless you voluntarily fill out the Contact Us form, in which case we only use your email to address your inquiry.
+        </p>
+
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Log Files</h3>
+        <p style={{ marginBottom: 16 }}>
+          Damtoday follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services' analytics. The information collected by log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable. The purpose of the information is for analyzing trends, administering the site, tracking users' movement on the website, and gathering demographic information.
+        </p>
+
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Google DoubleClick DART Cookie</h3>
+        <p style={{ marginBottom: 16 }}>
+          Google is one of the third-party vendors on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to our site and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL – <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", textDecoration: "none" }}>https://policies.google.com/technologies/ads</a>.
+        </p>
+
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Our Advertising Partners</h3>
+        <p style={{ marginBottom: 16 }}>
+          Some of advertisers on our site may use cookies and web beacons. Our advertising partners include:
+          <br/>
+          * **Google AdSense**: Google AdSense uses cookies to serve relevant advertisements to users based on their browsing history.
+        </p>
+
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Third-Party Privacy Policies</h3>
+        <p style={{ marginBottom: 16 }}>
+          Damtoday's Privacy Policy does not apply to other advertisers or websites. Thus, we are advising you to consult the respective Privacy Policies of these third-party ad servers for more detailed information. It may include their practices and instructions about how to opt-out of certain options.
+        </p>
+
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Questions</h3>
+        <p style={{ marginBottom: 16 }}>
+          If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us by email at **damtoday4@gmail.com**.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const getDamSlug = (name) => {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+    .replace(/\-+/g, '-')
+    .replace(/(^-|-$)/g, '');
+};
+
+const getStateSlug = (state) => {
+  if (state === "all") return "";
+  return state.toLowerCase().replace(/\s+/g, '-');
+};
+
+const getZoneSlug = (zone) => {
+  return zone.toLowerCase();
+};
+
+const getZoneFromSlug = (slug) => {
+  const zones = ["All", "North", "South", "East", "West", "Central"];
+  return zones.find(z => z.toLowerCase() === slug) || "All";
+};
+
+const getStateFromSlug = (slug) => {
+  const states = [
+    "Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana",
+    "Himachal Pradesh", "Gujarat", "Madhya Pradesh", "Odisha", "Uttar Pradesh", "Jharkhand"
+  ];
+  return states.find(s => s.toLowerCase().replace(/\s+/g, '-') === slug) || "all";
+};
+
+const STATE_TO_ZONE = {
+  "Karnataka": "South",
+  "Tamil Nadu": "South",
+  "Kerala": "South",
+  "Andhra Pradesh": "South",
+  "Telangana": "South",
+  "Himachal Pradesh": "North",
+  "Gujarat": "West",
+  "Madhya Pradesh": "Central",
+  "Odisha": "East",
+  "Uttar Pradesh": "Central",
+  "Jharkhand": "East"
+};
+
+const ZONE_MAP = {
+  "All": ["Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana", "Himachal Pradesh", "Gujarat", "Madhya Pradesh", "Odisha", "Uttar Pradesh", "Jharkhand"],
+  "North": ["Himachal Pradesh"],
+  "South": ["Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana"],
+  "West": ["Gujarat"],
+  "East": ["Odisha", "Jharkhand"],
+  "Central": ["Madhya Pradesh", "Uttar Pradesh"]
+};
+
+function useRouter() {
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setPath(window.location.pathname);
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const navigate = (to) => {
+    window.history.pushState({}, "", to);
+    setPath(to);
+    window.scrollTo(0, 0);
+  };
+
+  return { path, navigate };
+}
+
 // ===================== MAIN APP =====================
 export default function App() {
+  const { path, navigate } = useRouter();
   const [view, setView] = useState("main");
   const [selectedDam, setSelectedDam] = useState(null);
   const [showPinModal, setShowPinModal] = useState(false);
@@ -1654,6 +2435,9 @@ export default function App() {
   const [searchHistory, setSearchHistory] = useState([]);
   const [filter,setFilter] = useState("all");
   const [selectedState,setSelectedState] = useState("all");
+  const [selectedZone, setSelectedZone] = useState("All");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [stateSearchQuery, setStateSearchQuery] = useState("");
   const [searchQuery,setSearchQuery] = useState("");
   const [goStats,setGoStats] = useState(false);
   const statsRef = useRef(null);
@@ -1669,6 +2453,195 @@ export default function App() {
     script2.innerHTML = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`;
     document.head.appendChild(script2);
   }, []);
+
+  // Synchronize router path to component states and update SEO meta tags
+  useEffect(() => {
+    const setMetaDescription = (desc) => {
+      let meta = document.querySelector('meta[name="description"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = 'description';
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", desc);
+    };
+
+    const setJsonLdSchema = (schemaObj) => {
+      let script = document.getElementById('jsonld-schema');
+      if (script) {
+        script.textContent = JSON.stringify(schemaObj);
+      } else {
+        script = document.createElement('script');
+        script.id = 'jsonld-schema';
+        script.type = 'application/ld-json';
+        script.textContent = JSON.stringify(schemaObj);
+        document.head.appendChild(script);
+      }
+    };
+
+    const removeJsonLdSchema = () => {
+      const script = document.getElementById('jsonld-schema');
+      if (script) script.remove();
+    };
+
+    // Close dropdown and reset search query on navigation
+    setIsDropdownOpen(false);
+    setStateSearchQuery("");
+
+    const damMatch = path.match(/^\/dam\/([^/?#]+)/);
+    const zoneMatch = path.match(/^\/zone\/([^/?#]+)/);
+    const stateMatch = path.match(/^\/state\/([^/?#]+)/);
+
+    if (path === "/") {
+      setView("main");
+      setSelectedState("all");
+      setSelectedZone("All");
+      setSelectedDam(null);
+      document.title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
+      setMetaDescription("Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.");
+      removeJsonLdSchema();
+    } else if (path === "/about") {
+      setView("about");
+      document.title = "About Us - Open Reservoir Telemetry Integrity - Damtoday";
+      setMetaDescription("Learn about the mission of Damtoday. We provide transparent, daily public reports on major India reservoirs verified from official state and national water monitoring agencies.");
+      removeJsonLdSchema();
+    } else if (path === "/contact") {
+      setView("contact");
+      document.title = "Contact Us - Data Inquiries & Feedback - Damtoday";
+      setMetaDescription("Have feedback or data discrepancy reports? Contact the Damtoday support team directly at damtoday4@gmail.com or submit our online feedback form.");
+      removeJsonLdSchema();
+    } else if (path === "/privacy") {
+      setView("privacy");
+      document.title = "Privacy Policy - User Consent & Cookies - Damtoday";
+      setMetaDescription("Read the Privacy Policy for Damtoday. Information regarding user cookies, ad beacons (Google AdSense), data collection methods, and contact email.");
+      removeJsonLdSchema();
+    } else if (path === "/analytics") {
+      setView("analytics");
+      document.title = "Analytics Dashboard - Damtoday Administrator Console";
+      removeJsonLdSchema();
+    } else if (damMatch) {
+      const slug = damMatch[1];
+      const found = DAMS.find(d => getDamSlug(d.name) === slug);
+      if (found) {
+        setSelectedDam(found);
+        setView("detail");
+
+        const rawName = found.name;
+        const shortNameMatch = rawName.match(/\(([^)]+)\)/);
+        const shortName = shortNameMatch ? shortNameMatch[1].trim() : "";
+        const plainName = rawName.replace(/\s*\(.*\)\s*/g, "").trim();
+        const safeLevel = typeof found.level === 'number' ? found.level : parseFloat(found.level) || 0;
+
+        let seoTitle = "";
+        let seoDesc = "";
+
+        if (shortName) {
+          seoTitle = `${plainName} (${shortName}) Water Level Today - Live Reservoir Status | Damtoday`;
+          seoDesc = `Check live daily updates for ${plainName} (${shortName}) water level today. Get real-time ${shortName} dam storage capacity in TMC, inflow cusecs, outflow cusecs, and flow trend details.`;
+        } else {
+          seoTitle = `${plainName} Dam Water Level Today - Live Reservoir Status | Damtoday`;
+          seoDesc = `Check live daily updates for ${plainName} dam water level today. Get real-time reservoir storage capacity in TMC, inflow cusecs, outflow cusecs, and flow trend details.`;
+        }
+
+        document.title = seoTitle;
+        setMetaDescription(seoDesc);
+
+        setJsonLdSchema([
+          {
+            "@context": "https://schema.org",
+            "@type": "Reservoir",
+            "name": `${found.name} Reservoir`,
+            "description": `Live daily water storage levels, capacity, inflow, and outflow for ${found.name} dam located on the ${found.river} River in ${found.district} district, ${found.state}, India.`,
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": found.district,
+              "addressRegion": found.state,
+              "addressCountry": "IN"
+            },
+            "additionalProperty": [
+              {
+                "@type": "PropertyValue",
+                "name": "Live Water Storage Level",
+                "value": `${safeLevel.toFixed(1)}%`
+              },
+              {
+                "@type": "PropertyValue",
+                "name": "Design Volume Capacity",
+                "value": `${found.capacity} TMC`
+              },
+              {
+                "@type": "PropertyValue",
+                "name": "River System Source",
+                "value": `${found.river} River`
+              }
+            ]
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": `What is the water level of ${plainName} dam today?`,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": `As of today, the water storage level of ${found.name} is ${safeLevel.toFixed(1)}% of its total design capacity. The current storage volume is ${(found.capacity * safeLevel / 100).toFixed(2)} TMC.`
+                }
+              },
+              {
+                "@type": "Question",
+                "name": `What is the total storage capacity of ${plainName} reservoir?`,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": `The total design water storage capacity of ${found.name} reservoir is ${found.capacity} TMC (Thousand Million Cubic feet).`
+                }
+              },
+              {
+                "@type": "Question",
+                "name": `What is the live inflow and outflow of ${plainName} dam today?`,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": `${found.name} has a live inflow of ${found.inflow !== null ? found.inflow.toLocaleString() : '0'} cusecs and an outflow of ${found.outflow !== null ? found.outflow.toLocaleString() : '0'} cusecs today.`
+                }
+              }
+            ]
+          }
+        ]);
+      } else {
+        navigate("/");
+      }
+    } else if (zoneMatch) {
+      const slug = zoneMatch[1];
+      const zoneName = getZoneFromSlug(slug);
+      setSelectedZone(zoneName);
+      setSelectedState("all");
+      setView("main");
+      setSelectedDam(null);
+      document.title = `${zoneName} India Reservoir Water Levels - Live Daily Telemetry | Damtoday`;
+      setMetaDescription(`Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${zoneName} India. View active capacity and total daily volume accumulation.`);
+      removeJsonLdSchema();
+    } else if (stateMatch) {
+      const slug = stateMatch[1];
+      const stateName = getStateFromSlug(slug);
+      setSelectedState(stateName);
+      if (stateName !== "all") {
+        setSelectedZone(STATE_TO_ZONE[stateName] || "All");
+      } else {
+        setSelectedZone("All");
+      }
+      setView("main");
+      setSelectedDam(null);
+
+      if (stateName !== "all") {
+        document.title = `${stateName} Reservoir Water Levels Today - Live Daily Telemetry | Damtoday`;
+        setMetaDescription(`Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${stateName}, India. View active capacity and total daily volume accumulation.`);
+      } else {
+        document.title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
+        setMetaDescription("Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.");
+      }
+      removeJsonLdSchema();
+    }
+  }, [path]);
 
   // Track MongoDB Page View on Site Load
   useEffect(() => {
@@ -1719,7 +2692,7 @@ export default function App() {
   const handlePinSubmit = (e) => {
     e.preventDefault();
     if (pinInput === "9197") {
-      setView("analytics");
+      navigate("/analytics");
       setShowPinModal(false);
       setPinInput("");
       setPinError(false);
@@ -1728,7 +2701,11 @@ export default function App() {
     }
   };
 
-  const stateFilteredDams = selectedState === "all" ? DAMS : DAMS.filter(d => d.state === selectedState);
+  const stateFilteredDams = selectedState !== "all" 
+    ? DAMS.filter(d => d.state === selectedState)
+    : selectedZone !== "All"
+      ? DAMS.filter(d => (ZONE_MAP[selectedZone] || []).includes(d.state))
+      : DAMS;
   const currentAvgLevel = stateFilteredDams.length > 0
     ? parseFloat((stateFilteredDams.reduce((s,d)=>s+(typeof d.level==='number'?d.level:parseFloat(d.level)||0),0)/stateFilteredDams.length).toFixed(1))
     : 0.0;
@@ -1803,9 +2780,15 @@ export default function App() {
       `}</style>
 
       {view === "analytics" ? (
-        <AnalyticsDashboard setView={setView} searchHistory={searchHistory} />
+        <AnalyticsDashboard navigate={navigate} setView={setView} searchHistory={searchHistory} />
       ) : view === "detail" && selectedDam ? (
-        <DamDetailPage dam={selectedDam} setView={setView} />
+        <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} />
+      ) : view === "about" ? (
+        <AboutUsPage navigate={navigate} setView={setView} />
+      ) : view === "contact" ? (
+        <ContactUsPage navigate={navigate} setView={setView} />
+      ) : view === "privacy" ? (
+        <PrivacyPolicyPage navigate={navigate} setView={setView} />
       ) : (
         <>
           {/* HERO */}
@@ -1840,7 +2823,14 @@ export default function App() {
               background:"rgba(3,10,20,0.6)",backdropFilter:"blur(18px)",
               borderBottom:"1px solid rgba(6,182,212,0.12)"
             }}>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <a 
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/");
+                }}
+                style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",textDecoration:"none"}}
+              >
                 <div style={{
                   width:36,height:36,borderRadius:10,flexShrink:0,
                   background:"linear-gradient(135deg,#0369A1,#06B6D4)",
@@ -1850,9 +2840,9 @@ export default function App() {
                 }}>&#128167;</div>
                 <div>
                   <div style={{fontWeight:900,fontSize:15,color:"#E0F2FE",letterSpacing:0.3}}>Damtoday</div>
-                  <div style={{fontSize:9,color:"rgba(224,242,254,0.33)",letterSpacing:2,textTransform:"uppercase"}}>South India</div>
+                  <div style={{fontSize:9,color:"rgba(224,242,254,0.33)",letterSpacing:2,textTransform:"uppercase"}}>All India</div>
                 </div>
-              </div>
+              </a>
 
               <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",justifyContent:"flex-end"}}>
                 <div style={{fontSize:11,color:"rgba(224,242,254,0.35)"}}>
@@ -1889,7 +2879,7 @@ export default function App() {
                 color:"rgba(34,211,238,0.72)",padding:"5px 18px",borderRadius:20,display:"inline-block",
                 border:"1px solid rgba(34,211,238,0.18)",background:"rgba(34,211,238,0.06)",
                 animation:"fadeSlideUp 0.6s ease both"
-              }}>South India &middot; Daily Water Level Bulletin</div>
+              }}>{selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState} &middot; Daily Water Level Bulletin</div>
 
               <h1 style={{
                 fontSize:"clamp(38px,8vw,80px)",fontWeight:900,lineHeight:1.15,
@@ -1897,13 +2887,13 @@ export default function App() {
                 background:"linear-gradient(100deg,#BAE6FD 0%,#7DD3FC 18%,#FFFFFF 46%,#67E8F9 68%,#BAE6FD 100%)",
                 backgroundSize:"200% auto",backgroundClip:"text",WebkitBackgroundClip:"text",
                 WebkitTextFillColor:"transparent",animation:"shimmer 7s linear infinite,fadeSlideUp 0.8s ease 0.1s both"
-              }}>South India<br/>Damtoday</h1>
+              }}>{selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState}<br/>Damtoday</h1>
 
               <p style={{
                 fontSize:16,color:"rgba(224,242,254,0.46)",maxWidth:400,lineHeight:1.6,
                 marginBottom:24,animation:"fadeSlideUp 0.8s ease 0.2s both"
               }}>
-                Real-time daily monitoring of reservoir levels, capacity, inflows, and outflows across South India.
+                Real-time daily monitoring of reservoir levels, capacity, inflows, and outflows across {selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState}.
               </p>
 
               <div style={{ display:"flex", gap:16, animation:"fadeSlideUp 0.8s ease 0.3s both" }}>
@@ -1956,29 +2946,240 @@ export default function App() {
           {/* DAMS SECTION */}
           <div id="dams-section" style={{ padding:"80px 20px", maxWidth:1200, margin:"0 auto", position:"relative", zIndex:6 }}>
 
-            {/* State filters */}
-            <div style={{ marginBottom:30 }}>
-              <div style={{ fontSize:11, color:"rgba(224,242,254,0.35)", textTransform:"uppercase", letterSpacing:2, marginBottom:14, fontWeight:700 }}>Filter by State</div>
-              <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-                {["all","Karnataka","Tamil Nadu","Kerala","Andhra Pradesh","Telangana"].map(state => {
-                  const isActive = selectedState === state;
-                  return (
-                    <button
-                      key={state}
-                      onClick={() => { setSelectedState(state); setFilter("all"); }}
-                      style={{
-                        padding:"8px 16px", borderRadius:20, border:"1px solid",
-                        borderColor:isActive?"rgba(6,182,212,0.4)":"rgba(255,255,255,0.08)",
-                        background:isActive?"rgba(6,182,212,0.12)":"rgba(255,255,255,0.02)",
-                        color:isActive?"#67E8F9":"rgba(224,242,254,0.6)",
-                        fontSize:13, fontWeight:isActive?700:500, cursor:"pointer",
-                        transition:"all 0.2s"
-                      }}
-                    >
-                      {state === "all" ? "All States" : state}
-                    </button>
-                  );
-                })}
+            {/* Zone and State Selector */}
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 16,
+              marginBottom: 32,
+              flexWrap: "wrap",
+              background: "rgba(255, 255, 255, 0.01)",
+              border: "1px solid rgba(255, 255, 255, 0.04)",
+              borderRadius: 16,
+              padding: "16px 20px",
+              backdropFilter: "blur(8px)",
+              position: "relative",
+              zIndex: 50
+            }}>
+              {/* Dropdown Backdrop to close it on click outside */}
+              {isDropdownOpen && (
+                <div 
+                  onClick={() => setIsDropdownOpen(false)} 
+                  style={{ position: "fixed", inset: 0, zIndex: 99, background: "transparent" }}
+                />
+              )}
+
+              {/* Zone Selector */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
+                  Select Region Zone
+                </span>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", padding: 4, borderRadius: 20 }}>
+                  {["All", "North", "South", "East", "West", "Central"].map(zone => {
+                    const isActive = selectedZone === zone;
+                    const href = zone === "All" ? "/" : `/zone/${getZoneSlug(zone)}`;
+                    return (
+                      <a
+                        key={zone}
+                        href={href}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          navigate(href);
+                          setFilter("all");
+                        }}
+                        style={{
+                          display: "inline-block",
+                          textDecoration: "none",
+                          padding: "6px 14px",
+                          borderRadius: 16,
+                          background: isActive ? "linear-gradient(135deg, rgba(2,132,199,0.3), rgba(6,182,212,0.3))" : "transparent",
+                          border: "1px solid",
+                          borderColor: isActive ? "rgba(6,182,212,0.25)" : "transparent",
+                          color: isActive ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
+                          fontSize: 12,
+                          fontWeight: isActive ? 700 : 500,
+                          cursor: "pointer",
+                          transition: "all 0.2s"
+                        }}
+                      >
+                        {zone}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* State Dropdown Selector */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, position: "relative", width: "100%", maxWidth: 280, zIndex: 100 }}>
+                <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
+                  Filter by State
+                </span>
+                
+                {/* Dropdown Toggle Button */}
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    padding: "10px 16px",
+                    borderRadius: 14,
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    background: "rgba(255, 255, 255, 0.02)",
+                    color: selectedState === "all" ? "rgba(224, 242, 254, 0.5)" : "#67E8F9",
+                    fontSize: 13,
+                    fontWeight: selectedState === "all" ? 500 : 700,
+                    cursor: "pointer",
+                    outline: "none",
+                    transition: "all 0.2s",
+                    backdropFilter: "blur(4px)"
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                  onMouseLeave={e => { if(!isDropdownOpen) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; } }}
+                >
+                  <span>{selectedState === "all" ? "All States" : selectedState}</span>
+                  <span style={{ transition: "transform 0.2s", transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+                </button>
+
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <div style={{
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    right: 0,
+                    left: 0,
+                    background: "linear-gradient(148deg, #091a2f 0%, #030b15 100%)",
+                    border: "1px solid rgba(6, 182, 212, 0.2)",
+                    borderRadius: 14,
+                    boxShadow: "0 12px 32px rgba(0,0,0,0.5), 0 0 16px rgba(6, 182, 212, 0.1)",
+                    overflow: "hidden",
+                    padding: 8,
+                    animation: "fadeSlideUp 0.2s ease both",
+                    zIndex: 110
+                  }}>
+                    {/* Search Field */}
+                    <div style={{ position: "relative", marginBottom: 6 }}>
+                      <input
+                        type="text"
+                        placeholder="Search state..."
+                        value={stateSearchQuery}
+                        onChange={e => setStateSearchQuery(e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "8px 10px 8px 30px",
+                          borderRadius: 10,
+                          border: "1px solid rgba(255, 255, 255, 0.08)",
+                          background: "rgba(255, 255, 255, 0.03)",
+                          color: "#E0F2FE",
+                          fontSize: 12,
+                          outline: "none"
+                        }}
+                      />
+                      <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, opacity: 0.4 }}>🔍</span>
+                    </div>
+
+                    {/* Scrollable list */}
+                    <div style={{ maxHeight: 450, overflowY: "auto", display: "block" }}>
+                      {/* "All States" option */}
+                      {(stateSearchQuery === "" || "all states".includes(stateSearchQuery.toLowerCase())) && (
+                        <a
+                          href="/"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            navigate("/");
+                            setIsDropdownOpen(false);
+                            setStateSearchQuery("");
+                          }}
+                          style={{
+                            display: "block",
+                            padding: "8px 12px",
+                            borderRadius: 8,
+                            color: selectedState === "all" ? "#67E8F9" : "rgba(224, 242, 254, 0.7)",
+                            background: selectedState === "all" ? "rgba(6, 182, 212, 0.12)" : "transparent",
+                            fontSize: 12,
+                            textDecoration: "none",
+                            fontWeight: selectedState === "all" ? 700 : 500,
+                            cursor: "pointer",
+                            transition: "all 0.15s",
+                            marginBottom: 2
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = selectedState === "all" ? "rgba(6, 182, 212, 0.12)" : "transparent"; }}
+                        >
+                          All States
+                        </a>
+                      )}
+
+                      {/* Map through states under selected zone */}
+                      {["North", "South", "East", "West", "Central"]
+                        .filter(zone => selectedZone === "All" || selectedZone === zone)
+                        .map(zone => {
+                          const states = ZONE_MAP[zone] || [];
+                          const filteredStates = states.filter(state => 
+                            state.toLowerCase().includes(stateSearchQuery.toLowerCase())
+                          );
+                          if (filteredStates.length === 0) return null;
+                          
+                          return (
+                            <div key={zone} style={{ display: "block", marginBottom: 6 }}>
+                              {/* Zone header */}
+                              <div style={{
+                                fontSize: 9,
+                                fontWeight: 700,
+                                color: selectedZone === zone ? "#67E8F9" : "rgba(224, 242, 254, 0.3)",
+                                textTransform: "uppercase",
+                                letterSpacing: 1,
+                                padding: "6px 12px 4px",
+                                borderBottom: "1px solid rgba(255, 255, 255, 0.03)",
+                                marginTop: 4,
+                                marginBottom: 4
+                              }}>
+                                {zone} Zone
+                              </div>
+                              
+                              {/* States inside zone */}
+                              {filteredStates.map(state => {
+                                const isActive = selectedState === state;
+                                const href = `/state/${getStateSlug(state)}`;
+                                return (
+                                  <a
+                                    key={state}
+                                    href={href}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      navigate(href);
+                                      setIsDropdownOpen(false);
+                                      setStateSearchQuery("");
+                                    }}
+                                    style={{
+                                      display: "block",
+                                      padding: "8px 12px",
+                                      borderRadius: 8,
+                                      color: isActive ? "#67E8F9" : "rgba(224, 242, 254, 0.7)",
+                                      background: isActive ? "rgba(6, 182, 212, 0.12)" : "transparent",
+                                      fontSize: 12,
+                                      textDecoration: "none",
+                                      fontWeight: isActive ? 700 : 500,
+                                      cursor: "pointer",
+                                      transition: "all 0.15s",
+                                      paddingLeft: 20,
+                                      marginBottom: 2
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                                    onMouseLeave={e => { e.currentTarget.style.background = isActive ? "rgba(6, 182, 212, 0.12)" : "transparent"; }}
+                                  >
+                                    {state}
+                                  </a>
+                                );
+                              })}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1986,9 +3187,9 @@ export default function App() {
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:32, gap:20, flexWrap:"wrap" }}>
               <div>
                 <h2 style={{ fontSize:28, fontWeight:900, color:"#E0F2FE", letterSpacing:"-0.5px" }}>
-                  {selectedState === "all" ? "All South India" : selectedState} Reservoirs
+                  {selectedState === "all" ? (selectedZone === "All" ? "All India" : `${selectedZone} India`) : selectedState} Reservoirs
                 </h2>
-                <p style={{ fontSize:14, color:"rgba(224,242,254,0.4)", marginTop:4 }}>Search and select capacity/alert filters</p>
+                <p style={{ fontSize:14, color:"rgba(224,242,254,0.4)", marginTop:4 }}>Search and select capacity filters</p>
               </div>
 
               <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
@@ -2043,8 +3244,7 @@ export default function App() {
                     dam={dam}
                     delay={idx * 30}
                     onClick={() => {
-                      setSelectedDam(dam);
-                      setView("detail");
+                      navigate(`/dam/${getDamSlug(dam.name)}`);
                     }}
                   />
                 ))}
@@ -2074,7 +3274,55 @@ export default function App() {
               <div style={{ borderTop:"1px solid rgba(255,255,255,0.03)", paddingTop:16, fontSize:12, color:"rgba(224,242,254,0.35)" }}>
                 &copy; {new Date().getFullYear()} Damtoday. Created as a local public information resource.
               </div>
-              <div style={{ marginTop:24, display:"flex", justifyContent:"center", gap:16, fontSize:11 }}>
+              <div style={{ marginTop:24, display:"flex", justifyContent:"center", gap:20, flexWrap:"wrap", fontSize:11 }}>
+                <a
+                  href="/about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/about");
+                  }}
+                  style={{
+                    textDecoration: "none",
+                    background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
+                    transition:"color 0.2s"
+                  }}
+                  onMouseEnter={e => e.target.style.color="#38bdf8"}
+                  onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
+                >
+                  About Us
+                </a>
+                <a
+                  href="/contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/contact");
+                  }}
+                  style={{
+                    textDecoration: "none",
+                    background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
+                    transition:"color 0.2s"
+                  }}
+                  onMouseEnter={e => e.target.style.color="#38bdf8"}
+                  onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
+                >
+                  Contact Us
+                </a>
+                <a
+                  href="/privacy"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/privacy");
+                  }}
+                  style={{
+                    textDecoration: "none",
+                    background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
+                    transition:"color 0.2s"
+                  }}
+                  onMouseEnter={e => e.target.style.color="#38bdf8"}
+                  onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
+                >
+                  Privacy Policy
+                </a>
                 <button
                   onClick={() => setShowPinModal(true)}
                   style={{
