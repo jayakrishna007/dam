@@ -28,8 +28,8 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/dams.json
-          # Only commit if there are changes to the water level data
+          git add src/data/dams.json src/data/scrape_status.json
+          # Only commit if there are changes to the water level data or run status
           if ! git diff --cached --quiet; then
             git commit -m "chore: auto-update dam levels (10:00 AM IST)"
             git push
