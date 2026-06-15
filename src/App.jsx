@@ -2781,96 +2781,154 @@ export default function App() {
 
       {view === "analytics" ? (
         <AnalyticsDashboard navigate={navigate} setView={setView} searchHistory={searchHistory} />
-      ) : view === "detail" && selectedDam ? (
-        <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} />
-      ) : view === "about" ? (
-        <AboutUsPage navigate={navigate} setView={setView} />
-      ) : view === "contact" ? (
-        <ContactUsPage navigate={navigate} setView={setView} />
-      ) : view === "privacy" ? (
-        <PrivacyPolicyPage navigate={navigate} setView={setView} />
       ) : (
-        <>
-          {/* HERO */}
-          <div style={{
-            position:"relative",minHeight:"95vh",overflow:"hidden",
-            background:"radial-gradient(ellipse 140% 70% at 50% -15%,#082848 0%,#030A14 60%)",
-            display:"flex",flexDirection:"column"
+        <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+          {/* Global Sticky Navigation Header */}
+          <nav style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            padding: "14px 22px", zIndex: 100, position: "sticky", top: 0,
+            background: "rgba(3, 10, 20, 0.85)", backdropFilter: "blur(18px)",
+            borderBottom: "1px solid rgba(6, 182, 212, 0.12)"
           }}>
-            {/* Ambient glows */}
-            <div style={{position:"absolute",inset:0,pointerEvents:"none"}}>
-              <div style={{position:"absolute",width:560,height:320,top:0,left:"50%",transform:"translateX(-50%)",
-                background:"radial-gradient(ellipse,rgba(6,182,212,0.1),transparent 70%)"}}/>
-              <div style={{position:"absolute",width:320,height:320,top:"30%",left:"4%",borderRadius:"50%",
-                background:"radial-gradient(circle,rgba(59,130,246,0.07),transparent 70%)",animation:"glowPulse 7s ease infinite"}}/>
-              <div style={{position:"absolute",width:260,height:260,top:"22%",right:"4%",borderRadius:"50%",
-                background:"radial-gradient(circle,rgba(124,58,237,0.06),transparent 70%)",animation:"glowPulse 10s ease infinite 3s"}}/>
-            </div>
+            <a 
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
+              }}
+              style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", textDecoration: "none" }}
+            >
+              <div style={{
+                width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                background: "linear-gradient(135deg, #0369A1, #06B6D4)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 19, boxShadow: "0 0 20px rgba(6, 182, 212, 0.5)",
+                animation: "floatUp 3.5s ease infinite"
+              }}>&#128167;</div>
+              <div>
+                <div style={{ fontWeight: 900, fontSize: 15, color: "#E0F2FE", letterSpacing: 0.3 }}>Damtoday</div>
+                <div style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.33)", letterSpacing: 2, textTransform: "uppercase" }}>All India</div>
+              </div>
+            </a>
 
-            {/* Rain */}
-            {RAIN.map(r=>(
-              <div key={r.id} style={{
-                position:"absolute",top:0,left:r.left,width:"1.5px",height:r.h,pointerEvents:"none",
-                background:"linear-gradient(to bottom,transparent,rgba(6,182,212,0.5),transparent)",
-                animation:`rain ${r.dur} linear ${r.delay} infinite`
-              }}/>
-            ))}
-
-            {/* NAV */}
-            <nav style={{
-              display:"flex",justifyContent:"space-between",alignItems:"center",
-              padding:"14px 22px",zIndex:10,position:"sticky",top:0,
-              background:"rgba(3,10,20,0.6)",backdropFilter:"blur(18px)",
-              borderBottom:"1px solid rgba(6,182,212,0.12)"
-            }}>
-              <a 
-                href="/"
+            <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <a
+                href="/about"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate("/");
+                  navigate("/about");
                 }}
-                style={{display:"flex",alignItems:"center",gap:10,cursor:"pointer",textDecoration:"none"}}
+                style={{
+                  textDecoration: "none",
+                  color: view === "about" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
+                  fontSize: 12,
+                  fontWeight: view === "about" ? 700 : 600,
+                  transition: "color 0.2s"
+                }}
+                onMouseEnter={e => e.target.style.color = "#38bdf8"}
+                onMouseLeave={e => e.target.style.color = view === "about" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
               >
-                <div style={{
-                  width:36,height:36,borderRadius:10,flexShrink:0,
-                  background:"linear-gradient(135deg,#0369A1,#06B6D4)",
-                  display:"flex",alignItems:"center",justifyContent:"center",
-                  fontSize:19,boxShadow:"0 0 20px rgba(6,182,212,0.5)",
-                  animation:"floatUp 3.5s ease infinite"
-                }}>&#128167;</div>
-                <div>
-                  <div style={{fontWeight:900,fontSize:15,color:"#E0F2FE",letterSpacing:0.3}}>Damtoday</div>
-                  <div style={{fontSize:9,color:"rgba(224,242,254,0.33)",letterSpacing:2,textTransform:"uppercase"}}>All India</div>
-                </div>
+                About Us
               </a>
-
-              <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",justifyContent:"flex-end"}}>
-                <div style={{fontSize:11,color:"rgba(224,242,254,0.35)"}}>
-                  &#128338; <span style={{color:"#67E8F9",fontWeight:600}}>Updated : Today 10:00 AM IST</span>
-                </div>
-              </div>
-            </nav>
-
-            {/* LIVE TICKER */}
-            <div style={{
-              height:30,overflow:"hidden",display:"flex",alignItems:"center",
-              background:"rgba(6,182,212,0.045)",borderBottom:"1px solid rgba(6,182,212,0.1)"
-            }}>
-              <div style={{flexShrink:0,height:"100%",display:"flex",alignItems:"center",
-                padding:"0 14px",borderRight:"1px solid rgba(6,182,212,0.14)",gap:6}}>
-                <div style={{width:7,height:7,borderRadius:"50%",background:"#EF4444",animation:"blink 1.5s ease infinite"}}/>
-                <span style={{fontSize:10,fontWeight:700,color:"rgba(224,242,254,0.45)",letterSpacing:1}}>LIVE</span>
-              </div>
-              <div style={{overflow:"hidden",flex:1}}>
-                <div style={{
-                  display:"inline-block",whiteSpace:"nowrap",fontFamily:"monospace",
-                  fontSize:11,color:"rgba(103,232,249,0.6)",letterSpacing:0.4,paddingLeft:14,
-                  animation:"tickerScroll 90s linear infinite"
-                }}>{TICKER}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{TICKER}</div>
+              <a
+                href="/contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/contact");
+                }}
+                style={{
+                  textDecoration: "none",
+                  color: view === "contact" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
+                  fontSize: 12,
+                  fontWeight: view === "contact" ? 700 : 600,
+                  transition: "color 0.2s"
+                }}
+                onMouseEnter={e => e.target.style.color = "#38bdf8"}
+                onMouseLeave={e => e.target.style.color = view === "contact" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
+              >
+                Contact Us
+              </a>
+              <a
+                href="/privacy"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/privacy");
+                }}
+                style={{
+                  textDecoration: "none",
+                  color: view === "privacy" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
+                  fontSize: 12,
+                  fontWeight: view === "privacy" ? 700 : 600,
+                  transition: "color 0.2s"
+                }}
+                onMouseEnter={e => e.target.style.color = "#38bdf8"}
+                onMouseLeave={e => e.target.style.color = view === "privacy" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
+              >
+                Privacy
+              </a>
+              <div style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.35)", marginLeft: 10 }}>
+                &#128338; <span style={{ color: "#67E8F9", fontWeight: 600 }}>Updated : Today 10:00 AM IST</span>
               </div>
             </div>
+          </nav>
 
-            {/* HERO BODY */}
+          {/* Main content body */}
+          <div style={{ flexGrow: 1 }}>
+            {view === "detail" && selectedDam ? (
+              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} />
+            ) : view === "about" ? (
+              <AboutUsPage navigate={navigate} setView={setView} />
+            ) : view === "contact" ? (
+              <ContactUsPage navigate={navigate} setView={setView} />
+            ) : view === "privacy" ? (
+              <PrivacyPolicyPage navigate={navigate} setView={setView} />
+            ) : (
+              <>
+                {/* HERO */}
+                <div style={{
+                  position: "relative", minHeight: "95vh", overflow: "hidden",
+                  background: "radial-gradient(ellipse 140% 70% at 50% -15%, #082848 0%, #030A14 60%)",
+                  display: "flex", flexDirection: "column"
+                }}>
+                  {/* Ambient glows */}
+                  <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+                    <div style={{ position: "absolute", width: 560, height: 320, top: 0, left: "50%", transform: "translateX(-50%)",
+                      background: "radial-gradient(ellipse, rgba(6, 182, 212, 0.1), transparent 70%)" }} />
+                    <div style={{ position: "absolute", width: 320, height: 320, top: "30%", left: "4%", borderRadius: "50%",
+                      background: "radial-gradient(circle, rgba(59, 130, 246, 0.07), transparent 70%)", animation: "glowPulse 7s ease infinite" }} />
+                    <div style={{ position: "absolute", width: 260, height: 260, top: "22%", right: "4%", borderRadius: "50%",
+                      background: "radial-gradient(circle, rgba(124, 58, 237, 0.06), transparent 70%)", animation: "glowPulse 10s ease infinite 3s" }} />
+                  </div>
+
+                  {/* Rain */}
+                  {RAIN.map(r => (
+                    <div key={r.id} style={{
+                      position: "absolute", top: 0, left: r.left, width: "1.5px", height: r.h, pointerEvents: "none",
+                      background: "linear-gradient(to bottom, transparent, rgba(6, 182, 212, 0.5), transparent)",
+                      animation: `rain ${r.dur} linear ${r.delay} infinite`
+                    }} />
+                  ))}
+
+                  {/* LIVE TICKER */}
+                  <div style={{
+                    height: 30, overflow: "hidden", display: "flex", alignItems: "center",
+                    background: "rgba(6, 182, 212, 0.045)", borderBottom: "1px solid rgba(6, 182, 212, 0.1)"
+                  }}>
+                    <div style={{ flexShrink: 0, height: "100%", display: "flex", alignItems: "center",
+                      padding: "0 14px", borderRight: "1px solid rgba(6, 182, 212, 0.14)", gap: 6 }}>
+                      <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#EF4444", animation: "blink 1.5s ease infinite" }} />
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "rgba(224, 242, 254, 0.45)", letterSpacing: 1 }}>LIVE</span>
+                    </div>
+                    <div style={{ overflow: "hidden", flex: 1 }}>
+                      <div style={{
+                        display: "inline-block", whiteSpace: "nowrap", fontFamily: "monospace",
+                        fontSize: 11, color: "rgba(103, 232, 249, 0.6)", letterSpacing: 0.4, paddingLeft: 14,
+                        animation: "tickerScroll 90s linear infinite"
+                      }}>{TICKER}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{TICKER}</div>
+                    </div>
+                  </div>
+
+                  {/* HERO BODY */}
             <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",
               justifyContent:"center",padding:"52px 20px 116px",textAlign:"center"}}>
 
@@ -3259,9 +3317,12 @@ export default function App() {
               </div>
             )}
           </div>
+        </>
+      )}
+    </div>
 
-          {/* FOOTER */}
-          <footer style={{
+    {/* FOOTER */}
+    <footer style={{
             background:"#01070F", borderTop:"1px solid rgba(255,255,255,0.05)",
             padding:"40px 20px", textAlign:"center", position:"relative", zIndex:6
           }}>
@@ -3337,7 +3398,7 @@ export default function App() {
               </div>
             </div>
           </footer>
-        </>
+        </div>
       )}
 
       {showPinModal && (
