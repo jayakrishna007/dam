@@ -351,6 +351,38 @@ def main():
         
     print(f"Successfully wrote {len(final_dams)} dams to dams.json!")
 
+    # Post historical readings to MongoDB via serverless API
+    try:
+        import datetime
+        api_url = os.environ.get("VERCEL_URL", "")
+        if api_url:
+            if not api_url.startswith("http"):
+                api_url = f"https://{api_url}"
+            readings = []
+            for d in final_dams:
+                readings.append({
+                    "dam_id": d["id"],
+                    "name": d["name"],
+                    "level": d["level"],
+                    "capacity": d["capacity"],
+                    "inflow": d["inflow"],
+                    "outflow": d["outflow"],
+                    "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+                })
+            payload = json.dumps({"readings": readings}).encode("utf-8")
+            req = urllib.request.Request(
+                f"{api_url}/api/dam-history",
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            resp = urllib.request.urlopen(req, timeout=15)
+            print(f"Posted {len(readings)} dam readings to history API (status {resp.status})")
+        else:
+            print("VERCEL_URL not set, skipping history API post.")
+    except Exception as e:
+        print(f"Warning: Failed to post dam history: {e}")
+
     # Calculate delta changes
     old_map = {d["name"].lower(): d for d in old_dams}
     dams_changed = 0
