@@ -1217,6 +1217,40 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
 }
 
 // ===================== DAM DETAIL PAGE =====================
+function generateFallbackHistory(dam, safeLevel) {
+  const cutoffDate = new Date("2026-06-13T00:00:00");
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  
+  const result = [];
+  const currentDate = new Date(cutoffDate);
+  
+  const inflowBase = typeof dam.inflow === 'number' ? dam.inflow : parseFloat(dam.inflow) || 1200;
+  const outflowBase = typeof dam.outflow === 'number' ? dam.outflow : parseFloat(dam.outflow) || 800;
+  
+  let dayIndex = 0;
+  while (currentDate <= today) {
+    // Level slowly changes towards safeLevel
+    const level = Math.max(0, Math.min(100, safeLevel - (3 - dayIndex) * 0.4 + (Math.sin(dayIndex) * 0.1)));
+    const inflow = Math.max(0, inflowBase * (0.85 + Math.sin(dayIndex) * 0.15));
+    const outflow = Math.max(0, outflowBase * (0.9 + Math.cos(dayIndex) * 0.1));
+    
+    result.push({
+      dam_id: dam.id,
+      name: dam.name,
+      level,
+      capacity: dam.capacity,
+      inflow,
+      outflow,
+      timestamp: currentDate.toISOString()
+    });
+    
+    currentDate.setDate(currentDate.getDate() + 1);
+    dayIndex++;
+  }
+  return result;
+}
+
 function HistoricalCharts({ dam, safeLevel }) {
   const [period, setPeriod] = useState("7D");
   const [loading, setLoading] = useState(true);
@@ -1234,13 +1268,27 @@ function HistoricalCharts({ dam, safeLevel }) {
       })
       .then(data => {
         const docs = data.documents || [];
-        docs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        setHistoryData(docs);
+        if (docs.length === 0) {
+          const isDev = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+          if (isDev) {
+            setHistoryData(generateFallbackHistory(dam, safeLevel));
+          } else {
+            setHistoryData([]);
+          }
+        } else {
+          docs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+          setHistoryData(docs);
+        }
         setLoading(false);
       })
       .catch(err => {
-        console.error(err);
-        setHistoryData([]);
+        console.error("Historical data fetch failed:", err);
+        const isDev = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+        if (isDev) {
+          setHistoryData(generateFallbackHistory(dam, safeLevel));
+        } else {
+          setHistoryData([]);
+        }
         setLoading(false);
       });
   }, [dam, safeLevel]);
