@@ -1792,7 +1792,8 @@ function HistoricalCharts({ dam, safeLevel }) {
             <div style={{
               position: "absolute",
               top: 10,
-              left: hoveredPoint.x > width / 2 ? hoveredPoint.x * 0.9 - 140 : hoveredPoint.x * 1.1 + 10,
+              left: `${(hoveredPoint.x / width) * 100}%`,
+              transform: hoveredPoint.x > width / 2 ? "translateX(-110%)" : "translateX(10%)",
               background: "rgba(11, 22, 42, 0.95)",
               border: "1px solid rgba(56,189,248,0.25)",
               borderRadius: 10,
@@ -1926,7 +1927,8 @@ function HistoricalCharts({ dam, safeLevel }) {
             <div style={{
               position: "absolute",
               top: 10,
-              left: hoveredInflowPoint.x > width / 2 ? hoveredInflowPoint.x * 0.9 - 140 : hoveredInflowPoint.x * 1.1 + 10,
+              left: `${(hoveredInflowPoint.x / width) * 100}%`,
+              transform: hoveredInflowPoint.x > width / 2 ? "translateX(-110%)" : "translateX(10%)",
               background: "rgba(11, 22, 42, 0.95)",
               border: "1px solid rgba(34,197,94,0.25)",
               borderRadius: 10,
@@ -2054,7 +2056,8 @@ function HistoricalCharts({ dam, safeLevel }) {
             <div style={{
               position: "absolute",
               top: 10,
-              left: hoveredOutflowPoint.x > width / 2 ? hoveredOutflowPoint.x * 0.9 - 140 : hoveredOutflowPoint.x * 1.1 + 10,
+              left: `${(hoveredOutflowPoint.x / width) * 100}%`,
+              transform: hoveredOutflowPoint.x > width / 2 ? "translateX(-110%)" : "translateX(10%)",
               background: "rgba(11, 22, 42, 0.95)",
               border: "1px solid rgba(239,68,68,0.25)",
               borderRadius: 10,
