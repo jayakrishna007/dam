@@ -5,6 +5,8 @@
   "buildCommand": "npm run build",
   "devCommand": "vite --port $PORT",
   "rewrites": [
-    { "source": "/((?!api/|assets/|src/|node_modules/|@).*)" , "destination": "/index.html" }
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/assets/:path*", "destination": "/assets/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
