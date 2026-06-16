@@ -1217,20 +1217,15 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
 }
 
 // ===================== DAM DETAIL PAGE =====================
-function DamDetailPage({ dam, navigate, setView }) {
-  const [period, setPeriod] = useState("30D");
+function HistoricalCharts({ dam, safeLevel }) {
+  const [period, setPeriod] = useState("7D");
   const [loading, setLoading] = useState(true);
   const [historyData, setHistoryData] = useState([]);
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [activeTab, setActiveTab] = useState("level"); // "level" or "flow"
 
-  const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
-  const theme = waterTheme(safeLevel);
-
   useEffect(() => {
     setLoading(true);
-    const currentInflow = typeof dam.inflow === 'number' ? dam.inflow : parseFloat(dam.inflow) || 0;
-    const currentOutflow = typeof dam.outflow === 'number' ? dam.outflow : parseFloat(dam.outflow) || 0;
 
     fetch(`/api/dam-history?dam_id=${dam.id}`)
       .then(res => {
@@ -1240,53 +1235,102 @@ function DamDetailPage({ dam, navigate, setView }) {
       .then(data => {
         const docs = data.documents || [];
         docs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        if (docs.length === 0) {
-          setHistoryData([{
-            timestamp: new Date().toISOString(),
-            level: safeLevel,
-            inflow: currentInflow,
-            outflow: currentOutflow
-          }]);
-        } else {
-          setHistoryData(docs);
-        }
+        setHistoryData(docs);
         setLoading(false);
       })
       .catch(err => {
         console.error(err);
-        setHistoryData([{
-          timestamp: new Date().toISOString(),
-          level: safeLevel,
-          inflow: currentInflow,
-          outflow: currentOutflow
-        }]);
+        setHistoryData([]);
         setLoading(false);
       });
   }, [dam, safeLevel]);
 
-  const filteredData = useMemo(() => {
+  const filledHistoryData = useMemo(() => {
     if (historyData.length === 0) return [];
-    const now = new Date();
-    let cutoff = new Date();
-    if (period === "7D") {
-      cutoff.setDate(now.getDate() - 7);
-    } else if (period === "30D") {
-      cutoff.setDate(now.getDate() - 30);
-    } else {
-      cutoff.setDate(now.getDate() - 90);
-    }
-    const realHistory = historyData.filter(d => new Date(d.timestamp) >= cutoff);
     
-    if (realHistory.length === 1) {
-      const singlePoint = realHistory[0];
-      const prevDate = new Date(new Date(singlePoint.timestamp).getTime() - 24 * 60 * 60 * 1000);
-      return [
-        { ...singlePoint, timestamp: prevDate.toISOString() },
-        singlePoint
-      ];
+    // Discard any records before June 13, 2026 (ignore dummy/test data)
+    const cutoffDate = new Date("2026-06-13T00:00:00");
+    const sorted = [...historyData]
+      .filter(d => new Date(d.timestamp) >= cutoffDate)
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    
+    if (sorted.length === 0) return [];
+    
+    const earliestDate = new Date(sorted[0].timestamp);
+    earliestDate.setHours(0, 0, 0, 0);
+    const latestDate = new Date(sorted[sorted.length - 1].timestamp);
+    latestDate.setHours(0, 0, 0, 0);
+    
+    const result = [];
+    const currentDate = new Date(earliestDate);
+    
+    // Helper to find the record closest to or on currentDate
+    let lastRecord = sorted[0];
+    
+    while (currentDate <= latestDate) {
+      // Find if we have an exact record for this calendar day
+      const dayStart = new Date(currentDate);
+      const dayEnd = new Date(currentDate);
+      dayEnd.setDate(dayEnd.getDate() + 1);
+      
+      const recordsForDay = sorted.filter(d => {
+        const t = new Date(d.timestamp);
+        return t >= dayStart && t < dayEnd;
+      });
+      
+      if (recordsForDay.length > 0) {
+        // Use the last record of that day
+        lastRecord = recordsForDay[recordsForDay.length - 1];
+        result.push({
+          ...lastRecord,
+          timestamp: currentDate.toISOString() // normalize to calendar day
+        });
+      } else {
+        // Carry forward the last known record (backfill/interpolate)
+        result.push({
+          ...lastRecord,
+          timestamp: currentDate.toISOString() // normalize to calendar day
+        });
+      }
+      
+      currentDate.setDate(currentDate.getDate() + 1);
     }
-    return realHistory;
-  }, [historyData, period]);
+    
+    return result;
+  }, [historyData]);
+
+  const latestDate = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (filledHistoryData.length === 0) return today;
+    const d = new Date(filledHistoryData[filledHistoryData.length - 1].timestamp);
+    d.setHours(0, 0, 0, 0);
+    // Anchor timeline to today (current local date) to show "half cut" appropriately
+    return d > today ? d : today;
+  }, [filledHistoryData]);
+
+  const { cutoff, daysCount, minTime, maxTime, timeRange, midDate } = useMemo(() => {
+    let daysCount = 7;
+    if (period === "30D") daysCount = 30;
+    if (period === "90D") daysCount = 90;
+    
+    const cutoff = new Date(latestDate);
+    cutoff.setDate(latestDate.getDate() - (daysCount - 1));
+    cutoff.setHours(0, 0, 0, 0);
+    
+    const minTime = cutoff.getTime();
+    const maxTime = latestDate.getTime();
+    const timeRange = maxTime - minTime || 1;
+    
+    const midDate = new Date(minTime + timeRange / 2);
+    
+    return { cutoff, daysCount, minTime, maxTime, timeRange, midDate };
+  }, [latestDate, period]);
+
+  const filteredData = useMemo(() => {
+    if (filledHistoryData.length === 0) return [];
+    return filledHistoryData.filter(d => new Date(d.timestamp) >= cutoff);
+  }, [filledHistoryData, cutoff]);
 
   // Chart coordinates calculation
   const width = 600;
@@ -1304,8 +1348,9 @@ function DamDetailPage({ dam, navigate, setView }) {
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
-    const coords = filteredData.map((d, i) => {
-      const x = margin.left + (i / (filteredData.length - 1 || 1)) * chartWidth;
+    const coords = filteredData.map((d) => {
+      const time = new Date(d.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * chartWidth;
       const y = margin.top + (1 - (d.level - yMin) / (yMax - yMin || 1)) * chartHeight;
       return { x, y };
     });
@@ -1326,10 +1371,10 @@ function DamDetailPage({ dam, navigate, setView }) {
       yMin,
       yMax
     };
-  }, [filteredData, margin.left, margin.right, margin.top, margin.bottom]);
+  }, [filteredData, minTime, timeRange, margin.left, margin.right, margin.top, margin.bottom]);
 
   const handleMouseMove = (e) => {
-    if (!filteredData || filteredData.length === 0) return;
+    if (filteredData.length === 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clientX = e.clientX - rect.left;
     const chartWidth = rect.width * ((width - margin.left - margin.right) / width);
@@ -1337,15 +1382,28 @@ function DamDetailPage({ dam, navigate, setView }) {
     
     const relativeX = clientX - chartLeft;
     const pct = Math.max(0, Math.min(1, relativeX / chartWidth));
-    const index = Math.round(pct * (filteredData.length - 1));
-    const point = filteredData[index];
-    if (point && xCoords[index] !== undefined && yCoords[index] !== undefined) {
+    
+    const dayOffset = Math.round(pct * (daysCount - 1));
+    const targetDate = new Date(cutoff);
+    targetDate.setDate(cutoff.getDate() + dayOffset);
+    targetDate.setHours(0, 0, 0, 0);
+    
+    const matched = filteredData.find(d => {
+      const t = new Date(d.timestamp);
+      t.setHours(0, 0, 0, 0);
+      return t.getTime() === targetDate.getTime();
+    });
+    
+    if (matched) {
+      const x = margin.left + (dayOffset / (daysCount - 1)) * (width - margin.left - margin.right);
+      const y = margin.top + (1 - (matched.level - yMin) / (yMax - yMin || 1)) * (height - margin.top - margin.bottom);
       setHoveredPoint({
-        ...point,
-        index,
-        x: xCoords[index],
-        y: yCoords[index]
+        ...matched,
+        x,
+        y
       });
+    } else {
+      setHoveredPoint(null);
     }
   };
 
@@ -1371,8 +1429,9 @@ function DamDetailPage({ dam, navigate, setView }) {
     const maxVal = Math.max(100, ...inflows) * 1.15;
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
-    const coords = filteredData.map((d, i) => {
-      const x = margin.left + (i / (filteredData.length - 1 || 1)) * chartWidth;
+    const coords = filteredData.map((d) => {
+      const time = new Date(d.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * chartWidth;
       const val = typeof d.inflow === 'number' ? d.inflow : parseFloat(d.inflow) || 0;
       const y = margin.top + (1 - val / maxVal) * chartHeight;
       return { x, y };
@@ -1389,7 +1448,7 @@ function DamDetailPage({ dam, navigate, setView }) {
       inflowYCoords: coords.map(c => c.y),
       maxInflowVal: maxVal
     };
-  }, [filteredData, margin.left, margin.right, margin.top, margin.bottom]);
+  }, [filteredData, minTime, timeRange, margin.left, margin.right, margin.top, margin.bottom]);
 
   // Outflow chart calculations
   const {
@@ -1406,8 +1465,9 @@ function DamDetailPage({ dam, navigate, setView }) {
     const maxVal = Math.max(100, ...outflows) * 1.15;
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
-    const coords = filteredData.map((d, i) => {
-      const x = margin.left + (i / (filteredData.length - 1 || 1)) * chartWidth;
+    const coords = filteredData.map((d) => {
+      const time = new Date(d.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * chartWidth;
       const val = typeof d.outflow === 'number' ? d.outflow : parseFloat(d.outflow) || 0;
       const y = margin.top + (1 - val / maxVal) * chartHeight;
       return { x, y };
@@ -1424,10 +1484,10 @@ function DamDetailPage({ dam, navigate, setView }) {
       outflowYCoords: coords.map(c => c.y),
       maxOutflowVal: maxVal
     };
-  }, [filteredData, margin.left, margin.right, margin.top, margin.bottom]);
+  }, [filteredData, minTime, timeRange, margin.left, margin.right, margin.top, margin.bottom]);
 
   const handleInflowMouseMove = (e) => {
-    if (!filteredData || filteredData.length === 0) return;
+    if (filteredData.length === 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clientX = e.clientX - rect.left;
     const chartWidth = rect.width * ((width - margin.left - margin.right) / width);
@@ -1435,16 +1495,30 @@ function DamDetailPage({ dam, navigate, setView }) {
     
     const relativeX = clientX - chartLeft;
     const pct = Math.max(0, Math.min(1, relativeX / chartWidth));
-    const index = Math.round(pct * (filteredData.length - 1));
-    const point = filteredData[index];
-    if (point && inflowXCoords[index] !== undefined && inflowYCoords[index] !== undefined) {
+    
+    const dayOffset = Math.round(pct * (daysCount - 1));
+    const targetDate = new Date(cutoff);
+    targetDate.setDate(cutoff.getDate() + dayOffset);
+    targetDate.setHours(0, 0, 0, 0);
+    
+    const matched = filteredData.find(d => {
+      const t = new Date(d.timestamp);
+      t.setHours(0, 0, 0, 0);
+      return t.getTime() === targetDate.getTime();
+    });
+    
+    if (matched) {
+      const x = margin.left + (dayOffset / (daysCount - 1)) * (width - margin.left - margin.right);
+      const val = typeof matched.inflow === 'number' ? matched.inflow : parseFloat(matched.inflow) || 0;
+      const y = margin.top + (1 - val / maxInflowVal) * (height - margin.top - margin.bottom);
       setHoveredInflowPoint({
-        ...point,
-        index,
-        x: inflowXCoords[index],
-        y: inflowYCoords[index],
-        value: typeof point.inflow === 'number' ? point.inflow : parseFloat(point.inflow) || 0
+        ...matched,
+        x,
+        y,
+        value: val
       });
+    } else {
+      setHoveredInflowPoint(null);
     }
   };
 
@@ -1453,7 +1527,7 @@ function DamDetailPage({ dam, navigate, setView }) {
   };
 
   const handleOutflowMouseMove = (e) => {
-    if (!filteredData || filteredData.length === 0) return;
+    if (filteredData.length === 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clientX = e.clientX - rect.left;
     const chartWidth = rect.width * ((width - margin.left - margin.right) / width);
@@ -1461,16 +1535,30 @@ function DamDetailPage({ dam, navigate, setView }) {
     
     const relativeX = clientX - chartLeft;
     const pct = Math.max(0, Math.min(1, relativeX / chartWidth));
-    const index = Math.round(pct * (filteredData.length - 1));
-    const point = filteredData[index];
-    if (point && outflowXCoords[index] !== undefined && outflowYCoords[index] !== undefined) {
+    
+    const dayOffset = Math.round(pct * (daysCount - 1));
+    const targetDate = new Date(cutoff);
+    targetDate.setDate(cutoff.getDate() + dayOffset);
+    targetDate.setHours(0, 0, 0, 0);
+    
+    const matched = filteredData.find(d => {
+      const t = new Date(d.timestamp);
+      t.setHours(0, 0, 0, 0);
+      return t.getTime() === targetDate.getTime();
+    });
+    
+    if (matched) {
+      const x = margin.left + (dayOffset / (daysCount - 1)) * (width - margin.left - margin.right);
+      const val = typeof matched.outflow === 'number' ? matched.outflow : parseFloat(matched.outflow) || 0;
+      const y = margin.top + (1 - val / maxOutflowVal) * (height - margin.top - margin.bottom);
       setHoveredOutflowPoint({
-        ...point,
-        index,
-        x: outflowXCoords[index],
-        y: outflowYCoords[index],
-        value: typeof point.outflow === 'number' ? point.outflow : parseFloat(point.outflow) || 0
+        ...matched,
+        x,
+        y,
+        value: val
       });
+    } else {
+      setHoveredOutflowPoint(null);
     }
   };
 
@@ -1478,60 +1566,576 @@ function DamDetailPage({ dam, navigate, setView }) {
     setHoveredOutflowPoint(null);
   };
 
+  return (
+    <div style={{
+      background: "linear-gradient(148deg, #051224 0%, #030a15 100%)",
+      border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16,
+      padding: "20px 24px"
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
+        {/* Switch Tabs */}
+        <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10 }}>
+          <button
+            onClick={() => setActiveTab("level")}
+            style={{
+              padding: "6px 14px", borderRadius: 8, border: "none",
+              background: activeTab === "level" ? "rgba(14,165,233,0.15)" : "transparent",
+              color: activeTab === "level" ? "#38bdf8" : "rgba(224,242,254,0.5)",
+              fontSize: 12, fontWeight: activeTab === "level" ? 700 : 500, cursor: "pointer",
+              transition: "all 0.15s"
+            }}
+          >
+            Water Level
+          </button>
+          <button
+            onClick={() => setActiveTab("inflow")}
+            style={{
+              padding: "6px 14px", borderRadius: 8, border: "none",
+              background: activeTab === "inflow" ? "rgba(34,197,94,0.15)" : "transparent",
+              color: activeTab === "inflow" ? "#4ade80" : "rgba(224,242,254,0.5)",
+              fontSize: 12, fontWeight: activeTab === "inflow" ? 700 : 500, cursor: "pointer",
+              transition: "all 0.15s"
+            }}
+          >
+            Inflow
+          </button>
+          <button
+            onClick={() => setActiveTab("outflow")}
+            style={{
+              padding: "6px 14px", borderRadius: 8, border: "none",
+              background: activeTab === "outflow" ? "rgba(239,68,68,0.15)" : "transparent",
+              color: activeTab === "outflow" ? "#f87171" : "rgba(224,242,254,0.5)",
+              fontSize: 12, fontWeight: activeTab === "outflow" ? 700 : 500, cursor: "pointer",
+              transition: "all 0.15s"
+            }}
+          >
+            Outflow
+          </button>
+        </div>
+        
+        {/* Period Selectors */}
+        <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10 }}>
+          {["7D", "30D", "90D"].map(p => (
+            <button
+              key={p}
+              onClick={() => setPeriod(p)}
+              style={{
+                padding: "4px 12px", borderRadius: 8, border: "none",
+                background: period === p ? "rgba(6,182,212,0.15)" : "transparent",
+                color: period === p ? "#67E8F9" : "rgba(224,242,254,0.5)",
+                fontSize: 12, fontWeight: period === p ? 700 : 500, cursor: "pointer",
+                transition: "all 0.15s"
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <div style={{ height: 240, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(224,242,254,0.3)" }}>
+          Loading history trend...
+        </div>
+      ) : filteredData.length === 0 ? (
+        <div style={{ height: 240, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(224,242,254,0.3)" }}>
+          No historical data found.
+        </div>
+      ) : activeTab === "level" ? (
+        /* Water Level Chart */
+        <div style={{ position: "relative" }}>
+          <svg
+            width="100%"
+            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            style={{ overflow: "visible", cursor: "crosshair" }}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
+            <defs>
+              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {/* Grid Lines */}
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+              const val = yMin + ratio * (yMax - yMin);
+              const y = margin.top + (1 - ratio) * (height - margin.top - margin.bottom);
+              return (
+                <g key={i}>
+                  <line
+                    x1={margin.left}
+                    y1={y}
+                    x2={width - margin.right}
+                    y2={y}
+                    stroke="rgba(255,255,255,0.04)"
+                    strokeDasharray="4 4"
+                  />
+                  <text
+                    x={margin.left - 10}
+                    y={y + 4}
+                    textAnchor="end"
+                    fill="rgba(224,242,254,0.35)"
+                    style={{ fontSize: 10, fontFamily: "monospace" }}
+                  >
+                    {val.toFixed(0)}%
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Gradient Area under line */}
+            <polygon
+              points={areaPoints}
+              fill="url(#chartGradient)"
+            />
+
+            {/* Line Path */}
+            <polyline
+              fill="none"
+              stroke="#0ea5e9"
+              strokeWidth="2.5"
+              points={points}
+            />
+
+            {/* Hover vertical line and tooltip marker */}
+            {hoveredPoint && (
+              <g>
+                <line
+                  x1={hoveredPoint.x}
+                  y1={margin.top}
+                  x2={hoveredPoint.x}
+                  y2={height - margin.bottom}
+                  stroke="rgba(56,189,248,0.25)"
+                  strokeWidth="1.5"
+                  strokeDasharray="3 3"
+                />
+                <circle
+                  cx={hoveredPoint.x}
+                  cy={hoveredPoint.y}
+                  r="6"
+                  fill="#0ea5e9"
+                  stroke="#fff"
+                  strokeWidth="2"
+                />
+              </g>
+            )}
+
+            {/* X-Axis Dates */}
+            {filteredData.length > 0 && (
+              <g>
+                <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {cutoff.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+                <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+                <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {latestDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+              </g>
+            )}
+          </svg>
+
+          {/* Tooltip Overlay */}
+          {hoveredPoint && (
+            <div style={{
+              position: "absolute",
+              top: 10,
+              left: hoveredPoint.x > width / 2 ? hoveredPoint.x * 0.9 - 140 : hoveredPoint.x * 1.1 + 10,
+              background: "rgba(11, 22, 42, 0.95)",
+              border: "1px solid rgba(56,189,248,0.25)",
+              borderRadius: 10,
+              padding: "8px 12px",
+              boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
+              pointerEvents: "none",
+              zIndex: 10,
+              animation: "fadeIn 0.15s ease",
+              color: "#fff",
+              fontSize: 12
+            }}>
+              <div style={{ color: "rgba(224,242,254,0.5)", marginBottom: 4, fontSize: 10 }}>
+                {new Date(hoveredPoint.timestamp).toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
+              </div>
+              <div style={{ display: "flex", gap: 12, justifyContent: "space-between" }}>
+                <span>Filled:</span>
+                <strong style={{ color: "#38bdf8" }}>{hoveredPoint.level.toFixed(1)}%</strong>
+              </div>
+              <div style={{ display: "flex", gap: 12, justifyContent: "space-between", marginTop: 2 }}>
+                <span>Storage:</span>
+                <strong style={{ color: "#a5f3fc" }}>{(dam.capacity * hoveredPoint.level / 100).toFixed(2)} TMC</strong>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : activeTab === "inflow" ? (
+        /* Inflow Chart */
+        <div style={{ position: "relative" }}>
+          <svg
+            width="100%"
+            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            style={{ overflow: "visible", cursor: "crosshair" }}
+            onMouseMove={handleInflowMouseMove}
+            onMouseLeave={handleInflowMouseLeave}
+          >
+            <defs>
+              <linearGradient id="inflowGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#22c55e" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#22c55e" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {/* Grid Lines */}
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+              const val = ratio * maxInflowVal;
+              const y = margin.top + (1 - ratio) * (height - margin.top - margin.bottom);
+              return (
+                <g key={i}>
+                  <line
+                    x1={margin.left}
+                    y1={y}
+                    x2={width - margin.right}
+                    y2={y}
+                    stroke="rgba(255,255,255,0.04)"
+                    strokeDasharray="4 4"
+                  />
+                  <text
+                    x={margin.left - 10}
+                    y={y + 4}
+                    textAnchor="end"
+                    fill="rgba(224,242,254,0.35)"
+                    style={{ fontSize: 10, fontFamily: "monospace" }}
+                  >
+                    {fmtK(val)}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Gradient Area under line */}
+            <polygon
+              points={inflowAreaPoints}
+              fill="url(#inflowGrad)"
+            />
+
+            {/* Line Path */}
+            <polyline
+              fill="none"
+              stroke="#22c55e"
+              strokeWidth="2.5"
+              points={inflowPoints}
+            />
+
+            {/* Hover vertical line and tooltip marker */}
+            {hoveredInflowPoint && (
+              <g>
+                <line
+                  x1={hoveredInflowPoint.x}
+                  y1={margin.top}
+                  x2={hoveredInflowPoint.x}
+                  y2={height - margin.bottom}
+                  stroke="rgba(34,197,94,0.25)"
+                  strokeWidth="1.5"
+                  strokeDasharray="3 3"
+                />
+                <circle
+                  cx={hoveredInflowPoint.x}
+                  cy={hoveredInflowPoint.y}
+                  r="6"
+                  fill="#22c55e"
+                  stroke="#fff"
+                  strokeWidth="2"
+                />
+              </g>
+            )}
+
+            {/* X-Axis Dates */}
+            {filteredData.length > 0 && (
+              <g>
+                <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {cutoff.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+                <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+                <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {latestDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+              </g>
+            )}
+          </svg>
+
+          {/* Tooltip Overlay */}
+          {hoveredInflowPoint && (
+            <div style={{
+              position: "absolute",
+              top: 10,
+              left: hoveredInflowPoint.x > width / 2 ? hoveredInflowPoint.x * 0.9 - 140 : hoveredInflowPoint.x * 1.1 + 10,
+              background: "rgba(11, 22, 42, 0.95)",
+              border: "1px solid rgba(34,197,94,0.25)",
+              borderRadius: 10,
+              padding: "8px 12px",
+              boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
+              pointerEvents: "none",
+              zIndex: 10,
+              color: "#fff",
+              fontSize: 12
+            }}>
+              <div style={{ color: "rgba(224,242,254,0.5)", marginBottom: 4, fontSize: 10 }}>
+                {new Date(hoveredInflowPoint.timestamp).toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
+              <div style={{ display: "flex", gap: 12, justifyContent: "space-between" }}>
+                <span>Inflow:</span>
+                <strong style={{ color: "#86efac" }}>{hoveredInflowPoint.value.toLocaleString()} cusecs</strong>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Outflow Chart */
+        <div style={{ position: "relative" }}>
+          <svg
+            width="100%"
+            height={height}
+            viewBox={`0 0 ${width} ${height}`}
+            style={{ overflow: "visible", cursor: "crosshair" }}
+            onMouseMove={handleOutflowMouseMove}
+            onMouseLeave={handleOutflowMouseLeave}
+          >
+            <defs>
+              <linearGradient id="outflowGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            {/* Grid Lines */}
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+              const val = ratio * maxOutflowVal;
+              const y = margin.top + (1 - ratio) * (height - margin.top - margin.bottom);
+              return (
+                <g key={i}>
+                  <line
+                    x1={margin.left}
+                    y1={y}
+                    x2={width - margin.right}
+                    y2={y}
+                    stroke="rgba(255,255,255,0.04)"
+                    strokeDasharray="4 4"
+                  />
+                  <text
+                    x={margin.left - 10}
+                    y={y + 4}
+                    textAnchor="end"
+                    fill="rgba(224,242,254,0.35)"
+                    style={{ fontSize: 10, fontFamily: "monospace" }}
+                  >
+                    {fmtK(val)}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Gradient Area under line */}
+            <polygon
+              points={outflowAreaPoints}
+              fill="url(#outflowGrad)"
+            />
+
+            {/* Line Path */}
+            <polyline
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth="2.5"
+              points={outflowPoints}
+            />
+
+            {/* Hover vertical line and tooltip marker */}
+            {hoveredOutflowPoint && (
+              <g>
+                <line
+                  x1={hoveredOutflowPoint.x}
+                  y1={margin.top}
+                  x2={hoveredOutflowPoint.x}
+                  y2={height - margin.bottom}
+                  stroke="rgba(239,68,68,0.25)"
+                  strokeWidth="1.5"
+                  strokeDasharray="3 3"
+                />
+                <circle
+                  cx={hoveredOutflowPoint.x}
+                  cy={hoveredOutflowPoint.y}
+                  r="6"
+                  fill="#ef4444"
+                  stroke="#fff"
+                  strokeWidth="2"
+                />
+              </g>
+            )}
+
+            {/* X-Axis Dates */}
+            {filteredData.length > 0 && (
+              <g>
+                <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {cutoff.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+                <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+                <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
+                  {latestDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </text>
+              </g>
+            )}
+          </svg>
+
+          {/* Tooltip Overlay */}
+          {hoveredOutflowPoint && (
+            <div style={{
+              position: "absolute",
+              top: 10,
+              left: hoveredOutflowPoint.x > width / 2 ? hoveredOutflowPoint.x * 0.9 - 140 : hoveredOutflowPoint.x * 1.1 + 10,
+              background: "rgba(11, 22, 42, 0.95)",
+              border: "1px solid rgba(239,68,68,0.25)",
+              borderRadius: 10,
+              padding: "8px 12px",
+              boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
+              pointerEvents: "none",
+              zIndex: 10,
+              color: "#fff",
+              fontSize: 12
+            }}>
+              <div style={{ color: "rgba(224,242,254,0.5)", marginBottom: 4, fontSize: 10 }}>
+                {new Date(hoveredOutflowPoint.timestamp).toLocaleDateString(undefined, {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </div>
+              <div style={{ display: "flex", gap: 12, justifyContent: "space-between" }}>
+                <span>Outflow:</span>
+                <strong style={{ color: "#fca5a5" }}>{hoveredOutflowPoint.value.toLocaleString()} cusecs</strong>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ===================== DAM DETAIL PAGE =====================
+function DamDetailPage({ dam, navigate, setView, isDirectEntry }) {
+  const [shareCopied, setShareCopied] = useState(false);
+  const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
+  
+  const handleShare = (e) => {
+    e.preventDefault();
+    const shareUrl = `${window.location.origin}/dam/${getDamSlug(dam.name)}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 2000);
+      })
+      .catch((err) => {
+        console.error("Could not copy text: ", err);
+      });
+  };
+
   const netFlowCusecs = (dam.inflow || 0) - (dam.outflow || 0);
   const netFlowTmcPerDay = netFlowCusecs * 0.0000864;
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px", animation: "fadeSlideUp 0.5s ease" }}>
-      <a 
-        href={dam.state ? `/state/${getStateSlug(dam.state)}` : "/"}
-        onClick={(e) => {
-          e.preventDefault();
-          navigate(dam.state ? `/state/${getStateSlug(dam.state)}` : "/");
-        }}
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          textDecoration: "none",
-          background: "transparent", border: "none", color: "rgba(224,242,254,0.6)",
-          fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 20,
-          padding: "6px 12px", borderRadius: 8, transition: "all 0.2s",
-          border: "1px solid rgba(255,255,255,0.06)",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
-        onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
-      >
-        &larr; Back to {dam.state || "Karnataka"} Reservoirs
-      </a>
+      {/* Action Header: Back + Share */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
+        <a 
+          href={dam.state ? `/state/${getStateSlug(dam.state)}` : "/"}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(dam.state ? `/state/${getStateSlug(dam.state)}` : "/");
+          }}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            textDecoration: "none",
+            background: "transparent", border: "none", color: "rgba(224,242,254,0.6)",
+            fontSize: 14, fontWeight: 600, cursor: "pointer",
+            padding: "6px 12px", borderRadius: 8, transition: "all 0.2s",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
+        >
+          &larr; Back to {dam.state || "Karnataka"} Reservoirs
+        </a>
+
+        <button 
+          onClick={handleShare}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.2)",
+            color: "#67e8f9", fontSize: 13, fontWeight: 600, cursor: "pointer",
+            padding: "6px 14px", borderRadius: 8, transition: "all 0.2s",
+            outline: "none"
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = "rgba(6, 182, 212, 0.15)"; e.currentTarget.style.borderColor = "rgba(6, 182, 212, 0.35)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)"; e.currentTarget.style.borderColor = "rgba(6, 182, 212, 0.2)"; }}
+        >
+          {shareCopied ? (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Copied!
+            </>
+          ) : (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+              Share Dam Link
+            </>
+          )}
+        </button>
+      </div>
 
       {/* Main Grid Layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         
         {/* Top Header Card */}
-        <div className="dam-detail-header" style={{ flexDirection: "column", alignItems: "flex-start", gap: 16 }}>
+        <div className="dam-detail-header" style={{ flexDirection: "column", alignItems: "flex-start", gap: 16, padding: "20px 24px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-                <h1 style={{ fontSize: "clamp(20px, 4.5vw, 28px)", fontWeight: 900, color: "#fff", margin: 0 }}>
+                <h1 style={{ fontSize: "clamp(20px, 4.5vw, 26px)", fontWeight: 900, color: "#fff", margin: 0 }}>
                   {dam.name} Water Level Today
                 </h1>
               </div>
-              <div style={{ fontSize: 14, color: "rgba(224,242,254,0.5)" }}>
+              <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)" }}>
                 {dam.river} River &middot; {dam.district} District, {dam.state || "Karnataka"} &middot; Live Reservoir Storage Status
               </div>
             </div>
             
-            <div style={{ display: "flex", gap: 16 }}>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               {netFlowCusecs !== 0 && (
                 <div style={{
                   display: "flex", flexDirection: "column", alignItems: "flex-end",
                   background: netFlowCusecs > 0 ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)",
                   border: `1px solid ${netFlowCusecs > 0 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"}`,
-                  padding: "8px 16px", borderRadius: 12
+                  padding: "6px 12px", borderRadius: 10
                 }}>
-                  <span style={{ fontSize: 10, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
+                  <span style={{ fontSize: 9, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 0.5 }}>
                     Daily Accumulation
                   </span>
-                  <span style={{ fontSize: 16, fontWeight: 800, color: netFlowCusecs > 0 ? "#4ade80" : "#f87171" }}>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: netFlowCusecs > 0 ? "#4ade80" : "#f87171" }}>
                     {netFlowCusecs > 0 ? "+" : ""}{netFlowTmcPerDay.toFixed(3)} TMC/day
                   </span>
                 </div>
@@ -1540,42 +2144,56 @@ function DamDetailPage({ dam, navigate, setView }) {
               <div style={{
                 display: "flex", flexDirection: "column", alignItems: "flex-end",
                 background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.15)",
-                padding: "8px 16px", borderRadius: 12
+                padding: "6px 12px", borderRadius: 10
               }}>
-                <span style={{ fontSize: 10, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
+                <span style={{ fontSize: 9, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 0.5 }}>
                   Storage Status
                 </span>
-                <span style={{ fontSize: 16, fontWeight: 800, color: "#38bdf8" }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: "#38bdf8" }}>
                   {safeLevel.toFixed(1)}% Full
                 </span>
               </div>
             </div>
           </div>
-
-          {/* SEO Paragraph Block */}
-          <div style={{
-            background: "rgba(6, 182, 212, 0.03)",
-            border: "1px solid rgba(6, 182, 212, 0.1)",
-            borderRadius: 12,
-            padding: "16px 20px",
-            fontSize: 13,
-            lineHeight: 1.6,
-            color: "rgba(224, 242, 254, 0.65)",
-            width: "100%",
-            boxSizing: "border-box"
-          }}>
-            Welcome to the live daily report for the <strong>{dam.name.replace(/\s*\(.*\)\s*/g, "").trim()} water level today</strong>. Located in the <strong>{dam.district}</strong> district of <strong>{dam.state || "Karnataka"}</strong> on the <strong>{dam.river} River</strong> system, this reservoir plays a key role in regional agricultural irrigation and flood control. Today's telemetry monitoring indicates the storage is at <strong>{safeLevel.toFixed(1)}%</strong> of its maximum capacity. Monitor the charts below for live daily inflows and outflows in cusecs, historical capacity trends in TMC, and accumulation analytics to stay informed.
-          </div>
         </div>
 
-        {/* Desktop Split Layout */}
-        <div className="dam-detail-grid">
-          
-          {/* LEFT COLUMN: Graph & KPI Grid */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            
+        {/* 1. VISUALS & KEY STATS (At the top! Using a responsive grid layout) */}
+        <div className="dam-top-grid">
+          {/* Column A: Interactive Wave simulation */}
+          <div style={{
+            background: "linear-gradient(148deg, #051224 0%, #030a15 100%)",
+            border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16,
+            padding: "20px 24px", display: "flex", flexDirection: "column", gap: 14
+          }}>
+            <div>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: "#fff", margin: 0 }}>Visual Simulation</h3>
+              <p style={{ fontSize: 11, color: "rgba(224,242,254,0.4)", margin: "2px 0 0 0" }}>
+                Interactive outflow & wave velocity model
+              </p>
+            </div>
+
+            <div style={{ width: "100%", borderRadius: 12, overflow: "hidden" }}>
+              <WaterViz level={safeLevel} outflow={dam.outflow} capacity={dam.capacity} active={true} />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                <span style={{ color: "rgba(224,242,254,0.4)" }}>Simulation Status:</span>
+                <span style={{ color: "#34d399", fontWeight: 600 }}>Active</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                <span style={{ color: "rgba(224,242,254,0.4)" }}>Discharge Rate:</span>
+                <span style={{ color: "#fb7171", fontWeight: 600, fontFamily: "monospace" }}>
+                  {dam.outflow !== null ? `${dam.outflow.toLocaleString()} cusecs` : "0 cusecs"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Column B: KPIs & Specs */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             {/* KPI Cards Grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
               {[
                 { label: "Current Level", value: `${safeLevel.toFixed(1)}%`, sub: `${(dam.capacity * safeLevel / 100).toFixed(2)} TMC`, color: "#38bdf8" },
                 { label: "Total Capacity", value: `${dam.capacity} TMC`, sub: "Full Reservoir", color: "#a5f3fc" },
@@ -1584,16 +2202,16 @@ function DamDetailPage({ dam, navigate, setView }) {
               ].map((kpi, i) => (
                 <div key={i} style={{
                   background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)",
-                  borderRadius: 14, padding: 16, display: "flex", flexDirection: "column"
+                  borderRadius: 12, padding: "12px 16px", display: "flex", flexDirection: "column"
                 }}>
-                  <span style={{ fontSize: 11, color: "rgba(224,242,254,0.38)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>
+                  <span style={{ fontSize: 10, color: "rgba(224,242,254,0.38)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 }}>
                     {kpi.label}
                   </span>
-                  <span style={{ fontSize: 22, fontWeight: 800, color: kpi.color, fontFamily: "monospace", lineHeight: 1.1 }}>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontFamily: "monospace", lineHeight: 1.1 }}>
                     {kpi.value}
                   </span>
                   {kpi.sub && (
-                    <span style={{ fontSize: 11, color: "rgba(224,242,254,0.3)", marginTop: 4 }}>
+                    <span style={{ fontSize: 10, color: "rgba(224,242,254,0.3)", marginTop: 4 }}>
                       {kpi.sub}
                     </span>
                   )}
@@ -1601,580 +2219,103 @@ function DamDetailPage({ dam, navigate, setView }) {
               ))}
             </div>
 
-            {/* Custom SVG Chart Card */}
-            <div style={{
-              background: "linear-gradient(148deg, #051224 0%, #030a15 100%)",
-              border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16,
-              padding: "20px 24px"
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
-                {/* Switch Tabs */}
-                <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10 }}>
-                  <button
-                    onClick={() => setActiveTab("level")}
-                    style={{
-                      padding: "6px 14px", borderRadius: 8, border: "none",
-                      background: activeTab === "level" ? "rgba(14,165,233,0.15)" : "transparent",
-                      color: activeTab === "level" ? "#38bdf8" : "rgba(224,242,254,0.5)",
-                      fontSize: 12, fontWeight: activeTab === "level" ? 700 : 500, cursor: "pointer",
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    Water Level
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("inflow")}
-                    style={{
-                      padding: "6px 14px", borderRadius: 8, border: "none",
-                      background: activeTab === "inflow" ? "rgba(34,197,94,0.15)" : "transparent",
-                      color: activeTab === "inflow" ? "#4ade80" : "rgba(224,242,254,0.5)",
-                      fontSize: 12, fontWeight: activeTab === "inflow" ? 700 : 500, cursor: "pointer",
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    Inflow
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("outflow")}
-                    style={{
-                      padding: "6px 14px", borderRadius: 8, border: "none",
-                      background: activeTab === "outflow" ? "rgba(239,68,68,0.15)" : "transparent",
-                      color: activeTab === "outflow" ? "#f87171" : "rgba(224,242,254,0.5)",
-                      fontSize: 12, fontWeight: activeTab === "outflow" ? 700 : 500, cursor: "pointer",
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    Outflow
-                  </button>
-                </div>
-                
-                {/* Period Selectors */}
-                <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10 }}>
-                  {["7D", "30D", "90D"].map(p => (
-                    <button
-                      key={p}
-                      onClick={() => setPeriod(p)}
-                      style={{
-                        padding: "4px 12px", borderRadius: 8, border: "none",
-                        background: period === p ? "rgba(6,182,212,0.15)" : "transparent",
-                        color: period === p ? "#67E8F9" : "rgba(224,242,254,0.5)",
-                        fontSize: 12, fontWeight: period === p ? 700 : 500, cursor: "pointer",
-                        transition: "all 0.15s"
-                      }}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {loading ? (
-                <div style={{ height: 240, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(224,242,254,0.3)" }}>
-                  Loading history trend...
-                </div>
-              ) : filteredData.length === 0 ? (
-                <div style={{ height: 240, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(224,242,254,0.3)" }}>
-                  No historical data found.
-                </div>
-              ) : activeTab === "level" ? (
-                /* Water Level Chart */
-                <div style={{ position: "relative" }}>
-                  <svg
-                    width="100%"
-                    height={height}
-                    viewBox={`0 0 ${width} ${height}`}
-                    style={{ overflow: "visible", cursor: "crosshair" }}
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    <defs>
-                      <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-
-                    {/* Grid Lines */}
-                    {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
-                      const val = yMin + ratio * (yMax - yMin);
-                      const y = margin.top + (1 - ratio) * (height - margin.top - margin.bottom);
-                      return (
-                        <g key={i}>
-                          <line
-                            x1={margin.left}
-                            y1={y}
-                            x2={width - margin.right}
-                            y2={y}
-                            stroke="rgba(255,255,255,0.04)"
-                            strokeDasharray="4 4"
-                          />
-                          <text
-                            x={margin.left - 10}
-                            y={y + 4}
-                            textAnchor="end"
-                            fill="rgba(224,242,254,0.35)"
-                            style={{ fontSize: 10, fontFamily: "monospace" }}
-                          >
-                            {val.toFixed(0)}%
-                          </text>
-                        </g>
-                      );
-                    })}
-
-                    {/* Gradient Area under line */}
-                    <polygon
-                      points={areaPoints}
-                      fill="url(#chartGradient)"
-                    />
-
-                    {/* Line Path */}
-                    <polyline
-                      fill="none"
-                      stroke="#0ea5e9"
-                      strokeWidth="2.5"
-                      points={points}
-                    />
-
-                    {/* Hover vertical line and tooltip marker */}
-                    {hoveredPoint && (
-                      <g>
-                        <line
-                          x1={hoveredPoint.x}
-                          y1={margin.top}
-                          x2={hoveredPoint.x}
-                          y2={height - margin.bottom}
-                          stroke="rgba(56,189,248,0.25)"
-                          strokeWidth="1.5"
-                          strokeDasharray="3 3"
-                        />
-                        <circle
-                          cx={hoveredPoint.x}
-                          cy={hoveredPoint.y}
-                          r="6"
-                          fill="#0ea5e9"
-                          stroke="#fff"
-                          strokeWidth="2"
-                        />
-                      </g>
-                    )}
-
-                    {/* X-Axis Dates */}
-                    {filteredData.length > 0 && (
-                      <g>
-                        <text
-                          x={margin.left}
-                          y={height - 12}
-                          fill="rgba(224,242,254,0.3)"
-                          style={{ fontSize: 10 }}
-                        >
-                          {new Date(filteredData[0].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                        <text
-                          x={margin.left + (width - margin.left - margin.right) / 2}
-                          y={height - 12}
-                          textAnchor="middle"
-                          fill="rgba(224,242,254,0.3)"
-                          style={{ fontSize: 10 }}
-                        >
-                          {new Date(filteredData[Math.floor(filteredData.length / 2)].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                        <text
-                          x={width - margin.right}
-                          y={height - 12}
-                          textAnchor="end"
-                          fill="rgba(224,242,254,0.3)"
-                          style={{ fontSize: 10 }}
-                        >
-                          {new Date(filteredData[filteredData.length - 1].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                      </g>
-                    )}
-                  </svg>
-
-                  {/* Tooltip Overlay */}
-                  {hoveredPoint && (
-                    <div style={{
-                      position: "absolute",
-                      top: 10,
-                      left: hoveredPoint.x > width / 2 ? hoveredPoint.x * 0.9 - 140 : hoveredPoint.x * 1.1 + 10,
-                      background: "rgba(11, 22, 42, 0.95)",
-                      border: "1px solid rgba(56,189,248,0.25)",
-                      borderRadius: 10,
-                      padding: "8px 12px",
-                      boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
-                      pointerEvents: "none",
-                      zIndex: 10,
-                      animation: "fadeIn 0.15s ease",
-                      color: "#fff",
-                      fontSize: 12
-                    }}>
-                      <div style={{ color: "rgba(224,242,254,0.5)", marginBottom: 4, fontSize: 10 }}>
-                        {new Date(hoveredPoint.timestamp).toLocaleDateString(undefined, {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                      </div>
-                      <div style={{ display: "flex", gap: 12, justifyContent: "space-between" }}>
-                        <span>Filled:</span>
-                        <strong style={{ color: "#38bdf8" }}>{hoveredPoint.level.toFixed(1)}%</strong>
-                      </div>
-                      <div style={{ display: "flex", gap: 12, justifyContent: "space-between", marginTop: 2 }}>
-                        <span>Storage:</span>
-                        <strong style={{ color: "#a5f3fc" }}>{(dam.capacity * hoveredPoint.level / 100).toFixed(2)} TMC</strong>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : activeTab === "inflow" ? (
-                /* Inflow Chart */
-                <div style={{ position: "relative" }}>
-                  <svg
-                    width="100%"
-                    height={height}
-                    viewBox={`0 0 ${width} ${height}`}
-                    style={{ overflow: "visible", cursor: "crosshair" }}
-                    onMouseMove={handleInflowMouseMove}
-                    onMouseLeave={handleInflowMouseLeave}
-                  >
-                    <defs>
-                      <linearGradient id="inflowGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#22c55e" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#22c55e" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-
-                    {/* Grid Lines */}
-                    {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
-                      const val = ratio * maxInflowVal;
-                      const y = margin.top + (1 - ratio) * (height - margin.top - margin.bottom);
-                      return (
-                        <g key={i}>
-                          <line
-                            x1={margin.left}
-                            y1={y}
-                            x2={width - margin.right}
-                            y2={y}
-                            stroke="rgba(255,255,255,0.04)"
-                            strokeDasharray="4 4"
-                          />
-                          <text
-                            x={margin.left - 10}
-                            y={y + 4}
-                            textAnchor="end"
-                            fill="rgba(224,242,254,0.35)"
-                            style={{ fontSize: 10, fontFamily: "monospace" }}
-                          >
-                            {fmtK(val)}
-                          </text>
-                        </g>
-                      );
-                    })}
-
-                    {/* Gradient Area under line */}
-                    <polygon
-                      points={inflowAreaPoints}
-                      fill="url(#inflowGrad)"
-                    />
-
-                    {/* Line Path */}
-                    <polyline
-                      fill="none"
-                      stroke="#22c55e"
-                      strokeWidth="2.5"
-                      points={inflowPoints}
-                    />
-
-                    {/* Hover vertical line and tooltip marker */}
-                    {hoveredInflowPoint && (
-                      <g>
-                        <line
-                          x1={hoveredInflowPoint.x}
-                          y1={margin.top}
-                          x2={hoveredInflowPoint.x}
-                          y2={height - margin.bottom}
-                          stroke="rgba(34,197,94,0.25)"
-                          strokeWidth="1.5"
-                          strokeDasharray="3 3"
-                        />
-                        <circle
-                          cx={hoveredInflowPoint.x}
-                          cy={hoveredInflowPoint.y}
-                          r="6"
-                          fill="#22c55e"
-                          stroke="#fff"
-                          strokeWidth="2"
-                        />
-                      </g>
-                    )}
-
-                    {/* X-Axis Dates */}
-                    {filteredData.length > 0 && (
-                      <g>
-                        <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                          {new Date(filteredData[0].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                        <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                          {new Date(filteredData[Math.floor(filteredData.length / 2)].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                        <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                          {new Date(filteredData[filteredData.length - 1].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                      </g>
-                    )}
-                  </svg>
-
-                  {/* Tooltip Overlay */}
-                  {hoveredInflowPoint && (
-                    <div style={{
-                      position: "absolute",
-                      top: 10,
-                      left: hoveredInflowPoint.x > width / 2 ? hoveredInflowPoint.x * 0.9 - 140 : hoveredInflowPoint.x * 1.1 + 10,
-                      background: "rgba(11, 22, 42, 0.95)",
-                      border: "1px solid rgba(34,197,94,0.25)",
-                      borderRadius: 10,
-                      padding: "8px 12px",
-                      boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
-                      pointerEvents: "none",
-                      zIndex: 10,
-                      color: "#fff",
-                      fontSize: 12
-                    }}>
-                      <div style={{ color: "rgba(224,242,254,0.5)", marginBottom: 4, fontSize: 10 }}>
-                        {new Date(hoveredInflowPoint.timestamp).toLocaleDateString(undefined, {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
-                      </div>
-                      <div style={{ display: "flex", gap: 12, justifyContent: "space-between" }}>
-                        <span>Inflow:</span>
-                        <strong style={{ color: "#86efac" }}>{hoveredInflowPoint.value.toLocaleString()} cusecs</strong>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* Outflow Chart */
-                <div style={{ position: "relative" }}>
-                  <svg
-                    width="100%"
-                    height={height}
-                    viewBox={`0 0 ${width} ${height}`}
-                    style={{ overflow: "visible", cursor: "crosshair" }}
-                    onMouseMove={handleOutflowMouseMove}
-                    onMouseLeave={handleOutflowMouseLeave}
-                  >
-                    <defs>
-                      <linearGradient id="outflowGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#ef4444" stopOpacity="0.25" />
-                        <stop offset="100%" stopColor="#ef4444" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-
-                    {/* Grid Lines */}
-                    {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
-                      const val = ratio * maxOutflowVal;
-                      const y = margin.top + (1 - ratio) * (height - margin.top - margin.bottom);
-                      return (
-                        <g key={i}>
-                          <line
-                            x1={margin.left}
-                            y1={y}
-                            x2={width - margin.right}
-                            y2={y}
-                            stroke="rgba(255,255,255,0.04)"
-                            strokeDasharray="4 4"
-                          />
-                          <text
-                            x={margin.left - 10}
-                            y={y + 4}
-                            textAnchor="end"
-                            fill="rgba(224,242,254,0.35)"
-                            style={{ fontSize: 10, fontFamily: "monospace" }}
-                          >
-                            {fmtK(val)}
-                          </text>
-                        </g>
-                      );
-                    })}
-
-                    {/* Gradient Area under line */}
-                    <polygon
-                      points={outflowAreaPoints}
-                      fill="url(#outflowGrad)"
-                    />
-
-                    {/* Line Path */}
-                    <polyline
-                      fill="none"
-                      stroke="#ef4444"
-                      strokeWidth="2.5"
-                      points={outflowPoints}
-                    />
-
-                    {/* Hover vertical line and tooltip marker */}
-                    {hoveredOutflowPoint && (
-                      <g>
-                        <line
-                          x1={hoveredOutflowPoint.x}
-                          y1={margin.top}
-                          x2={hoveredOutflowPoint.x}
-                          y2={height - margin.bottom}
-                          stroke="rgba(239,68,68,0.25)"
-                          strokeWidth="1.5"
-                          strokeDasharray="3 3"
-                        />
-                        <circle
-                          cx={hoveredOutflowPoint.x}
-                          cy={hoveredOutflowPoint.y}
-                          r="6"
-                          fill="#ef4444"
-                          stroke="#fff"
-                          strokeWidth="2"
-                        />
-                      </g>
-                    )}
-
-                    {/* X-Axis Dates */}
-                    {filteredData.length > 0 && (
-                      <g>
-                        <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                          {new Date(filteredData[0].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                        <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                          {new Date(filteredData[Math.floor(filteredData.length / 2)].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                        <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                          {new Date(filteredData[filteredData.length - 1].timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                        </text>
-                      </g>
-                    )}
-                  </svg>
-
-                  {/* Tooltip Overlay */}
-                  {hoveredOutflowPoint && (
-                    <div style={{
-                      position: "absolute",
-                      top: 10,
-                      left: hoveredOutflowPoint.x > width / 2 ? hoveredOutflowPoint.x * 0.9 - 140 : hoveredOutflowPoint.x * 1.1 + 10,
-                      background: "rgba(11, 22, 42, 0.95)",
-                      border: "1px solid rgba(239,68,68,0.25)",
-                      borderRadius: 10,
-                      padding: "8px 12px",
-                      boxShadow: "0 10px 25px rgba(0,0,0,0.6)",
-                      pointerEvents: "none",
-                      zIndex: 10,
-                      color: "#fff",
-                      fontSize: 12
-                    }}>
-                      <div style={{ color: "rgba(224,242,254,0.5)", marginBottom: 4, fontSize: 10 }}>
-                        {new Date(hoveredOutflowPoint.timestamp).toLocaleDateString(undefined, {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
-                      </div>
-                      <div style={{ display: "flex", gap: 12, justifyContent: "space-between" }}>
-                        <span>Outflow:</span>
-                        <strong style={{ color: "#fca5a5" }}>{hoveredOutflowPoint.value.toLocaleString()} cusecs</strong>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-          </div>
-
-          {/* RIGHT COLUMN: Animation & Dam Details */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            
-            {/* WaterViz Card */}
-            <div style={{
-              background: "linear-gradient(148deg, #051224 0%, #030a15 100%)",
-              border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16,
-              padding: "20px 24px", display: "flex", flexDirection: "column", gap: 14
-            }}>
-              <div>
-                <h3 style={{ fontSize: 15, fontWeight: 800, color: "#fff", margin: 0 }}>Visual Simulation</h3>
-                <p style={{ fontSize: 11, color: "rgba(224,242,254,0.4)", margin: "2px 0 0 0" }}>
-                  Interactive outflow & wave velocity model
-                </p>
-              </div>
-
-              {/* Responsive Container for WaterViz */}
-              <div style={{ width: "100%", borderRadius: 12, overflow: "hidden" }}>
-                <WaterViz level={safeLevel} outflow={dam.outflow} capacity={dam.capacity} active={true} />
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                  <span style={{ color: "rgba(224,242,254,0.4)" }}>Simulation Status:</span>
-                  <span style={{ color: "#34d399", fontWeight: 600 }}>Active</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                  <span style={{ color: "rgba(224,242,254,0.4)" }}>Discharge Rate:</span>
-                  <span style={{ color: "#fb7171", fontWeight: 600, fontFamily: "monospace" }}>
-                    {dam.outflow !== null ? `${dam.outflow.toLocaleString()} cusecs` : "0 cusecs"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Dam Specifications & Meta Card */}
+            {/* Specifications Card */}
             <div style={{
               background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
               borderRadius: 16, padding: "20px 24px"
             }}>
-              <h3 style={{ fontSize: 15, fontWeight: 800, color: "#fff", margin: "0 0 16px 0" }}>Reservoir Specifications</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 800, color: "#fff", margin: "0 0 14px 0" }}>Reservoir Specifications</h3>
               
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {[
                   { label: "River System", value: dam.river },
                   { label: "District Location", value: dam.district },
                   { label: "State", value: dam.state || "Karnataka" },
-                  { label: "Design Capacity", value: `${dam.capacity} TMC (Thousand Million Cubic feet)` }
+                  { label: "Design Capacity", value: `${dam.capacity} TMC` }
                 ].map((item, i) => (
                   <div key={i} style={{
                     display: "flex", justifyContent: "space-between", alignItems: "center",
-                    paddingBottom: 8, borderBottom: i === 3 ? "none" : "1px solid rgba(255,255,255,0.04)"
+                    paddingBottom: 6, borderBottom: i === 3 ? "none" : "1px solid rgba(255,255,255,0.04)"
                   }}>
                     <span style={{ fontSize: 12, color: "rgba(224,242,254,0.4)" }}>{item.label}</span>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: item.valueColor || "#fff", textAlign: "right" }}>{item.value}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#fff", textAlign: "right" }}>{item.value}</span>
                   </div>
                 ))}
               </div>
-
-              {/* Net Gain/Loss Assessment Summary */}
-              <div style={{
-                marginTop: 20, padding: 14, borderRadius: 12,
-                background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.03)"
-              }}>
-                <div style={{ fontSize: 11, color: "rgba(224,242,254,0.35)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>
-                  Flow Dynamics Analysis
-                </div>
-                <div style={{ fontSize: 12, lineHeight: 1.5, color: "rgba(224,242,254,0.7)" }}>
-                  {netFlowCusecs > 0 ? (
-                    <span>
-                      The reservoir is experiencing a net positive accumulation. Water inflow is exceeding outflow by <strong style={{ color: "#4ade80" }}>{netFlowCusecs.toLocaleString()} cusecs</strong>, increasing overall storage at a rate of <strong style={{ color: "#4ade80" }}>{netFlowTmcPerDay.toFixed(3)} TMC</strong> per 24 hours.
-                    </span>
-                  ) : netFlowCusecs < 0 ? (
-                    <span>
-                      The reservoir is currently depleting. Outflow discharges exceed water inflow by <strong style={{ color: "#f87171" }}>{Math.abs(netFlowCusecs).toLocaleString()} cusecs</strong>, resulting in a daily net reduction of <strong style={{ color: "#f87171" }}>{Math.abs(netFlowTmcPerDay).toFixed(3)} TMC</strong> in storage volume.
-                    </span>
-                  ) : (
-                    <span>
-                      The reservoir flow is currently in equilibrium. Inflow and outflow rates are balanced at <strong style={{ color: "#fff" }}>{dam.inflow?.toLocaleString() || 0} cusecs</strong>, keeping storage volume stable.
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
+          </div>
+        </div>
 
+        {/* 2. HISTORICAL CHARTS SECTION (Only visible if NOT a direct entry) */}
+        {!isDirectEntry ? (
+          <HistoricalCharts dam={dam} safeLevel={safeLevel} />
+        ) : (
+          <div style={{
+            background: "rgba(255,255,255,0.015)", border: "1px dashed rgba(255,255,255,0.08)",
+            borderRadius: 16, padding: "24px 20px", display: "flex", flexDirection: "column",
+            alignItems: "center", gap: 8, textAlign: "center"
+          }}>
+            <span style={{ fontSize: 20 }}>📊</span>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(224,242,254,0.8)" }}>Historical trends restricted via shared link</div>
+            <div style={{ fontSize: 11, color: "rgba(224,242,254,0.4)", maxWidth: 360 }}>
+              To view full historical charts, daily inflow/outflow curves, and trends, please visit our main dashboard.
+            </div>
+            <a 
+              href="/"
+              onClick={(e) => { e.preventDefault(); navigate("/"); }}
+              style={{
+                marginTop: 8, fontSize: 12, color: "#38bdf8", fontWeight: 700, textDecoration: "none",
+                background: "rgba(56,189,248,0.08)", padding: "6px 14px", borderRadius: 8,
+                border: "1px solid rgba(56,189,248,0.15)", transition: "all 0.2s"
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(56,189,248,0.15)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
+            >
+              Go to Main Dashboard
+            </a>
+          </div>
+        )}
+
+        {/* 3. VERBOSE DETAILS & ANALYSIS (Placed at the bottom for SEO & deep analysis) */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
+          {/* SEO Paragraph Card */}
+          <div style={{
+            background: "rgba(6, 182, 212, 0.03)",
+            border: "1px solid rgba(6, 182, 212, 0.1)",
+            borderRadius: 14,
+            padding: "16px 20px",
+            fontSize: 13,
+            lineHeight: 1.6,
+            color: "rgba(224, 242, 254, 0.65)",
+            boxSizing: "border-box"
+          }}>
+            Welcome to the live daily report for the <strong>{dam.name.replace(/\s*\(.*\)\s*/g, "").trim()} water level today</strong>. Located in the <strong>{dam.district}</strong> district of <strong>{dam.state || "Karnataka"}</strong> on the <strong>{dam.river} River</strong> system, this reservoir plays a key role in regional agricultural irrigation and flood control. Today's telemetry monitoring indicates the storage is at <strong>{safeLevel.toFixed(1)}%</strong> of its maximum capacity.
           </div>
 
+          {/* Flow Dynamics Analysis Card */}
+          <div style={{
+            background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)",
+            borderRadius: 14, padding: "16px 20px"
+          }}>
+            <div style={{ fontSize: 11, color: "rgba(224,242,254,0.35)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>
+              Flow Dynamics Analysis
+            </div>
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "rgba(224,242,254,0.7)" }}>
+              {netFlowCusecs > 0 ? (
+                <span>
+                  The reservoir is experiencing a net positive accumulation. Water inflow is exceeding outflow by <strong style={{ color: "#4ade80" }}>{netFlowCusecs.toLocaleString()} cusecs</strong>, increasing overall storage at a rate of <strong style={{ color: "#4ade80" }}>{netFlowTmcPerDay.toFixed(3)} TMC</strong> per 24 hours.
+                </span>
+              ) : netFlowCusecs < 0 ? (
+                <span>
+                  The reservoir is currently depleting. Outflow discharges exceed water inflow by <strong style={{ color: "#f87171" }}>{Math.abs(netFlowCusecs).toLocaleString()} cusecs</strong>, resulting in a daily net reduction of <strong style={{ color: "#f87171" }}>{Math.abs(netFlowTmcPerDay).toFixed(3)} TMC</strong> in storage volume.
+                </span>
+              ) : (
+                <span>
+                  The reservoir flow is currently in equilibrium. Inflow and outflow rates are balanced at <strong style={{ color: "#fff" }}>{dam.inflow?.toLocaleString() || 0} cusecs</strong>, keeping storage volume stable.
+                </span>
+              )}
+            </div>
+          </div>
         </div>
 
       </div>
@@ -2524,6 +2665,7 @@ function useRouter() {
 // ===================== MAIN APP =====================
 export default function App() {
   const { path, navigate } = useRouter();
+  const [isDirectEntry, setIsDirectEntry] = useState(window.location.pathname.startsWith("/dam/"));
   const [view, setView] = useState("main");
   const [selectedDam, setSelectedDam] = useState(null);
   const [showPinModal, setShowPinModal] = useState(false);
@@ -2538,6 +2680,12 @@ export default function App() {
   const [searchQuery,setSearchQuery] = useState("");
   const [goStats,setGoStats] = useState(false);
   const statsRef = useRef(null);
+
+  useEffect(() => {
+    if (isDirectEntry && !path.startsWith("/dam/")) {
+      setIsDirectEntry(false);
+    }
+  }, [path, isDirectEntry]);
 
   useEffect(() => {
     const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
@@ -2859,6 +3007,17 @@ export default function App() {
             grid-template-columns: 1fr;
           }
         }
+        .dam-top-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+          gap: 24px;
+          align-items: start;
+        }
+        @media (max-width: 900px) {
+          .dam-top-grid {
+            grid-template-columns: 1fr;
+          }
+        }
         .dam-detail-header {
           background: linear-gradient(135deg, #091a2f 0%, #040c17 100%);
           border: 1px solid rgba(255,255,255,0.08);
@@ -2973,7 +3132,7 @@ export default function App() {
           {/* Main content body */}
           <div style={{ flexGrow: 1 }}>
             {view === "detail" && selectedDam ? (
-              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} />
+              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} isDirectEntry={isDirectEntry} />
             ) : view === "about" ? (
               <AboutUsPage navigate={navigate} setView={setView} />
             ) : view === "contact" ? (

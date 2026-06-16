@@ -1,6 +1,10 @@
 {
   "cleanUrls": true,
+  "framework": "vite",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "devCommand": "vite --port $PORT",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/((?!api/|assets/|src/|node_modules/|@).*)" , "destination": "/index.html" }
   ]
 }

@@ -17,6 +17,12 @@ if (!uri) {
     client = new MongoClient(uri);
     clientPromise = client.connect();
   }
+  // Prevent unhandled promise rejection process crash in Node.js v26+
+  if (clientPromise) {
+    clientPromise.catch((err) => {
+      console.error("MongoDB background connection failed:", err.message);
+    });
+  }
 }
 
 export default async function getDb() {
