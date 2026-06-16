@@ -26,8 +26,33 @@ def scrape_bbmb():
         with open(pdf_filename, "wb") as f:
             f.write(pdf_data)
             
-        # Parse PDF using pypdf
-        import pypdf
+        # Parse PDF using pypdf (with dynamic fallback install if missing)
+        try:
+            import pypdf
+        except ImportError:
+            import subprocess
+            import sys
+            print("pypdf is missing. Attempting dynamic installation...")
+            try:
+                # Try targeting /tmp first (useful in serverless environments like AWS Lambda / Vercel)
+                tmp_dir = "/tmp/python-packages"
+                os.makedirs(tmp_dir, exist_ok=True)
+                subprocess.check_call([sys.executable, "-m", "pip", "install", "--target", tmp_dir, "pypdf"])
+                if tmp_dir not in sys.path:
+                    sys.path.append(tmp_dir)
+                import pypdf
+            except Exception as e:
+                # Try standard pip install as fallback
+                try:
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", "pypdf"])
+                    import pypdf
+                except Exception as e2:
+                    print(f"Failed to install pypdf: {e2}")
+                    pypdf = None
+
+        if pypdf is None:
+            raise ImportError("The 'pypdf' package is required to parse the BBMB PDF, but it is not installed and could not be dynamically installed.")
+
         reader = pypdf.PdfReader(pdf_filename)
         text = reader.pages[0].extract_text()
         
