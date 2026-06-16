@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "framework": "vite",
+  "outputDirectory": "dist",
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "devCommand": "vite --port $PORT",
