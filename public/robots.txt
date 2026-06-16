@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /dam/
+Allow: /state/
+Allow: /zone/
+Disallow: /analytics
+Disallow: /api/
+
+Sitemap: https://damtoday.com/sitemap.xml

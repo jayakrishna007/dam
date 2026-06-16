@@ -2088,7 +2088,7 @@ function HistoricalCharts({ dam, safeLevel }) {
 }
 
 // ===================== DAM DETAIL PAGE =====================
-function DamDetailPage({ dam, navigate, setView, isDirectEntry }) {
+function DamDetailPage({ dam, navigate, setView }) {
   const [shareCopied, setShareCopied] = useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
   
@@ -2173,6 +2173,14 @@ function DamDetailPage({ dam, navigate, setView, isDirectEntry }) {
               <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)" }}>
                 {dam.river} River &middot; {dam.district} District, {dam.state || "Karnataka"} &middot; Live Reservoir Storage Status
               </div>
+              {SCRAPE_STATUS?.last_run_timestamp && (
+                <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "3px 8px", borderRadius: 6 }}>
+                  <span style={{ fontSize: 11, color: "rgba(224,242,254,0.5)" }}>Last Updated:</span>
+                  <time dateTime={SCRAPE_STATUS.last_run_timestamp.split(" ")[0]} style={{ fontSize: 11, fontWeight: 600, color: "#67e8f9" }}>
+                    {SCRAPE_STATUS.last_run_timestamp}
+                  </time>
+                </div>
+              )}
             </div>
             
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -2297,35 +2305,8 @@ function DamDetailPage({ dam, navigate, setView, isDirectEntry }) {
           </div>
         </div>
 
-        {/* 2. HISTORICAL CHARTS SECTION (Only visible if NOT a direct entry) */}
-        {!isDirectEntry ? (
-          <HistoricalCharts dam={dam} safeLevel={safeLevel} />
-        ) : (
-          <div style={{
-            background: "rgba(255,255,255,0.015)", border: "1px dashed rgba(255,255,255,0.08)",
-            borderRadius: 16, padding: "24px 20px", display: "flex", flexDirection: "column",
-            alignItems: "center", gap: 8, textAlign: "center"
-          }}>
-            <span style={{ fontSize: 20 }}>📊</span>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "rgba(224,242,254,0.8)" }}>Historical trends restricted via shared link</div>
-            <div style={{ fontSize: 11, color: "rgba(224,242,254,0.4)", maxWidth: 360 }}>
-              To view full historical charts, daily inflow/outflow curves, and trends, please visit our main dashboard.
-            </div>
-            <a 
-              href="/"
-              onClick={(e) => { e.preventDefault(); navigate("/"); }}
-              style={{
-                marginTop: 8, fontSize: 12, color: "#38bdf8", fontWeight: 700, textDecoration: "none",
-                background: "rgba(56,189,248,0.08)", padding: "6px 14px", borderRadius: 8,
-                border: "1px solid rgba(56,189,248,0.15)", transition: "all 0.2s"
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(56,189,248,0.15)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
-            >
-              Go to Main Dashboard
-            </a>
-          </div>
-        )}
+        {/* 2. HISTORICAL CHARTS SECTION */}
+        <HistoricalCharts dam={dam} safeLevel={safeLevel} />
 
         {/* 3. VERBOSE DETAILS & ANALYSIS (Placed at the bottom for SEO & deep analysis) */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
@@ -2716,7 +2697,6 @@ function useRouter() {
 // ===================== MAIN APP =====================
 export default function App() {
   const { path, navigate } = useRouter();
-  const [isDirectEntry, setIsDirectEntry] = useState(window.location.pathname.startsWith("/dam/"));
   const [view, setView] = useState("main");
   const [selectedDam, setSelectedDam] = useState(null);
   const [showPinModal, setShowPinModal] = useState(false);
@@ -2731,12 +2711,6 @@ export default function App() {
   const [searchQuery,setSearchQuery] = useState("");
   const [goStats,setGoStats] = useState(false);
   const statsRef = useRef(null);
-
-  useEffect(() => {
-    if (isDirectEntry && !path.startsWith("/dam/")) {
-      setIsDirectEntry(false);
-    }
-  }, [path, isDirectEntry]);
 
   useEffect(() => {
     const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
@@ -2762,6 +2736,36 @@ export default function App() {
       meta.setAttribute("content", desc);
     };
 
+    const setCanonicalUrl = (url) => {
+      let link = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'canonical';
+        document.head.appendChild(link);
+      }
+      link.setAttribute("href", url);
+    };
+
+    const setOpenGraphTags = (title, desc, url, image = "https://damtoday.com/og-image.png") => {
+      const setMeta = (property, content) => {
+        let el = document.querySelector(`meta[property="${property}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('property', property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute("content", content);
+      };
+      setMeta("og:title", title);
+      setMeta("og:description", desc);
+      setMeta("og:url", url);
+      setMeta("og:image", image);
+      setMeta("twitter:title", title);
+      setMeta("twitter:description", desc);
+      setMeta("twitter:url", url);
+      setMeta("twitter:image", image);
+    };
+
     const setJsonLdSchema = (schemaObj) => {
       let script = document.getElementById('jsonld-schema');
       if (script) {
@@ -2769,7 +2773,7 @@ export default function App() {
       } else {
         script = document.createElement('script');
         script.id = 'jsonld-schema';
-        script.type = 'application/ld-json';
+        script.type = 'application/ld+json';
         script.textContent = JSON.stringify(schemaObj);
         document.head.appendChild(script);
       }
@@ -2788,32 +2792,50 @@ export default function App() {
     const zoneMatch = path.match(/^\/zone\/([^/?#]+)/);
     const stateMatch = path.match(/^\/state\/([^/?#]+)/);
 
+    const baseUrl = "https://damtoday.com";
+    const currentUrl = `${baseUrl}${path}`;
+    setCanonicalUrl(currentUrl);
+
     if (path === "/") {
       setView("main");
       setSelectedState("all");
       setSelectedZone("All");
       setSelectedDam(null);
-      document.title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
-      setMetaDescription("Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.");
+      const title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
+      const desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
+      document.title = title;
+      setMetaDescription(desc);
+      setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (path === "/about") {
       setView("about");
-      document.title = "About Us - Open Reservoir Telemetry Integrity - Damtoday";
-      setMetaDescription("Learn about the mission of Damtoday. We provide transparent, daily public reports on major India reservoirs verified from official state and national water monitoring agencies.");
+      const title = "About Us - Open Reservoir Telemetry Integrity - Damtoday";
+      const desc = "Learn about the mission of Damtoday. We provide transparent, daily public reports on major India reservoirs verified from official state and national water monitoring agencies.";
+      document.title = title;
+      setMetaDescription(desc);
+      setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (path === "/contact") {
       setView("contact");
-      document.title = "Contact Us - Data Inquiries & Feedback - Damtoday";
-      setMetaDescription("Have feedback or data discrepancy reports? Contact the Damtoday support team directly at damtoday4@gmail.com or submit our online feedback form.");
+      const title = "Contact Us - Data Inquiries & Feedback - Damtoday";
+      const desc = "Have feedback or data discrepancy reports? Contact the Damtoday support team directly at damtoday4@gmail.com or submit our online feedback form.";
+      document.title = title;
+      setMetaDescription(desc);
+      setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (path === "/privacy") {
       setView("privacy");
-      document.title = "Privacy Policy - User Consent & Cookies - Damtoday";
-      setMetaDescription("Read the Privacy Policy for Damtoday. Information regarding user cookies, ad beacons (Google AdSense), data collection methods, and contact email.");
+      const title = "Privacy Policy - User Consent & Cookies - Damtoday";
+      const desc = "Read the Privacy Policy for Damtoday. Information regarding user cookies, ad beacons (Google AdSense), data collection methods, and contact email.";
+      document.title = title;
+      setMetaDescription(desc);
+      setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (path === "/analytics") {
       setView("analytics");
-      document.title = "Analytics Dashboard - Damtoday Administrator Console";
+      const title = "Analytics Dashboard - Damtoday Administrator Console";
+      document.title = title;
+      setCanonicalUrl(currentUrl);
       removeJsonLdSchema();
     } else if (damMatch) {
       const slug = damMatch[1];
@@ -2841,6 +2863,9 @@ export default function App() {
 
         document.title = seoTitle;
         setMetaDescription(seoDesc);
+        setOpenGraphTags(seoTitle, seoDesc, currentUrl);
+
+        const lastUpdated = new Date().toISOString();
 
         setJsonLdSchema([
           {
@@ -2848,6 +2873,7 @@ export default function App() {
             "@type": "Reservoir",
             "name": `${found.name} Reservoir`,
             "description": `Live daily water storage levels, capacity, inflow, and outflow for ${found.name} dam located on the ${found.river} River in ${found.district} district, ${found.state}, India.`,
+            "dateModified": lastUpdated,
             "address": {
               "@type": "PostalAddress",
               "addressLocality": found.district,
@@ -2862,13 +2888,23 @@ export default function App() {
               },
               {
                 "@type": "PropertyValue",
-                "name": "Design Volume Capacity",
+                "name": "Live Water Storage Capacity",
+                "value": `${(found.capacity * safeLevel / 100).toFixed(2)} TMC`
+              },
+              {
+                "@type": "PropertyValue",
+                "name": "Design Capacity",
                 "value": `${found.capacity} TMC`
               },
               {
                 "@type": "PropertyValue",
-                "name": "River System Source",
-                "value": `${found.river} River`
+                "name": "Daily Inflow Rate",
+                "value": found.inflow !== null ? `${found.inflow} cusecs` : "0 cusecs"
+              },
+              {
+                "@type": "PropertyValue",
+                "name": "Daily Outflow Rate",
+                "value": found.outflow !== null ? `${found.outflow} cusecs` : "0 cusecs"
               }
             ]
           },
@@ -2913,8 +2949,11 @@ export default function App() {
       setSelectedState("all");
       setView("main");
       setSelectedDam(null);
-      document.title = `${zoneName} India Reservoir Water Levels - Live Daily Telemetry | Damtoday`;
-      setMetaDescription(`Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${zoneName} India. View active capacity and total daily volume accumulation.`);
+      const title = `${zoneName} India Reservoir Water Levels - Live Daily Telemetry | Damtoday`;
+      const desc = `Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${zoneName} India. View active capacity and total daily volume accumulation.`;
+      document.title = title;
+      setMetaDescription(desc);
+      setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (stateMatch) {
       const slug = stateMatch[1];
@@ -2928,16 +2967,21 @@ export default function App() {
       setView("main");
       setSelectedDam(null);
 
+      let title = "";
+      let desc = "";
       if (stateName !== "all") {
-        document.title = `${stateName} Reservoir Water Levels Today - Live Daily Telemetry | Damtoday`;
-        setMetaDescription(`Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${stateName}, India. View active capacity and total daily volume accumulation.`);
+        title = `${stateName} Reservoir Water Levels Today - Live Daily Telemetry | Damtoday`;
+        desc = `Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${stateName}, India. View active capacity and total daily volume accumulation.`;
       } else {
-        document.title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
-        setMetaDescription("Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.");
+        title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
+        desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
       }
+      document.title = title;
+      setMetaDescription(desc);
+      setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     }
-  }, [path]);
+  }, [path, navigate]);
 
   // Track MongoDB Page View on Site Load
   useEffect(() => {
@@ -3183,7 +3227,7 @@ export default function App() {
           {/* Main content body */}
           <div style={{ flexGrow: 1 }}>
             {view === "detail" && selectedDam ? (
-              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} isDirectEntry={isDirectEntry} />
+              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} />
             ) : view === "about" ? (
               <AboutUsPage navigate={navigate} setView={setView} />
             ) : view === "contact" ? (
@@ -3245,15 +3289,17 @@ export default function App() {
                 color:"rgba(34,211,238,0.72)",padding:"5px 18px",borderRadius:20,display:"inline-block",
                 border:"1px solid rgba(34,211,238,0.18)",background:"rgba(34,211,238,0.06)",
                 animation:"fadeSlideUp 0.6s ease both"
-              }}>{selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState} &middot; Daily Water Level Bulletin</div>
+              }}>Damtoday &middot; Daily Water Level Bulletin</div>
 
               <h1 style={{
-                fontSize:"clamp(38px,8vw,80px)",fontWeight:900,lineHeight:1.15,
-                letterSpacing:"-3px",marginBottom:20,maxWidth:580,paddingBottom:"12px",
+                fontSize:"clamp(32px,6vw,56px)",fontWeight:900,lineHeight:1.15,
+                letterSpacing:"-2px",marginBottom:20,maxWidth:700,paddingBottom:"12px",
                 background:"linear-gradient(100deg,#BAE6FD 0%,#7DD3FC 18%,#FFFFFF 46%,#67E8F9 68%,#BAE6FD 100%)",
                 backgroundSize:"200% auto",backgroundClip:"text",WebkitBackgroundClip:"text",
                 WebkitTextFillColor:"transparent",animation:"shimmer 7s linear infinite,fadeSlideUp 0.8s ease 0.1s both"
-              }}>{selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState}<br/>Damtoday</h1>
+              }}>
+                Live {selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState} Reservoir Water Levels
+              </h1>
 
               <p style={{
                 fontSize:16,color:"rgba(224,242,254,0.46)",maxWidth:400,lineHeight:1.6,

@@ -32,3 +32,13 @@ __pycache__/
 # Scraper temp files
 *.pdf
 *.html
+
+# Vercel
+.vercel/
+
+# Scratch files
+scratch/
+
+# Dynamically generated assets
+public/sitemap.xml
+
