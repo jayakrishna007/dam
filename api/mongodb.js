@@ -1,34 +1,48 @@
 import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_URI;
-let client;
-let clientPromise;
 
-if (!uri) {
-  console.warn("WARNING: MONGODB_URI is not set in environment variables.");
-} else {
-  if (process.env.NODE_ENV === 'development') {
-    if (!global._mongoClientPromise) {
-      client = new MongoClient(uri);
-      global._mongoClientPromise = client.connect();
-    }
-    clientPromise = global._mongoClientPromise;
-  } else {
-    client = new MongoClient(uri);
-    clientPromise = client.connect();
-  }
-  // Prevent unhandled promise rejection process crash in Node.js v26+
-  if (clientPromise) {
-    clientPromise.catch((err) => {
-      console.error("MongoDB background connection failed:", err.message);
-    });
+// Use a global variable in development to prevent connection leaks across HMR reloads,
+// and a local module-scoped cache in production.
+let cachedDb = null;
+let cachedClient = null;
+
+if (process.env.NODE_ENV === 'development') {
+  if (!global._mongoCachedDb) {
+    global._mongoCachedDb = null;
+    global._mongoCachedClient = null;
   }
 }
 
 export default async function getDb() {
-  if (!clientPromise) {
+  if (!uri) {
     throw new Error("MongoDB Connection String (MONGODB_URI) is not configured.");
   }
-  const con = await clientPromise;
-  return con.db('damwatch');
+
+  // Resolve cache based on environment
+  const dbCache = process.env.NODE_ENV === 'development' ? global._mongoCachedDb : cachedDb;
+  const clientCache = process.env.NODE_ENV === 'development' ? global._mongoCachedClient : cachedClient;
+
+  if (dbCache && clientCache) {
+    return dbCache;
+  }
+
+  // Initialize connection lazily inside the handler execution lifecycle
+  const client = new MongoClient(uri, {
+    serverSelectionTimeoutMS: 5000, // Fail fast instead of hanging
+    socketTimeoutMS: 20000,
+  });
+
+  await client.connect();
+  const db = client.db('damwatch');
+
+  if (process.env.NODE_ENV === 'development') {
+    global._mongoCachedDb = db;
+    global._mongoCachedClient = client;
+  } else {
+    cachedDb = db;
+    cachedClient = client;
+  }
+
+  return db;
 }
