@@ -382,6 +382,8 @@ def main():
     try:
         import datetime
         api_url = os.environ.get("VERCEL_URL", "")
+        if not api_url:
+            api_url = "https://damtoday.com"
         if api_url:
             if not api_url.startswith("http"):
                 api_url = f"https://{api_url}"
@@ -406,7 +408,7 @@ def main():
             resp = urllib.request.urlopen(req, timeout=15)
             print(f"Posted {len(readings)} dam readings to history API (status {resp.status})")
         else:
-            print("VERCEL_URL not set, skipping history API post.")
+            print("api_url not set, skipping history API post.")
     except Exception as e:
         print(f"Warning: Failed to post dam history: {e}")
 
