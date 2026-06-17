@@ -374,7 +374,7 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
 }
 
 // ===================== DAM CARD =====================
-function DamCard({ dam, delay, onClick }) {
+function DamCard({ dam, delay, onClick, t }) {
   const ref=useRef(null);
   const [vis,setVis]=useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
@@ -401,9 +401,9 @@ function DamCard({ dam, delay, onClick }) {
     onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,gap:8}}>
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontWeight:800,fontSize:15,color:"#DDEFFC",lineHeight:1.25,marginBottom:3}}>{dam.name}</div>
+          <div style={{fontWeight:800,fontSize:15,color:"#DDEFFC",lineHeight:1.25,marginBottom:3}}>{t(dam.name)}</div>
           <div style={{fontSize:11,color:"rgba(220,240,255,0.38)"}}>
-            <span style={{color:mid,fontWeight:600}}>{dam.river}</span>{" \u00b7 "}{dam.district}
+            <span style={{color:mid,fontWeight:600}}>{t(dam.river)}</span>{" \u00b7 "}{t(dam.district)}
           </div>
         </div>
       </div>
@@ -2146,7 +2146,8 @@ function HistoricalCharts({ dam, safeLevel }) {
   const [shareCopied, setShareCopied] = useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
   
-  const plainName = dam.name.replace(/\s*\(.*\)\s*/g, "").trim();
+  const translatedName = t(dam.name);
+  const plainName = translatedName.replace(/\s*\(.*\)\s*/g, "").trim();
   const slug = getDamSlug(dam.name);
   const staticInfo = DAM_STATIC_INFO[slug] || {
     history: {
@@ -2278,7 +2279,7 @@ function HistoricalCharts({ dam, safeLevel }) {
                 </h1>
               </div>
               <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)" }}>
-                {dam.river} {t("river")} &middot; {dam.district} {t("district")}, {getLocalizedState(dam.state, lang)} &middot; {t("storageStatus")}
+                {t(dam.river)} {t("river")} &middot; {t(dam.district)} {t("district")}, {getLocalizedState(dam.state, lang)} &middot; {t("storageStatus")}
               </div>
               {SCRAPE_STATUS?.last_run_timestamp && (
                 <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "3px 8px", borderRadius: 6 }}>
@@ -2475,22 +2476,22 @@ function HistoricalCharts({ dam, safeLevel }) {
             boxSizing: "border-box"
           }}>
             {lang === "hi" && (
-              <span><strong>{plainName} जलाशय</strong> के आज के लाइव दैनिक बुलेटिन में आपका स्वागत है। <strong>{getLocalizedState(dam.state, lang)}</strong> के <strong>{dam.district}</strong> जिले में <strong>{dam.river} नदी</strong> पर स्थित, यह जलाशय क्षेत्र में कृषि और बाढ़ नियंत्रण में मुख्य भूमिका निभाता है। आज का वर्तमान जल स्तर इसकी कुल क्षमता का <strong>{safeLevel.toFixed(1)}%</strong> है।</span>
+              <span><strong>{plainName} जलाशय</strong> के आज के लाइव दैनिक बुलेटिन में आपका स्वागत है। <strong>{getLocalizedState(dam.state, lang)}</strong> के <strong>{t(dam.district)}</strong> जिले में <strong>{t(dam.river)} नदी</strong> पर स्थित, यह जलाशय क्षेत्र में कृषि और बाढ़ नियंत्रण में मुख्य भूमिका निभाता है। आज का वर्तमान जल स्तर इसकी कुल क्षमता का <strong>{safeLevel.toFixed(1)}%</strong> है।</span>
             )}
             {lang === "kn" && (
-              <span><strong>{plainName} ಜಲಾಶಯದ</strong> ಇಂದಿನ ನೀರಿನ ಮಟ್ಟದ ಲೈವ್ ದೈನಂದಿನ ವರದಿಗಳಿಗೆ ಸುಸ್ವಾಗತ. <strong>{getLocalizedState(dam.state, lang)}</strong> ರಾಜ್ಯದ <strong>{dam.district}</strong> ಜಿಲ್ಲೆಯ <strong>{dam.river} ನದಿಯ</strong> ವ್ಯಾಪ್ತಿಯಲ್ಲಿರುವ ಈ ಜಲಾಶಯವು ಕೃಷಿ ಮತ್ತು ಪ್ರವಾಹ ನಿಯಂತ್ರಣಕ್ಕೆ ಪ್ರಮುಖವಾಗಿದೆ. ಇಂದಿನ ಒಟ್ಟು ಶೇಖರಣಾ ಮಟ್ಟವು ಜಲಾಶಯದ ಒಟ್ಟು ಸಾಮರ್ಥ್ಯದ <strong>{safeLevel.toFixed(1)}%</strong> ಆಗಿದೆ.</span>
+              <span><strong>{plainName} ಜಲಾಶಯದ</strong> ಇಂದಿನ ನೀರಿನ ಮಟ್ಟದ ಲೈವ್ ದೈನಂದಿನ ವರದಿಗಳಿಗೆ ಸುಸ್ವಾಗತ. <strong>{getLocalizedState(dam.state, lang)}</strong> ರಾಜ್ಯದ <strong>{t(dam.district)}</strong> ಜಿಲ್ಲೆಯ <strong>{t(dam.river)} ನದಿಯ</strong> ವ್ಯಾಪ್ತಿಯಲ್ಲಿರುವ ಈ ಜಲಾಶಯವು ಕೃಷಿ ಮತ್ತು ಪ್ರವಾಹ ನಿಯಂತ್ರಣಕ್ಕೆ ಪ್ರಮುಖವಾಗಿದೆ. ಇಂದಿನ ಒಟ್ಟು ಶೇಖರಣಾ ಮಟ್ಟವು ಜಲಾಶಯದ ಒಟ್ಟು ಸಾಮರ್ಥ್ಯದ <strong>{safeLevel.toFixed(1)}%</strong> ಆಗಿದೆ.</span>
             )}
             {lang === "te" && (
-              <span><strong>{plainName} జలాశయం</strong> ఈ రోజు నీటి మట్టాల లైవ్ రోజువారీ నివేదికకు స్వాగతం. <strong>{getLocalizedState(dam.state, lang)}</strong> లోని <strong>{dam.district}</strong> జిల్లాలో <strong>{dam.river} నది</strong> పై నిర్మించిన ఈ ప్రాజెక్ట్ వ్యవసాయం మరియు వరద నివారణలో కీలక పాత్ర పోషిస్తుంది. ఇందీన నీటి నిల్వ సామర్థ్యం గరిష్ట నిల్వలో <strong>{safeLevel.toFixed(1)}%</strong> గా నమోదైంది.</span>
+              <span><strong>{plainName} జలాశయం</strong> ఈ రోజు నీటి మట్టాల లైవ్ రోజువారీ నివేదికకు స్వాగతం. <strong>{getLocalizedState(dam.state, lang)}</strong> లోని <strong>{t(dam.district)}</strong> జిల్లాలో <strong>{t(dam.river)} నది</strong> పై నిర్మించిన ఈ ప్రాజెక్ట్ వ్యవసాయం మరియు వరద నివారణలో కీలక పాత్ర పోషిస్తుంది. ఇందీన నీటి నిల్వ సామర్థ్యం గరిష్ట నిల్వలో <strong>{safeLevel.toFixed(1)}%</strong> గా నమోదైంది.</span>
             )}
             {lang === "ta" && (
-              <span><strong>{plainName} அணையின்</strong> இன்றைய நீர் மட்டம் குறித்த நேரடி தினசரி அறிக்கை பக்கத்திற்கு வரவேற்கிறோம். <strong>{getLocalizedState(dam.state, lang)}</strong> மாநிலத்தின் <strong>{dam.district}</strong> மாவட்டத்தில் <strong>{dam.river} ஆற்றின்</strong> குறுக்கே அமைந்துள்ள இந்த அணை விவசாய பாசனம் மற்றும் வெள்ள கட்டுப்பாட்டில் முக்கிய பங்கு வகிக்கிறது. இன்றைய நீர் இருப்பு அதன் கொள்ளளவில் <strong>{safeLevel.toFixed(1)}%</strong> ஆக உள்ளது.</span>
+              <span><strong>{plainName} அணையின்</strong> இன்றைய நீர் மட்டம் குறித்த நேரடி தினசரி அறிக்கை பக்கத்திற்கு வரவேற்கிறோம். <strong>{getLocalizedState(dam.state, lang)}</strong> மாநிலத்தின் <strong>{t(dam.district)}</strong> மாவட்டத்தில் <strong>{t(dam.river)} ஆற்றின்</strong> குறுக்கே அமைந்துள்ள இந்த அணை விவசாய பாசனம் மற்றும் வெள்ள கட்டுப்பாட்டில் முக்கிய பங்கு வகிக்கிறது. இன்றைய நீர் இருப்பு அதன் கொள்ளளவில் <strong>{safeLevel.toFixed(1)}%</strong> ஆக உள்ளது.</span>
             )}
             {lang === "ml" && (
-              <span><strong>{plainName} ഡാമിന്റെ</strong> ഇന്നത്തെ ജലനിരപ്പ് വിവരങ്ങളിലേക്ക് സ്വാഗതം. <strong>{getLocalizedState(dam.state, lang)}</strong> സംസ്ഥാനത്തെ <strong>{dam.district}</strong> ജില്ലയിൽ <strong>{dam.river} നദിക്ക്</strong> കുറുകെയുള്ള ഈ ഡാം കാർഷിക ആവശ്യങ്ങൾക്കും പ്രളയ നിയന്ത്രണത്തിനും സഹായിക്കുന്നു. ഇന്നത്തെ ജല സംഭരണം പരമാവധി സംഭരണശേഷിയുടെ <strong>{safeLevel.toFixed(1)}%</strong> ആണ്.</span>
+              <span><strong>{plainName} ഡാമിന്റെ</strong> ഇന്നത്തെ ജലനിരപ്പ് വിവരങ്ങളിലേക്ക് സ്വാഗതം. <strong>{getLocalizedState(dam.state, lang)}</strong> സംസ്ഥാനത്തെ <strong>{t(dam.district)}</strong> ജില്ലയിൽ <strong>{t(dam.river)} നദിക്ക്</strong> കുറുകെയുള്ള ഈ ഡാം കാർഷിക ആവശ്യങ്ങൾക്കും പ്രളയ നിയന്ത്രണത്തിനും സഹായിക്കുന്നു. ഇന്നത്തെ ജല സംഭരണം പരമാവധി സംഭരണശേഷിയുടെ <strong>{safeLevel.toFixed(1)}%</strong> ആണ്.</span>
             )}
             {lang === "en" && (
-              <span>Welcome to the live daily report for the <strong>{plainName} water level today</strong>. Located in the <strong>{dam.district}</strong> district of <strong>{dam.state || "Karnataka"}</strong> on the <strong>{dam.river} River</strong> system, this reservoir plays a key role in regional agricultural irrigation and flood control. Today's telemetry monitoring indicates the storage is at <strong>{safeLevel.toFixed(1)}%</strong> of its maximum capacity.</span>
+              <span>Welcome to the live daily report for the <strong>{plainName} water level today</strong>. Located in the <strong>{t(dam.district)}</strong> district of <strong>{dam.state || "Karnataka"}</strong> on the <strong>{t(dam.river)} River</strong> system, this reservoir plays a key role in regional agricultural irrigation and flood control. Today's telemetry monitoring indicates the storage is at <strong>{safeLevel.toFixed(1)}%</strong> of its maximum capacity.</span>
             )}
           </div>
 
@@ -3024,6 +3025,15 @@ export default function App() {
     setLangDropdownOpen(false);
   };
 
+  const tickerText = useMemo(() => {
+    return DAMS.map(d => {
+      const cap = typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0;
+      const lvl = typeof d.level === 'number' ? d.level : parseFloat(d.level) || 0;
+      const tmc = (cap * lvl / 100).toFixed(2);
+      return `${t(d.name)}: ${tmc} TMC`;
+    }).join("  ◆  ");
+  }, [lang]);
+
 
   useEffect(() => {
     const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
@@ -3514,8 +3524,11 @@ export default function App() {
     const query = searchQuery.trim().toLowerCase();
     const matchesSearch = query === "" ||
       dam.name.toLowerCase().includes(query) ||
+      t(dam.name).toLowerCase().includes(query) ||
       dam.river.toLowerCase().includes(query) ||
-      dam.district.toLowerCase().includes(query);
+      t(dam.river).toLowerCase().includes(query) ||
+      dam.district.toLowerCase().includes(query) ||
+      t(dam.district).toLowerCase().includes(query);
     return matchesFilter && matchesSearch;
   });
 
@@ -3830,7 +3843,7 @@ export default function App() {
                         display: "inline-block", whiteSpace: "nowrap", fontFamily: "monospace",
                         fontSize: 11, color: "rgba(103, 232, 249, 0.6)", letterSpacing: 0.4, paddingLeft: 14,
                         animation: "tickerScroll 90s linear infinite"
-                      }}>{TICKER}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{TICKER}</div>
+                      }}>{tickerText}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tickerText}</div>
                     </div>
                   </div>
 
@@ -4258,6 +4271,7 @@ export default function App() {
                     onClick={() => {
                       navigate(`/dam/${getDamSlug(dam.name)}`);
                     }}
+                    t={t}
                   />
                 ))}
               </div>
