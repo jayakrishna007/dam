@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import DAMS from "./data/dams.json";
 import SCRAPE_STATUS from "./data/scrape_status.json";
+import DAM_STATIC_INFO from "./data/dam_static_info.json";
 
 // ===================== MONGODB VERCEL SERVERLESS TELEMETRY API =====================
 const callMongo = async (action, collection, payload = {}) => {
@@ -2092,6 +2093,20 @@ function DamDetailPage({ dam, navigate, setView }) {
   const [shareCopied, setShareCopied] = useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
   
+  const plainName = dam.name.replace(/\s*\(.*\)\s*/g, "").trim();
+  const slug = getDamSlug(dam.name);
+  const staticInfo = DAM_STATIC_INFO[slug] || {
+    history: `The ${plainName} reservoir is a vital water resource project located on the ${dam.river} River in the ${dam.district} district of ${dam.state || "Karnataka"}. It plays a central role in municipal drinking water distribution, flood control, and agricultural canal irrigation in the surrounding regions.`,
+    timings: {
+      hours: "9:00 AM - 6:00 PM Daily",
+      fountain: "N/A",
+      fee: "Free admission"
+    },
+    map: {
+      flowPath: `Outflow discharges downstream into the ${dam.river} River, feeding the local river basin and agricultural canal networks.`
+    }
+  };
+  
   const handleShare = (e) => {
     e.preventDefault();
     const shareUrl = `${window.location.origin}/dam/${getDamSlug(dam.name)}`;
@@ -2278,37 +2293,85 @@ function DamDetailPage({ dam, navigate, setView }) {
               ))}
             </div>
 
-            {/* Specifications Card */}
-            <div style={{
-              background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)",
-              borderRadius: 16, padding: "20px 24px"
-            }}>
-              <h3 style={{ fontSize: 14, fontWeight: 800, color: "#fff", margin: "0 0 14px 0" }}>Reservoir Specifications</h3>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[
-                  { label: "River System", value: dam.river },
-                  { label: "District Location", value: dam.district },
-                  { label: "State", value: dam.state || "Karnataka" },
-                  { label: "Design Capacity", value: `${dam.capacity} TMC` }
-                ].map((item, i) => (
-                  <div key={i} style={{
-                    display: "flex", justifyContent: "space-between", alignItems: "center",
-                    paddingBottom: 6, borderBottom: i === 3 ? "none" : "1px solid rgba(255,255,255,0.04)"
-                  }}>
-                    <span style={{ fontSize: 12, color: "rgba(224,242,254,0.4)" }}>{item.label}</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "#fff", textAlign: "right" }}>{item.value}</span>
+
+
+            {/* Visiting Timings Card */}
+            {staticInfo?.timings && (
+              <div style={{
+                background: "rgba(6, 182, 212, 0.04)", border: "1px solid rgba(6, 182, 212, 0.15)",
+                borderRadius: 16, padding: "16px 20px"
+              }}>
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: "#67e8f9", margin: "0 0 12px 0", display: "flex", alignItems: "center", gap: 8 }}>
+                  <span>⏰</span> {plainName} Visiting Timings
+                </h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                    <span style={{ color: "rgba(224,242,254,0.4)" }}>Visiting Hours:</span>
+                    <span style={{ color: "#fff", fontWeight: 600, textAlign: "right" }}>{staticInfo.timings.hours}</span>
                   </div>
-                ))}
+                  {staticInfo.timings.fountain && staticInfo.timings.fountain !== "N/A" && (
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                      <span style={{ color: "rgba(224,242,254,0.4)" }}>Light Show:</span>
+                      <span style={{ color: "#67e8f9", fontWeight: 600, textAlign: "right" }}>{staticInfo.timings.fountain}</span>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                    <span style={{ color: "rgba(224,242,254,0.4)" }}>Entry Fee:</span>
+                    <span style={{ color: "#fff", fontWeight: 600, textAlign: "right" }}>{staticInfo.timings.fee}</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
         {/* 2. HISTORICAL CHARTS SECTION */}
         <HistoricalCharts dam={dam} safeLevel={safeLevel} />
 
-        {/* 3. VERBOSE DETAILS & ANALYSIS (Placed at the bottom for SEO & deep analysis) */}
+        {/* 3. HERITAGE & GEOGRAPHIC DETAILS (Placed at the bottom for rich informational content & SEO) */}
+        <div className="dam-bottom-info-grid" style={{ marginBottom: 20 }}>
+          {/* Heritage & History Card */}
+          <div style={{
+            background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)",
+            borderRadius: 16, padding: "20px 24px"
+          }}>
+            <h3 style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+              <span>📜</span> History of {plainName} Dam
+            </h3>
+            <p style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(224,242,254,0.6)" }}>
+              {staticInfo.history}
+            </p>
+          </div>
+
+          {/* Location & Downstream Flow Map Card */}
+          <div style={{
+            background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)",
+            borderRadius: 16, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 12
+          }}>
+            <h3 style={{ fontSize: 14, fontWeight: 800, color: "#fff", margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+              <span>🗺️</span> Water Map & Downstream River Flow
+            </h3>
+            
+            <div style={{ width: "100%", height: 180, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <iframe
+                title={`${dam.name} Location Map`}
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                style={{ border: 0 }}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(dam.name.replace(/\s*\(.*\)\s*/g, "").trim() + " Dam, " + dam.district + ", " + (dam.state || "India"))}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                allowFullScreen
+              ></iframe>
+            </div>
+
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "rgba(224,242,254,0.6)" }}>
+              <strong style={{ color: "#38bdf8", display: "block", marginBottom: 4, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 }}>Downstream Basin Path:</strong>
+              {staticInfo.map.flowPath}
+            </div>
+          </div>
+        </div>
+
+        {/* 4. VERBOSE DETAILS & ANALYSIS (Placed at the bottom for SEO & deep analysis) */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 20 }}>
           {/* SEO Paragraph Card */}
           <div style={{
@@ -3111,6 +3174,17 @@ export default function App() {
         @media (max-width: 900px) {
           .dam-top-grid {
             grid-template-columns: 1fr;
+          }
+        }
+        .dam-bottom-info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+        }
+        @media (max-width: 768px) {
+          .dam-bottom-info-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
           }
         }
         .dam-detail-header {

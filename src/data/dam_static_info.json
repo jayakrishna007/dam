@@ -1,0 +1,119 @@
+{
+  "krishna-raja-sagara-krs": {
+    "history": "Conceived in 1911 by Maharaja Krishnaraja Wodeyar IV and legendary chief engineer Sir M. Visvesvaraya to alleviate regional droughts. Completed in 1932, the dam was built entirely using 'surkhi mortar' (a local mixture of limestone and brick powder) instead of cement, making it a masterpiece of early 20th-century Indian engineering.",
+    "timings": {
+      "hours": "6:30 AM - 9:00 PM Daily",
+      "fountain": "6:30 PM - 7:30 PM (Weekdays), 6:30 PM - 8:30 PM (Weekends)",
+      "fee": "₹15 Adults, ₹5 Children (Brindavan Gardens entry)"
+    },
+    "map": {
+      "latitude": 12.4276,
+      "longitude": 76.5744,
+      "flowPath": "Outflow discharges downstream into the Cauvery River, passing through Srirangapatna and Shivanasamudra Falls before entering the Stanley Reservoir at Mettur Dam in Tamil Nadu."
+    }
+  },
+  "mettur-stanley": {
+    "history": "Completed in 1934 under British Rule (designed by Colonel W. M. Ellis), the Mettur Dam (Stanley Reservoir) is one of the oldest and largest gravity dams in India. It serves as the primary agricultural lifeline for the Cauvery Delta region.",
+    "timings": {
+      "hours": "9:00 AM - 6:00 PM Daily",
+      "fountain": "N/A (Lush park is open for sightseers)",
+      "fee": "₹5 per person"
+    },
+    "map": {
+      "latitude": 11.7951,
+      "longitude": 77.8015,
+      "flowPath": "Outflow continues along the Cauvery River, irrigating the fertile delta farmlands of Salem, Erode, Trichy, and Tanjavur before discharging into the Bay of Bengal."
+    }
+  },
+  "kabini": {
+    "history": "Built in 1974, the Kabini Dam is a critical reservoir in the Cauvery basin. Located near the border of the Nagarhole National Park, it is highly popular for wildlife tourism and supplies drinking water to Mysuru and Bengaluru.",
+    "timings": {
+      "hours": "8:00 AM - 6:00 PM Daily",
+      "fountain": "N/A",
+      "fee": "Free (Viewpoint area)"
+    },
+    "map": {
+      "latitude": 11.9796,
+      "longitude": 76.3510,
+      "flowPath": "Outflow joins the Cauvery River at Tirumakudal Narasipura and flows downstream into Tamil Nadu."
+    }
+  },
+  "harangi": {
+    "history": "Completed in 1982 near Kushalnagar in Kodagu. The Harangi Dam is the first reservoir built across a tributary of the Cauvery River in Karnataka, facilitating extensive farming in the Western Ghats region.",
+    "timings": {
+      "hours": "8:00 AM - 6:00 PM Daily",
+      "fountain": "N/A (Scenic reservoir gardens open)",
+      "fee": "₹10 per person"
+    },
+    "map": {
+      "latitude": 12.4842,
+      "longitude": 75.9038,
+      "flowPath": "Outflow joins the Cauvery River near Kudige, passing downstream to feed the main KRS reservoir."
+    }
+  },
+  "hemavathy": {
+    "history": "Completed in 1979 near Gorur. A major reservoir constructed across the Hemavathy River, a key tributary of Cauvery. It is famous for its beautiful park and the nearby submerged Shettihalli Rosary Church.",
+    "timings": {
+      "hours": "8:00 AM - 6:00 PM Daily",
+      "fountain": "N/A",
+      "fee": "₹10 per person"
+    },
+    "map": {
+      "latitude": 12.9808,
+      "longitude": 76.0506,
+      "flowPath": "Flows downstream into the Cauvery River system, merging near KRS Dam."
+    }
+  },
+  "tungabhadra": {
+    "history": "Built in 1953 by legendary engineer Thirumala Iyengar. A multipurpose dam serving irrigation, electricity generation, and flood control for Karnataka and Andhra Pradesh. Famous for its multi-colored lighting and Japanese gardens.",
+    "timings": {
+      "hours": "8:30 AM - 8:30 PM Daily",
+      "fountain": "7:00 PM - 8:30 PM (Musical Light Show)",
+      "fee": "Free (Hilltop bus ride is paid)"
+    },
+    "map": {
+      "latitude": 15.2635,
+      "longitude": 76.3338,
+      "flowPath": "Flows into the Tungabhadra River, joining the Krishna River near Alampur in Telangana, and downstream to Srisailam and Nagarjuna Sagar dams."
+    }
+  },
+  "bhadra": {
+    "history": "Completed in 1965 near Lakkavalli. A major multi-purpose reservoir designed by Sir M. Visvesvaraya. Surrounded by the scenic Bhadra Wildlife Sanctuary.",
+    "timings": {
+      "hours": "9:00 AM - 6:00 PM Daily",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 13.7088,
+      "longitude": 75.6375,
+      "flowPath": "Outflow joins the Tunga River at Kudli to form the Tungabhadra River."
+    }
+  },
+  "almatti": {
+    "history": "Completed in 2005. Officially named the Lal Bahadur Shastri Dam, it is the main reservoir of the Upper Krishna Project. Famous for its terraced gardens and boating.",
+    "timings": {
+      "hours": "8:00 AM - 8:00 PM Daily",
+      "fountain": "7:00 PM - 8:00 PM (Garden fountains)",
+      "fee": "₹20 Adults, ₹10 Children"
+    },
+    "map": {
+      "latitude": 16.3315,
+      "longitude": 75.8856,
+      "flowPath": "Outflow travels down the Krishna River towards Narayanpur Dam and Srisailam Dam."
+    }
+  },
+  "idukki": {
+    "history": "Completed in 1973. A double curvature arch dam, one of the highest arch dams in Asia. Constructed between two granite hills, Kuravan and Kurathi.",
+    "timings": {
+      "hours": "9:30 AM - 5:00 PM (Weekends & Holidays only)",
+      "fountain": "N/A",
+      "fee": "₹25 Adults, ₹10 Children"
+    },
+    "map": {
+      "latitude": 9.8514,
+      "longitude": 76.9725,
+      "flowPath": "Outflow is directed through underground pipes to the Moolamattom Power House, then discharges into the Nachar River."
+    }
+  }
+}
