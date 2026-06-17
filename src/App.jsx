@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import DAMS from "./data/dams.json";
 import SCRAPE_STATUS from "./data/scrape_status.json";
 import DAM_STATIC_INFO from "./data/dam_static_info.json";
+import TRANSLATIONS from "./data/translations.json";
 
 // ===================== MONGODB VERCEL SERVERLESS TELEMETRY API =====================
 const callMongo = async (action, collection, payload = {}) => {
@@ -2141,21 +2142,35 @@ function HistoricalCharts({ dam, safeLevel }) {
 }
 
 // ===================== DAM DETAIL PAGE =====================
-function DamDetailPage({ dam, navigate, setView }) {
+function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
   const [shareCopied, setShareCopied] = useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
   
   const plainName = dam.name.replace(/\s*\(.*\)\s*/g, "").trim();
   const slug = getDamSlug(dam.name);
   const staticInfo = DAM_STATIC_INFO[slug] || {
-    history: `The ${plainName} reservoir is a vital water resource project located on the ${dam.river} River in the ${dam.district} district of ${dam.state || "Karnataka"}. It plays a central role in municipal drinking water distribution, flood control, and agricultural canal irrigation in the surrounding regions.`,
+    history: {
+      en: `The ${plainName} reservoir is a vital water resource project located on the ${dam.river} River in the ${dam.district} district of ${dam.state || "Karnataka"}. It plays a central role in municipal drinking water distribution, flood control, and agricultural canal irrigation in the surrounding regions.`,
+      hi: `${plainName} जलाशय ${dam.state || "कर्नाटक"} के ${dam.district} जिले में ${dam.river} नदी पर स्थित एक महत्वपूर्ण जल संसाधन परियोजना है। यह क्षेत्र में पेयजल वितरण, बाढ़ नियंत्रण और सिंचाई में मुख्य भूमिका निभाता है।`,
+      kn: `${plainName} ಜಲಾಶಯವು ${dam.state || "ಕರ್ನಾಟಕ"} ರಾಜ್ಯದ ${dam.district} ಜಿಲ್ಲೆಯ ${dam.river} ನದಿಗೆ ಅಡ್ಡಲಾಗಿ ನಿರ್ಮಿಸಲಾದ ಪ್ರಮುಖ ಜಲಾಶಯವಾಗಿದೆ. ಇದು ಕುಡಿಯುವ ನೀರು, ಪ್ರವಾಹ ನಿಯಂತ್ರಣ ಮತ್ತು ಕೃಷಿ ನೀರಾವರಿಯಲ್ಲಿ ಪ್ರಮುಖ ಪಾತ್ರ ವಹಿಸುತ್ತದೆ.`,
+      te: `${plainName} రిజర్వాయర్ అనేది ${dam.state || "కర్ణాటక"} లోని ${dam.district} జిల్లాలో ${dam.river} నదిపై నిర్మించబడిన కీలకమైన ప్రాజెక్ట్. ఇది తాగునీరు, వరద నివారణ మరియు సాగునీరు అందించడంలో ప్రధాన పాత్ర పోషిస్తుంది.`,
+      ta: `${plainName} அணை என்பது ${dam.state || "கர்நாடகா"} மாநிலத்தின் ${dam.district} மாவட்டத்தில் ${dam.river} ஆற்றின் குறுக்கே கட்டப்பட்ட ஒரு முக்கியமான நீர் திட்டமாகும். இது குடிநீர் மற்றும் விவசாய பாசனத்தில் முக்கிய பங்கு வகிக்கிறது.`,
+      ml: `${plainName} അണക്കെട്ട് ${dam.state || "കർണാടക"} സംസ്ഥാനത്തെ ${dam.district} ജില്ലയിൽ ${dam.river} നദിക്ക് കുറുകെ നിർമ്മിച്ച പ്രധാന പദ്ധതിയാണ്. ഇത് കുടിവെള്ള വിതരണത്തിലും കൃഷിയിലും പ്രധാന പങ്ക് വഹിക്കുന്നു.`
+    },
     timings: {
-      hours: "9:00 AM - 6:00 PM Daily",
-      fountain: "N/A",
-      fee: "Free admission"
+      hours: { en: "9:00 AM - 6:00 PM Daily", hi: "सुबह 9:00 - शाम 6:00 बजे तक", kn: "ಬೆಳಿಗ್ಗೆ 9:00 ರಿಂದ ಸಂಜೆ 6:00 ರವರೆಗೆ", te: "ఉదయం 9:00 నుండి సాయంత్రం 6:00 వరకు", ta: "காலை 9:00 முதல் மாலை 6:00 மணி வரை", ml: "രാവിലെ 9:00 മുതൽ വൈകുന്നേരം 6:00 വരെ" },
+      fountain: { en: "N/A", hi: "लागू नहीं", kn: "ಇಲ್ಲ", te: "లేదు", ta: "இல்லை", ml: "ഇല്ല" },
+      fee: { en: "Free admission", hi: "निःशुल्क प्रवेश", kn: "ಉಚಿತ ಪ್ರವೇಶ", te: "ఉచిత ప్రవేశം", ta: "இலவச அனுமதி", ml: "സൗജന്യ പ്രവേശനം" }
     },
     map: {
-      flowPath: `Outflow discharges downstream into the ${dam.river} River, feeding the local river basin and agricultural canal networks.`
+      flowPath: {
+        en: `Outflow discharges downstream into the ${dam.river} River, feeding the local river basin and agricultural canal networks.`,
+        hi: `बाहरी बहाव नीचे की ओर ${dam.river} नदी में बहता है, जिससे स्थानीय कृषि नहरों को पानी मिलता है।`,
+        kn: `ಹೊರಹರಿವು ಕೆಳಮುಖವಾಗಿ ${dam.river} ನದಿಗೆ ಸೇರುತ್ತದೆ, ಇದು ಸ್ಥಳೀಯ ಕೃಷಿ ಕಾಲುವೆಗಳಿಗೆ ನೀರು ಒದಗಿಸುತ್ತದೆ.`,
+        te: `दिగువకు ప్రవహించే నీరు ${dam.river} నదిలో కలిసి స్థానిక సాగునీటి కాలువలకు అందుతుంది.`,
+        ta: `நீர் வெளியேற்றம் காவிரி ஆற்றில் கலந்து உள்ளூர் விவசாய கால்வாய்களுக்குச் செல்கிறது.`,
+        ml: `പുറത്തേക്കുള്ള ഒഴുക്ക് താഴോട്ട് ${dam.river} നദിയിലൂടെ കനാലുകളിലേക്ക് ഒഴുകുന്നു.`
+      }
     }
   };
   
@@ -2174,6 +2189,31 @@ function DamDetailPage({ dam, navigate, setView }) {
 
   const netFlowCusecs = (dam.inflow || 0) - (dam.outflow || 0);
   const netFlowTmcPerDay = netFlowCusecs * 0.0000864;
+
+  const localizedTitle = () => {
+    if (lang === "hi") return `${dam.name} जल स्तर आज`;
+    if (lang === "kn") return `${dam.name} ನೀರಿನ ಮಟ್ಟ ಇಂದು`;
+    if (lang === "te") return `${dam.name} నీటి మట్టం ఈ రోజు`;
+    if (lang === "ta") return `${dam.name} நீர் मட்டம் இன்று`;
+    if (lang === "ml") return `${dam.name} ജലനിരപ്പ് ഇന്ന്`;
+    return `${dam.name} Water Level Today`;
+  };
+
+  const localizedBackText = () => {
+    const stateName = dam.state || "Karnataka";
+    const stateLocal = getLocalizedState(stateName, lang);
+    if (lang === "hi") return `&larr; ${stateLocal} के जलाशयों पर वापस जाएं`;
+    if (lang === "kn") return `&larr; ${stateLocal} ಜಲಾಶಯಗಳಿಗೆ ಹಿಂತಿರುಗಿ`;
+    if (lang === "te") return `&larr; ${stateLocal} జలాಶಯాలకు తిరిగి వెళ్ళండి`;
+    if (lang === "ta") return `&larr; ${stateLocal} அணைகளுக்குத் திரும்புக`;
+    if (lang === "ml") return `&larr; ${stateLocal} ഡാമുകളിലേക്ക് മടങ്ങുക`;
+    return `&larr; Back to ${stateName} Reservoirs`;
+  };
+
+  const localizedHistoryTitle = () => {
+    if (lang === "en") return `${t("history")} ${plainName} ${t("dam")}`;
+    return `${plainName} ${t("dam")} ${t("history")}`;
+  };
 
   return (
     <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px", animation: "fadeSlideUp 0.5s ease" }}>
@@ -2195,8 +2235,8 @@ function DamDetailPage({ dam, navigate, setView }) {
           }}
           onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
           onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
+          dangerouslySetInnerHTML={{ __html: localizedBackText() }}
         >
-          &larr; Back to {dam.state || "Karnataka"} Reservoirs
         </a>
 
         <button 
@@ -2214,12 +2254,12 @@ function DamDetailPage({ dam, navigate, setView }) {
           {shareCopied ? (
             <>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Copied!
+              {t("copied")}
             </>
           ) : (
             <>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
-              Share Dam Link
+              {t("share")}
             </>
           )}
         </button>
@@ -2234,15 +2274,15 @@ function DamDetailPage({ dam, navigate, setView }) {
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
                 <h1 style={{ fontSize: "clamp(20px, 4.5vw, 26px)", fontWeight: 900, color: "#fff", margin: 0 }}>
-                  {dam.name} Water Level Today
+                  {localizedTitle()}
                 </h1>
               </div>
               <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)" }}>
-                {dam.river} River &middot; {dam.district} District, {dam.state || "Karnataka"} &middot; Live Reservoir Storage Status
+                {dam.river} {t("river")} &middot; {dam.district} {t("district")}, {getLocalizedState(dam.state, lang)} &middot; {t("storageStatus")}
               </div>
               {SCRAPE_STATUS?.last_run_timestamp && (
                 <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "3px 8px", borderRadius: 6 }}>
-                  <span style={{ fontSize: 11, color: "rgba(224,242,254,0.5)" }}>Last Updated:</span>
+                  <span style={{ fontSize: 11, color: "rgba(224,242,254,0.5)" }}>{t("lastUpdated")}:</span>
                   <time dateTime={SCRAPE_STATUS.last_run_timestamp.split(" ")[0]} style={{ fontSize: 11, fontWeight: 600, color: "#67e8f9" }}>
                     {SCRAPE_STATUS.last_run_timestamp}
                   </time>
@@ -2259,10 +2299,10 @@ function DamDetailPage({ dam, navigate, setView }) {
                   padding: "6px 12px", borderRadius: 10
                 }}>
                   <span style={{ fontSize: 9, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 0.5 }}>
-                    Daily Accumulation
+                    {t("dailyChange")}
                   </span>
                   <span style={{ fontSize: 14, fontWeight: 800, color: netFlowCusecs > 0 ? "#4ade80" : "#f87171" }}>
-                    {netFlowCusecs > 0 ? "+" : ""}{netFlowTmcPerDay.toFixed(3)} TMC/day
+                    {netFlowCusecs > 0 ? "+" : ""}{netFlowTmcPerDay.toFixed(3)} {t("tmc")}/{lang === "hi" ? "दिन" : lang === "kn" ? "ದಿನ" : lang === "te" ? "రోజు" : lang === "ta" ? "நாள்" : lang === "ml" ? "ദിവസം" : "day"}
                   </span>
                 </div>
               )}
@@ -2273,10 +2313,10 @@ function DamDetailPage({ dam, navigate, setView }) {
                 padding: "6px 12px", borderRadius: 10
               }}>
                 <span style={{ fontSize: 9, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 0.5 }}>
-                  Storage Status
+                  {t("storageStatus")}
                 </span>
                 <span style={{ fontSize: 14, fontWeight: 800, color: "#38bdf8" }}>
-                  {safeLevel.toFixed(1)}% Full
+                  {safeLevel.toFixed(1)}% {t("filled")}
                 </span>
               </div>
             </div>
@@ -2292,9 +2332,9 @@ function DamDetailPage({ dam, navigate, setView }) {
             padding: "20px 24px", display: "flex", flexDirection: "column", gap: 14
           }}>
             <div>
-              <h3 style={{ fontSize: 15, fontWeight: 800, color: "#fff", margin: 0 }}>Visual Simulation</h3>
+              <h3 style={{ fontSize: 15, fontWeight: 800, color: "#fff", margin: 0 }}>{t("visualSimulation")}</h3>
               <p style={{ fontSize: 11, color: "rgba(224,242,254,0.4)", margin: "2px 0 0 0" }}>
-                Interactive outflow & wave velocity model
+                {lang === "hi" ? "इंटरैक्टिव प्रवाह और लहर वेग मॉडल" : lang === "kn" ? "ಸಂವಾದಾತ್ಮಕ ಹೊರಹರಿವು ಮತ್ತು ತರಂಗ ವೇಗದ ಮಾದರಿ" : lang === "te" ? "ఇంటరాక్టివ్ అవుట్‌ఫ్లో & వేవ్ వెలాసిటీ మోడల్" : lang === "ta" ? "ஊடாடும் நீர்வெளியேற்றம் மற்றும் அலை திசைвеக மாதிரி" : lang === "ml" ? "തത്സമയ ഒഴുക്ക് മാതൃക" : "Interactive outflow & wave velocity model"}
               </p>
             </div>
 
@@ -2304,13 +2344,13 @@ function DamDetailPage({ dam, navigate, setView }) {
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 4 }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                <span style={{ color: "rgba(224,242,254,0.4)" }}>Simulation Status:</span>
-                <span style={{ color: "#34d399", fontWeight: 600 }}>Active</span>
+                <span style={{ color: "rgba(224,242,254,0.4)" }}>{t("simulationStatus")}:</span>
+                <span style={{ color: "#34d399", fontWeight: 600 }}>{t("active")}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                <span style={{ color: "rgba(224,242,254,0.4)" }}>Discharge Rate:</span>
+                <span style={{ color: "rgba(224,242,254,0.4)" }}>{t("dischargeRate")}:</span>
                 <span style={{ color: "#fb7171", fontWeight: 600, fontFamily: "monospace" }}>
-                  {dam.outflow !== null ? `${dam.outflow.toLocaleString()} cusecs` : "0 cusecs"}
+                  {dam.outflow !== null ? `${dam.outflow.toLocaleString()} ${t("cusecs")}` : `0 ${t("cusecs")}`}
                 </span>
               </div>
             </div>
@@ -2321,10 +2361,10 @@ function DamDetailPage({ dam, navigate, setView }) {
             {/* KPI Cards Grid */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
               {[
-                { label: "Current Level", value: `${safeLevel.toFixed(1)}%`, sub: `${(dam.capacity * safeLevel / 100).toFixed(2)} TMC`, color: "#38bdf8" },
-                { label: "Total Capacity", value: `${dam.capacity} TMC`, sub: "Full Reservoir", color: "#a5f3fc" },
-                { label: "Daily Inflow", value: dam.inflow !== null ? `${fmtK(dam.inflow)}` : "—", sub: dam.inflow !== null ? "cusecs" : "", color: "#86efac" },
-                { label: "Daily Outflow", value: dam.outflow !== null ? `${fmtK(dam.outflow)}` : "—", sub: dam.outflow !== null ? "cusecs" : "", color: "#fca5a5" }
+                { label: t("storage"), value: `${safeLevel.toFixed(1)}%`, sub: `${(dam.capacity * safeLevel / 100).toFixed(2)} ${t("tmc")}`, color: "#38bdf8" },
+                { label: t("capacity"), value: `${dam.capacity} ${t("tmc")}`, sub: t("fullReservoir"), color: "#a5f3fc" },
+                { label: t("inflow"), value: dam.inflow !== null ? `${fmtK(dam.inflow)}` : "—", sub: dam.inflow !== null ? t("cusecs") : "", color: "#86efac" },
+                { label: t("outflow"), value: dam.outflow !== null ? `${fmtK(dam.outflow)}` : "—", sub: dam.outflow !== null ? t("cusecs") : "", color: "#fca5a5" }
               ].map((kpi, i) => (
                 <div key={i} style={{
                   background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)",
@@ -2345,8 +2385,6 @@ function DamDetailPage({ dam, navigate, setView }) {
               ))}
             </div>
 
-
-
             {/* Visiting Timings Card */}
             {staticInfo?.timings && (
               <div style={{
@@ -2354,22 +2392,22 @@ function DamDetailPage({ dam, navigate, setView }) {
                 borderRadius: 16, padding: "16px 20px"
               }}>
                 <h3 style={{ fontSize: 14, fontWeight: 800, color: "#67e8f9", margin: "0 0 12px 0", display: "flex", alignItems: "center", gap: 8 }}>
-                  <span>⏰</span> {plainName} Visiting Timings
+                  <span>⏰</span> {plainName} {t("visitingTimings")}
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                    <span style={{ color: "rgba(224,242,254,0.4)" }}>Visiting Hours:</span>
-                    <span style={{ color: "#fff", fontWeight: 600, textAlign: "right" }}>{staticInfo.timings.hours}</span>
+                    <span style={{ color: "rgba(224,242,254,0.4)" }}>{t("hours")}:</span>
+                    <span style={{ color: "#fff", fontWeight: 600, textAlign: "right" }}>{td(staticInfo.timings.hours)}</span>
                   </div>
-                  {staticInfo.timings.fountain && staticInfo.timings.fountain !== "N/A" && (
+                  {staticInfo.timings.fountain && td(staticInfo.timings.fountain) !== "N/A" && td(staticInfo.timings.fountain) !== "N/A" && (
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                      <span style={{ color: "rgba(224,242,254,0.4)" }}>Light Show:</span>
-                      <span style={{ color: "#67e8f9", fontWeight: 600, textAlign: "right" }}>{staticInfo.timings.fountain}</span>
+                      <span style={{ color: "rgba(224,242,254,0.4)" }}>{t("fountain")}:</span>
+                      <span style={{ color: "#67e8f9", fontWeight: 600, textAlign: "right" }}>{td(staticInfo.timings.fountain)}</span>
                     </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                    <span style={{ color: "rgba(224,242,254,0.4)" }}>Entry Fee:</span>
-                    <span style={{ color: "#fff", fontWeight: 600, textAlign: "right" }}>{staticInfo.timings.fee}</span>
+                    <span style={{ color: "rgba(224,242,254,0.4)" }}>{t("fee")}:</span>
+                    <span style={{ color: "#fff", fontWeight: 600, textAlign: "right" }}>{td(staticInfo.timings.fee)}</span>
                   </div>
                 </div>
               </div>
@@ -2378,7 +2416,7 @@ function DamDetailPage({ dam, navigate, setView }) {
         </div>
 
         {/* 2. HISTORICAL CHARTS SECTION */}
-        <HistoricalCharts dam={dam} safeLevel={safeLevel} />
+        <HistoricalCharts dam={dam} safeLevel={safeLevel} t={t} />
 
         {/* 3. HERITAGE & GEOGRAPHIC DETAILS (Placed at the bottom for rich informational content & SEO) */}
         <div className="dam-bottom-info-grid" style={{ marginBottom: 20 }}>
@@ -2388,10 +2426,10 @@ function DamDetailPage({ dam, navigate, setView }) {
             borderRadius: 16, padding: "20px 24px"
           }}>
             <h3 style={{ fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
-              <span>📜</span> History of {plainName} Dam
+              <span>📜</span> {localizedHistoryTitle()}
             </h3>
             <p style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(224,242,254,0.6)" }}>
-              {staticInfo.history}
+              {td(staticInfo.history)}
             </p>
           </div>
 
@@ -2401,7 +2439,7 @@ function DamDetailPage({ dam, navigate, setView }) {
             borderRadius: 16, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 12
           }}>
             <h3 style={{ fontSize: 14, fontWeight: 800, color: "#fff", margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
-              <span>🗺️</span> Water Map & Downstream River Flow
+              <span>🗺️</span> {t("waterMap")}
             </h3>
             
             <div style={{ width: "100%", height: 180, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)" }}>
@@ -2417,8 +2455,8 @@ function DamDetailPage({ dam, navigate, setView }) {
             </div>
 
             <div style={{ fontSize: 13, lineHeight: 1.5, color: "rgba(224,242,254,0.6)" }}>
-              <strong style={{ color: "#38bdf8", display: "block", marginBottom: 4, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 }}>Downstream Basin Path:</strong>
-              {staticInfo.map.flowPath}
+              <strong style={{ color: "#38bdf8", display: "block", marginBottom: 4, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 }}>{t("flowPath")}:</strong>
+              {td(staticInfo.map.flowPath)}
             </div>
           </div>
         </div>
@@ -2436,7 +2474,24 @@ function DamDetailPage({ dam, navigate, setView }) {
             color: "rgba(224, 242, 254, 0.65)",
             boxSizing: "border-box"
           }}>
-            Welcome to the live daily report for the <strong>{dam.name.replace(/\s*\(.*\)\s*/g, "").trim()} water level today</strong>. Located in the <strong>{dam.district}</strong> district of <strong>{dam.state || "Karnataka"}</strong> on the <strong>{dam.river} River</strong> system, this reservoir plays a key role in regional agricultural irrigation and flood control. Today's telemetry monitoring indicates the storage is at <strong>{safeLevel.toFixed(1)}%</strong> of its maximum capacity.
+            {lang === "hi" && (
+              <span><strong>{plainName} जलाशय</strong> के आज के लाइव दैनिक बुलेटिन में आपका स्वागत है। <strong>{getLocalizedState(dam.state, lang)}</strong> के <strong>{dam.district}</strong> जिले में <strong>{dam.river} नदी</strong> पर स्थित, यह जलाशय क्षेत्र में कृषि और बाढ़ नियंत्रण में मुख्य भूमिका निभाता है। आज का वर्तमान जल स्तर इसकी कुल क्षमता का <strong>{safeLevel.toFixed(1)}%</strong> है।</span>
+            )}
+            {lang === "kn" && (
+              <span><strong>{plainName} ಜಲಾಶಯದ</strong> ಇಂದಿನ ನೀರಿನ ಮಟ್ಟದ ಲೈವ್ ದೈನಂದಿನ ವರದಿಗಳಿಗೆ ಸುಸ್ವಾಗತ. <strong>{getLocalizedState(dam.state, lang)}</strong> ರಾಜ್ಯದ <strong>{dam.district}</strong> ಜಿಲ್ಲೆಯ <strong>{dam.river} ನದಿಯ</strong> ವ್ಯಾಪ್ತಿಯಲ್ಲಿರುವ ಈ ಜಲಾಶಯವು ಕೃಷಿ ಮತ್ತು ಪ್ರವಾಹ ನಿಯಂತ್ರಣಕ್ಕೆ ಪ್ರಮುಖವಾಗಿದೆ. ಇಂದಿನ ಒಟ್ಟು ಶೇಖರಣಾ ಮಟ್ಟವು ಜಲಾಶಯದ ಒಟ್ಟು ಸಾಮರ್ಥ್ಯದ <strong>{safeLevel.toFixed(1)}%</strong> ಆಗಿದೆ.</span>
+            )}
+            {lang === "te" && (
+              <span><strong>{plainName} జలాశయం</strong> ఈ రోజు నీటి మట్టాల లైవ్ రోజువారీ నివేదికకు స్వాగతం. <strong>{getLocalizedState(dam.state, lang)}</strong> లోని <strong>{dam.district}</strong> జిల్లాలో <strong>{dam.river} నది</strong> పై నిర్మించిన ఈ ప్రాజెక్ట్ వ్యవసాయం మరియు వరద నివారణలో కీలక పాత్ర పోషిస్తుంది. ఇందీన నీటి నిల్వ సామర్థ్యం గరిష్ట నిల్వలో <strong>{safeLevel.toFixed(1)}%</strong> గా నమోదైంది.</span>
+            )}
+            {lang === "ta" && (
+              <span><strong>{plainName} அணையின்</strong> இன்றைய நீர் மட்டம் குறித்த நேரடி தினசரி அறிக்கை பக்கத்திற்கு வரவேற்கிறோம். <strong>{getLocalizedState(dam.state, lang)}</strong> மாநிலத்தின் <strong>{dam.district}</strong> மாவட்டத்தில் <strong>{dam.river} ஆற்றின்</strong> குறுக்கே அமைந்துள்ள இந்த அணை விவசாய பாசனம் மற்றும் வெள்ள கட்டுப்பாட்டில் முக்கிய பங்கு வகிக்கிறது. இன்றைய நீர் இருப்பு அதன் கொள்ளளவில் <strong>{safeLevel.toFixed(1)}%</strong> ஆக உள்ளது.</span>
+            )}
+            {lang === "ml" && (
+              <span><strong>{plainName} ഡാമിന്റെ</strong> ഇന്നത്തെ ജലനിരപ്പ് വിവരങ്ങളിലേക്ക് സ്വാഗതം. <strong>{getLocalizedState(dam.state, lang)}</strong> സംസ്ഥാനത്തെ <strong>{dam.district}</strong> ജില്ലയിൽ <strong>{dam.river} നദിക്ക്</strong> കുറുകെയുള്ള ഈ ഡാം കാർഷിക ആവശ്യങ്ങൾക്കും പ്രളയ നിയന്ത്രണത്തിനും സഹായിക്കുന്നു. ഇന്നത്തെ ജല സംഭരണം പരമാവധി സംഭരണശേഷിയുടെ <strong>{safeLevel.toFixed(1)}%</strong> ആണ്.</span>
+            )}
+            {lang === "en" && (
+              <span>Welcome to the live daily report for the <strong>{plainName} water level today</strong>. Located in the <strong>{dam.district}</strong> district of <strong>{dam.state || "Karnataka"}</strong> on the <strong>{dam.river} River</strong> system, this reservoir plays a key role in regional agricultural irrigation and flood control. Today's telemetry monitoring indicates the storage is at <strong>{safeLevel.toFixed(1)}%</strong> of its maximum capacity.</span>
+            )}
           </div>
 
           {/* Flow Dynamics Analysis Card */}
@@ -2445,20 +2500,60 @@ function DamDetailPage({ dam, navigate, setView }) {
             borderRadius: 14, padding: "16px 20px"
           }}>
             <div style={{ fontSize: 11, color: "rgba(224,242,254,0.35)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>
-              Flow Dynamics Analysis
+              {lang === "hi" ? "बहाव गतिशीलता विश्लेषण" :
+               lang === "kn" ? "ಹರಿವಿನ ಚಲನಶೀಲತೆ ವಿಶ್ಲೇಷಣೆ" :
+               lang === "te" ? "ప్రవాహ విశ్లేషణ" :
+               lang === "ta" ? "நீர் ஓட்ட பகுப்பாய்வு" :
+               lang === "ml" ? "ഒഴുക്ക് വിശകലനം" : "Flow Dynamics Analysis"}
             </div>
             <div style={{ fontSize: 13, lineHeight: 1.5, color: "rgba(224,242,254,0.7)" }}>
               {netFlowCusecs > 0 ? (
                 <span>
-                  The reservoir is experiencing a net positive accumulation. Water inflow is exceeding outflow by <strong style={{ color: "#4ade80" }}>{netFlowCusecs.toLocaleString()} cusecs</strong>, increasing overall storage at a rate of <strong style={{ color: "#4ade80" }}>{netFlowTmcPerDay.toFixed(3)} TMC</strong> per 24 hours.
+                  {lang === "hi" ? (
+                    <span>जलाशय में पानी बढ़ रहा है। आवक निकासी से <strong>{netFlowCusecs.toLocaleString()} क्यूसेक</strong> अधिक है, जिससे प्रति 24 घंटे में <strong>{netFlowTmcPerDay.toFixed(3)} टीएमसी</strong> की दर से कुल भंडारण बढ़ रहा है।</span>
+                  ) : lang === "kn" ? (
+                    <span>ಜಲಾಶಯದಲ್ಲಿ ನೀರಿನ ಸಂಗ್ರಹ ಹೆಚ್ಚುತ್ತಿದೆ. ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ <strong>{netFlowCusecs.toLocaleString()} ಕ್ಯೂಸೆಕ್</strong> ಹೆಚ್ಚಾಗಿದ್ದು, ಪ್ರತಿ 24 ಗಂಟೆಗೆ <strong>{netFlowTmcPerDay.toFixed(3)} ಟಿಎಂಸಿ</strong> ವೇಗದಲ್ಲಿ ಸಂಗ್ರಹ ಹೆಚ್ಚುತ್ತಿದೆ.</span>
+                  ) : lang === "te" ? (
+                    <span>రిజర్వాయర్‌లో నికర సానుకూల ప్రവാహం ఉంది. ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే <strong>{netFlowCusecs.toLocaleString()} క్యూసెక్కులు</strong> ఎక్కువగా ఉంది, ఇది ప్రతి 24 గంటలకు <strong>{netFlowTmcPerDay.toFixed(3)} టీఎంసీ</strong> చొప్పున నిల్వను పెంచుతుంది.</span>
+                  ) : lang === "ta" ? (
+                    <span>நீர்த்தೇக்கத்தில் நீர் இருப்பு அதிகரித்து வருகிறது. நீர்வரத்து வெளியேற்றத்தை விட <strong>{netFlowCusecs.toLocaleString()} கனஅடி</strong> அதிகமாக உள்ளது, இதனால் 24 மணி நேரத்திற்கு <strong>{netFlowTmcPerDay.toFixed(3)} டிஎம்சி</strong> என்ற விகிതத்தில் சேമിப்பு அதிகரிக்கிறது.</span>
+                  ) : lang === "ml" ? (
+                    <span>ഡാമിൽ ജലസംഭരണം വർദ്ധിക്കുന്നു. നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ <strong>{netFlowCusecs.toLocaleString()} ക്യൂസെക്സ്</strong> കൂടുതലാണ്, 24 മണിക്കൂറിൽ ആകെ സംഭരണം <strong>{netFlowTmcPerDay.toFixed(3)} ടിഎംസി</strong> വർദ്ധിക്കുന്നു.</span>
+                  ) : (
+                    <span>The reservoir is experiencing a net positive accumulation. Water inflow is exceeding outflow by <strong style={{ color: "#4ade80" }}>{netFlowCusecs.toLocaleString()} cusecs</strong>, increasing overall storage at a rate of <strong style={{ color: "#4ade80" }}>{netFlowTmcPerDay.toFixed(3)} TMC</strong> per 24 hours.</span>
+                  )}
                 </span>
               ) : netFlowCusecs < 0 ? (
                 <span>
-                  The reservoir is currently depleting. Outflow discharges exceed water inflow by <strong style={{ color: "#f87171" }}>{Math.abs(netFlowCusecs).toLocaleString()} cusecs</strong>, resulting in a daily net reduction of <strong style={{ color: "#f87171" }}>{Math.abs(netFlowTmcPerDay).toFixed(3)} TMC</strong> in storage volume.
+                  {lang === "hi" ? (
+                    <span>जलाशय का जल स्तर कम हो रहा है। निकासी आवक से <strong>{Math.abs(netFlowCusecs).toLocaleString()} क्यूसेक</strong> अधिक है, जिसके परिणामस्वरूप 24 घंटे में भंडारण मात्रा में <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} टीएमसी</strong> की दैनिक शुद्ध कमी हो रही है।</span>
+                  ) : lang === "kn" ? (
+                    <span>ಜಲಾಶಯದಲ್ಲಿ ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತಿದೆ. ಹೊರಹರಿವು ಒಳಹರಿವಿಗಿಂತ <strong>{Math.abs(netFlowCusecs).toLocaleString()} ಕ್ಯೂಸೆಕ್</strong> ಹೆಚ್ಚಾಗಿದ್ದು, ದಿನಕ್ಕೆ <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} ಟಿಎಂಸಿ</strong> ಯಷ್ಟು ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತಿದೆ.</span>
+                  ) : lang === "te" ? (
+                    <span>రిజర్వాయర్‌లో నిల్వలు తగ్గుతున్నాయి. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే <strong>{Math.abs(netFlowCusecs).toLocaleString()} క్యూసెక్కులు</strong> ఎక్కువగా ఉంది, దీనివల్ల రోజువారీ <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} టీఎంసీ</strong> నిల్వ తగ్గుతుంది.</span>
+                  ) : lang === "ta" ? (
+                    <span>நீர்த்தೇக்க நீர் மட்டம் குறைந்து வருகிறது. வெளியேற்றம் நீர்வரத்தை விட <strong>{Math.abs(netFlowCusecs).toLocaleString()} கனஅடி</strong> அதிகமாக உள்ளது, இதனால் ஒரு நாளைக்கு <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} டிஎம்சி</strong> நீர் சேമിப்பு குறைகிறது.</span>
+                  ) : lang === "ml" ? (
+                    <span>ഡാമിൽ ജലസംഭരണം കുറയുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ <strong>{Math.abs(netFlowCusecs).toLocaleString()} ക്യൂസെക്സ്</strong> കൂടുതലാണ്, ഇത് പ്രതിദിനം <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} ടിഎംസി</strong> കുറയുന്നതിന് കാരണമാകുന്നു.</span>
+                  ) : (
+                    <span>The reservoir is currently depleting. Outflow discharges exceed water inflow by <strong style={{ color: "#f87171" }}>{Math.abs(netFlowCusecs).toLocaleString()} cusecs</strong>, resulting in a daily net reduction of <strong style={{ color: "#f87171" }}>{Math.abs(netFlowTmcPerDay).toFixed(3)} TMC</strong> in storage volume.</span>
+                  )}
                 </span>
               ) : (
                 <span>
-                  The reservoir flow is currently in equilibrium. Inflow and outflow rates are balanced at <strong style={{ color: "#fff" }}>{dam.inflow?.toLocaleString() || 0} cusecs</strong>, keeping storage volume stable.
+                  {lang === "hi" ? (
+                    <span>जलाशय प्रवाह वर्तमान में संतुलन में है। आवक और निकासी की दरें <strong>{dam.inflow?.toLocaleString() || 0} क्यूसेक</strong> पर संतुलित हैं, जिससे भंडारण मात्रा स्थिर बनी हुई है।</span>
+                  ) : lang === "kn" ? (
+                    <span>ಜಲಾಶಯದ ಹರಿವು ಪ್ರಸ್ತುತ ಸಮತೋಲನದಲ್ಲಿದೆ. ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವಿನ ಪ್ರಮಾಣವು <strong>{dam.inflow?.toLocaleString() || 0} ಕ್ಯೂಸೆಕ್</strong> ನಲ್ಲಿ ಸಮನಾಗಿದ್ದು, ಸಂಗ್ರಹವು ಸ್ಥಿರವಾಗಿದೆ.</span>
+                  ) : lang === "te" ? (
+                    <span>రిజర్వాయర్ ప్రవాహం ప్రస్తుతం సమతుల్యంగా ఉంది. ఇన్‌ఫ్లో మరియు అవుట్‌ఫ్లో రేట్లు <strong>{dam.inflow?.toLocaleString() || 0} క్యూసెక్కులు</strong> వద్ద సమానంగా ఉన్నాయి, దీనివల్ల నిల్వ స్థిరంగా ఉంటుంది.</span>
+                  ) : lang === "ta" ? (
+                    <span>நீர்த்தேக்க நீர் ஓட்டம் சமநிலையில் உள்ளது. நீர்வரத்து மற்றும் வெளியேற்ற விகிதங்கள் <strong>{dam.inflow?.toLocaleString() || 0} கனஅடி</strong> அளவில் சமமாக இருப்பதால், நீர் இருப்பு நிலையாக உள்ளது.</span>
+                  ) : lang === "ml" ? (
+                    <span>ഡാമിലെ ഒഴുക്ക് സമനിലയിലാണ്. നീരൊഴുക്കും പുറത്തേക്കുള്ള ഒഴുക്കും <strong>{dam.inflow?.toLocaleString() || 0} ക്യൂസെക്സ്</strong> ആയി സമനില പാലിക്കുന്നതിനാൽ ജലസംഭരണം മാറ്റമില്ലാതെ തുടരുന്നു.</span>
+                  ) : (
+                    <span>The reservoir flow is currently in equilibrium. Inflow and outflow rates are balanced at <strong style={{ color: "#fff" }}>{dam.inflow?.toLocaleString() || 0} cusecs</strong>, keeping storage volume stable.</span>
+                  )}
                 </span>
               )}
             </div>
@@ -2471,7 +2566,7 @@ function DamDetailPage({ dam, navigate, setView }) {
 }
 
 // ===================== ABOUT US PAGE =====================
-function AboutUsPage({ navigate, setView }) {
+function AboutUsPage({ navigate, setView, lang, t }) {
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 16px", animation: "fadeSlideUp 0.5s ease" }}>
       <button 
@@ -2486,7 +2581,7 @@ function AboutUsPage({ navigate, setView }) {
         onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
         onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
       >
-        &larr; Back to Dashboard
+        &larr; {t("backToDashboard")}
       </button>
 
       <div style={{
@@ -2494,43 +2589,41 @@ function AboutUsPage({ navigate, setView }) {
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
         padding: "32px 40px", marginBottom: 24
       }}>
-        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>About Damtoday</h1>
+        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>{t("aboutDamToday")}</h1>
         <p style={{ fontSize: 15, color: "rgba(224,242,254,0.6)", lineHeight: 1.7, marginBottom: 20 }}>
-          Damtoday is an independent, public-service telemetry monitoring platform dedicated to providing daily updates on major reservoir water levels, storage capacities, inflows, and outflows across India.
+          {t("aboutDesc")}
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24, marginTop: 32 }}>
           <div style={{ borderLeft: "3px solid #38bdf8", paddingLeft: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Our Mission</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t("ourMission")}</h3>
             <p style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
-              Water is one of our most critical resources. Our mission is to make reservoir data open, transparent, and easy to interpret for farmers, agricultural consultants, hydrologists, and citizens. By providing clear visual indicators, historical trends, and daily accumulation analysis, we help individuals make informed decisions about water conservation and crop planning.
+              {t("missionDesc")}
             </p>
           </div>
 
           <div style={{ borderLeft: "3px solid #67e8f9", paddingLeft: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Transparency & Data Sources</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t("transparencySources")}</h3>
             <p style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
-              Damtoday is committed to absolute data integrity. We do not manufacture or alter water level records. All metrics shown are parsed daily from official publications and bulletins released by state irrigation and disaster monitoring authorities, including:
+              {t("transparencyDesc")}
             </p>
             <ul style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.8, marginTop: 8, paddingLeft: 20 }}>
-              <li>Karnataka State Natural Disaster Monitoring Centre (KSNDMC)</li>
-              <li>Tamil Nadu Water Resources Department (TNWRD)</li>
-              <li>Andhra Pradesh Water Resources Department (APWRD)</li>
-              <li>Bhakra Beas Management Board (BBMB)</li>
-              <li>Sardar Sarovar Narmada Nigam Ltd (SSNNL)</li>
-              <li>Central Water Commission (CWC) & State WRDs</li>
+              <li>{lang === "hi" ? "कर्नाटक राज्य प्राकृतिक आपदा निगरानी केंद्र (KSNDMC)" : lang === "kn" ? "ಕರ್ನಾಟಕ ರಾಜ್ಯ ನೈಸರ್ಗಿಕ ವಿಕೋಪ ಉಸ್ತುವಾರಿ ಕೇಂದ್ರ (KSNDMC)" : lang === "te" ? "కర్ణాటక రాష్ట్ర విపత్తు నిర్వహణ సంస్థ (KSNDMC)" : lang === "ta" ? "கர்நாடகா மாநில இயற்கை பேரிடர் கண்காணிப்பு மையம் (KSNDMC)" : lang === "ml" ? "കർണ്ണാടക സംസ്ഥാന ദുരന്ത നിവാരണ കേന്ദ്രം (KSNDMC)" : "Karnataka State Natural Disaster Monitoring Centre (KSNDMC)"}</li>
+              <li>{lang === "hi" ? "तमिलनाडु जल संसाधन विभाग (TNWRD)" : lang === "kn" ? "ತಮಿಳುನಾಡು ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (TNWRD)" : lang === "te" ? "తమిళనాడు నీటి వనరుల శాఖ (TNWRD)" : lang === "ta" ? "தமிழ்நாடு நீர்வளத் துறை (TNWRD)" : lang === "ml" ? "തമിഴ്നാട് ജലവിഭവ വകുപ്പ് (TNWRD)" : "Tamil Nadu Water Resources Department (TNWRD)"}</li>
+              <li>{lang === "hi" ? "आंध्र प्रदेश जल संसाधन विभाग (APWRD)" : lang === "kn" ? "ಆಂಧ್ರಪ್ರದೇಶ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (APWRD)" : lang === "te" ? "ఆంధ్రప్రదేశ్ నీటి వనరుల శాఖ (APWRD)" : lang === "ta" ? "ஆந்திரப் பிரதேச நீர்வளத் துறை (APWRD)" : lang === "ml" ? "ആന്ധ്രാപ്രദേശ് ജലവിഭവ വകുപ്പ് (APWRD)" : "Andhra Pradesh Water Resources Department (APWRD)"}</li>
+              <li>{lang === "hi" ? "भाखड़ा ब्यास प्रबंधन बोर्ड (BBMB)" : lang === "kn" ? "ಭಾಕ್ರಾ ಬಿಯಾಸ್ ವ್ಯವಸ್ಥಾಪನಾ ಮಂಡಳಿ (BBMB)" : lang === "te" ? "భాక్రా బియాస్ మేనేజ్‌మెంట్ బోర్డ్ (BBMB)" : lang === "ta" ? "பக்ரா பியாസ് மேలాண்மை வாரியம் (BBMB)" : lang === "ml" ? "ഭക്രാ ബിയാസ് മാനേജ്‌മെന്റ് ബോർഡ് (BBMB)" : "Bhakra Beas Management Board (BBMB)"}</li>
+              <li>{lang === "hi" ? "सरदार सरोवर नर्मदा निगम लिमिटेड (SSNNL)" : lang === "kn" ? "ಸರ್ದಾರ್ ಸರೋವರ್ ನರ್ಮದಾ ನಿಗಮ ಲಿಮಿಟೆಡ್ (SSNNL)" : lang === "te" ? "సర్దార్ సరోవర్ నర్మదా నిగమ్ లిమిటెడ్ (SSNNL)" : lang === "ta" ? "சர்தார் சரோவர் நர்மதா நிகாம் லிமிடெட் (SSNNL)" : lang === "ml" ? "സർദാർ സരോവർ നർമ്മദ നിഗം ലിമിറ്റഡ് (SSNNL)" : "Sardar Sarovar Narmada Nigam Ltd (SSNNL)"}</li>
+              <li>{lang === "hi" ? "केंद्रीय जल आयोग (CWC) और राज्य जल संसाधन विभाग" : lang === "kn" ? "ಕೇಂದ್ರ ಜಲ ಆಯೋಗ (CWC) ಮತ್ತು ರಾಜ್ಯ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆಗಳು" : lang === "te" ? "కేంద్ర జల సంఘం (CWC) & రాష్ట్ర నీటి వనరుల శాఖలు" : lang === "ta" ? "மத்திய நீர் ஆணையம் (CWC) & மாநில நீர்வளத் துறைகள்" : lang === "ml" ? "കേന്ദ്ര ജല കമ്മീഷൻ (CWC) & സംസ്ഥാന ജലവിഭവ വകുപ്പുകൾ" : "Central Water Commission (CWC) & State WRDs"}</li>
             </ul>
           </div>
 
           <div style={{ borderLeft: "3px solid #86efac", paddingLeft: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>Understanding the Metrics</h3>
-            <p style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
-              * **TMC (Thousand Million Cubic feet)**: The unit used to describe the volume of water stored in reservoirs. One TMC is equal to approximately 28.3 billion liters of water.
-              <br/>
-              * **Cusecs (Cubic feet per second)**: The rate used to describe flow velocity. 1 cusec equals 28.3 liters of water passing a point every second.
-              <br/>
-              * **Flow Balance**: When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes.
-            </p>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t("understandingMetrics")}</h3>
+            <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
+              <p style={{ marginBottom: 8 }}><strong>{t("tmc")} (Thousand Million Cubic feet)</strong>: {lang === "hi" ? "जलाशयों में संग्रहीत पानी की मात्रा का वर्णन करने के लिए इस्तेमाल की जाने वाली इकाई। एक टीएमसी लगभग 28.3 अरब लीटर पानी के बराबर होती है।" : lang === "kn" ? "ಜಲಾಶಯಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ನೀರಿನ ಪ್ರಮಾಣವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ಘಟಕ. ಒಂದು ಟಿಎಂಸಿ ಎಂದರೆ ಸುಮಾರು 28.3 ಶತಕೋಟಿ ಲೀಟರ್ ನೀರು." : lang === "te" ? "రిజర్వాయర్లలో నిల్వ ఉన్న నీటి పరిమాణాన్ని తెలియజేసే ప్రమాణం. ఒక టీఎండీ అంటే సుమారు 28.3 బిలియన్ లీటర్ల నీరు." : lang === "ta" ? "நீர்த்தேக்கங்களில் சேமிக்கப்படும் நீரின் அளவை விவரிக்கும் அலகு. ஒரு டிஎம்சி என்பது தோராயமாக 28.3 பில்லியன் லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലാശയങ്ങളിലെ ജലത്തിന്റെ അളവ് സൂചിപ്പിക്കുന്ന യൂണിറ്റ്. ഒരു ടിഎംസി എന്നാൽ ഏകദേശം 28.3 ബില്യൺ ലിറ്റർ ജലമാണ്." : "The unit used to describe the volume of water stored in reservoirs. One TMC is equal to approximately 28.3 billion liters of water."}</p>
+              <p style={{ marginBottom: 8 }}><strong>{t("cusecs").charAt(0).toUpperCase() + t("cusecs").slice(1)} (Cubic feet per second)</strong>: {lang === "hi" ? "प्रवाह वेग का वर्णन करने के लिए इस्तेमाल की जाने वाली दर। 1 क्यूसेक हर सेकंड एक बिंदु से गुजरने वाले 28.3 लीटर पानी के बराबर होता है।" : lang === "kn" ? "ನೀರಿನ ಹರಿವಿನ ವೇಗವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ದರ. 1 ಕ್ಯೂಸೆಕ್ ಎಂದರೆ ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಒಂದು ಬಿಂದುವನ್ನು ದಾಟುವ 28.3 ಲೀಟರ್ ನೀರು." : lang === "te" ? "నీటి ప్రవాహ వేగాన్ని తెలియజేసే కొలత. ఒక క్యూసెక్కు అంటే ప్రతి సెకనుకు ఒక బిందువును దాటి ప్రవహించే 28.3 లీటర్ల నీరు." : lang === "ta" ? "நீர் ஓட்டத்தின் வேகத்தை விவரிக்கும் அலகு. 1 கனஅடி என்பது ஒவ்வொரு வினாடியும் ஒரு புள்ளியைக் கடந்து செல்லும் 28.3 லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലപ്രവാഹത്തിന്റെ വേഗത അളക്കുന്ന യൂണിറ്റ്. ഒരു ക്യൂസെക്സ് എന്നാൽ ഒരു സെക്കൻഡിൽ ഒരു പോയിന്റിലൂടെ ഒഴുകിപ്പോകുന്ന 28.3 ലിറ്റർ ജലമാണ്." : "The rate used to describe flow velocity. 1 cusec equals 28.3 liters of water passing a point every second."}</p>
+              <p style={{ marginBottom: 8 }}><strong>{lang === "hi" ? "प्रवाह संतुलन" : lang === "kn" ? "ಹರಿವಿನ ಸಮತೋಲನ" : lang === "te" ? "ప్రవాహ సమతుల్యత" : lang === "ta" ? "ஓட்ட சமநிலை" : lang === "ml" ? "നീരൊഴുക്ക് സന്തുലിതാവസ്ഥ" : "Flow Balance"}</strong>: {lang === "hi" ? "जब आवक निकासी से अधिक हो जाती है, तो जलाशय में भंडारण जमा होता है। जब निकासी आवक से अधिक हो जाती है, तो भंडारण कम हो जाता है।" : lang === "kn" ? "ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಜಲಾಶಯದಲ್ಲಿ ನೀರು ಸಂಗ್ರಹವಾಗುತ್ತದೆ. ಹೊರಹರಿವು ಒಳಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತದೆ." : lang === "te" ? "ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు రిజర్వాయర్‌లో నిల్వ పెరుగుతుంది. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు నిల్వ తగ్గుతుంది." : lang === "ta" ? "நீர்வரத்து வெளியேற்றத்தை விட அதிகமாக இருக்கும்போது, நீர்த்தೇக்கத்தின் சேമിப்பு அதிகரிக்கும். வெளியேற்றம் நீர்வரத்தை விட அதிகமாக இருக்கும்போது, சேമിப்பு குறையும்." : lang === "ml" ? "നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കൂടുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കുറയുന്നു." : "When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes."}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -2539,7 +2632,7 @@ function AboutUsPage({ navigate, setView }) {
 }
 
 // ===================== CONTACT US PAGE =====================
-function ContactUsPage({ navigate, setView }) {
+function ContactUsPage({ navigate, setView, lang, t }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -2565,7 +2658,7 @@ function ContactUsPage({ navigate, setView }) {
         onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
         onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
       >
-        &larr; Back to Dashboard
+        &larr; {t("backToDashboard")}
       </button>
 
       <div style={{
@@ -2573,9 +2666,9 @@ function ContactUsPage({ navigate, setView }) {
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
         padding: "32px 40px"
       }}>
-        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>Contact Us</h1>
+        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>{t("contact")}</h1>
         <p style={{ fontSize: 14, color: "rgba(224,242,254,0.5)", lineHeight: 1.6, marginBottom: 28 }}>
-          Have any feedback, noticed a data discrepancy, or want to partner with us? Fill out the form below or write to us directly at **damtoday4@gmail.com**.
+          {t("contactDesc")}
         </p>
 
         {submitted ? (
@@ -2584,9 +2677,9 @@ function ContactUsPage({ navigate, setView }) {
             padding: "24px 20px", borderRadius: 12, textAlign: "center", margin: "20px 0"
           }}>
             <span style={{ fontSize: 32, display: "block", marginBottom: 12 }}>&check;</span>
-            <h3 style={{ color: "#4ade80", fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Message Sent Successfully!</h3>
+            <h3 style={{ color: "#4ade80", fontSize: 18, fontWeight: 700, marginBottom: 6 }}>{t("messageSent")}</h3>
             <p style={{ fontSize: 13, color: "rgba(224,242,254,0.6)", lineHeight: 1.5 }}>
-              Thank you for reaching out. We have received your submission and will get in touch with you at **{email}** if necessary.
+              {t("contactSuccessDesc").replace("{email}", email)}
             </p>
             <button 
               onClick={() => { setSubmitted(false); setName(""); setEmail(""); setMessage(""); }}
@@ -2596,13 +2689,13 @@ function ContactUsPage({ navigate, setView }) {
                 transition: "all 0.2s"
               }}
             >
-              Send Another Message
+              {t("sendAnother")}
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>Your Name</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>{t("yourName")}</label>
               <input 
                 type="text" 
                 required
@@ -2616,7 +2709,7 @@ function ContactUsPage({ navigate, setView }) {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>Your Email</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>{t("yourEmail")}</label>
               <input 
                 type="email" 
                 required
@@ -2630,7 +2723,7 @@ function ContactUsPage({ navigate, setView }) {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>Message</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>{t("message")}</label>
               <textarea 
                 required
                 rows="5"
@@ -2655,7 +2748,7 @@ function ContactUsPage({ navigate, setView }) {
               onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 15px rgba(6,182,212,0.4)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; }}
             >
-              Send Message
+              {t("sendMessage")}
             </button>
           </form>
         )}
@@ -2665,7 +2758,7 @@ function ContactUsPage({ navigate, setView }) {
 }
 
 // ===================== PRIVACY POLICY PAGE =====================
-function PrivacyPolicyPage({ navigate, setView }) {
+function PrivacyPolicyPage({ navigate, setView, lang, t }) {
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 16px", animation: "fadeSlideUp 0.5s ease" }}>
       <button 
@@ -2680,7 +2773,7 @@ function PrivacyPolicyPage({ navigate, setView }) {
         onMouseEnter={e => { e.currentTarget.style.color = "#38bdf8"; e.currentTarget.style.background = "rgba(56,189,248,0.08)"; }}
         onMouseLeave={e => { e.currentTarget.style.color = "rgba(224,242,254,0.6)"; e.currentTarget.style.background = "transparent"; }}
       >
-        &larr; Back to Dashboard
+        &larr; {t("backToDashboard")}
       </button>
 
       <div style={{
@@ -2688,53 +2781,55 @@ function PrivacyPolicyPage({ navigate, setView }) {
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
         padding: "32px 40px", color: "rgba(224,242,254,0.6)", fontSize: 13, lineHeight: 1.7
       }}>
-        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 20 }}>Privacy Policy</h1>
+        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 20 }}>{t("privacy")}</h1>
         
         <p style={{ marginBottom: 16 }}>
-          At Damtoday, accessible from our website, one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by Damtoday and how we use it.
+          {t("privacyDesc")}
         </p>
 
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Consent</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>{t("consent")}</h3>
         <p style={{ marginBottom: 16 }}>
-          By using our website, you hereby consent to our Privacy Policy and agree to its terms.
+          {t("consentDesc")}
         </p>
 
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Information We Collect</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>{t("infoWeCollect")}</h3>
         <p style={{ marginBottom: 16 }}>
-          Damtoday does not require user registration. We do not collect personal identifying information like name, address, or phone number unless you voluntarily fill out the Contact Us form, in which case we only use your email to address your inquiry.
+          {t("infoWeCollectDesc")}
         </p>
 
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Log Files</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>{t("logFiles")}</h3>
         <p style={{ marginBottom: 16 }}>
-          Damtoday follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services' analytics. The information collected by log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the number of clicks. These are not linked to any information that is personally identifiable. The purpose of the information is for analyzing trends, administering the site, tracking users' movement on the website, and gathering demographic information.
+          {t("logFilesDesc")}
         </p>
 
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Google DoubleClick DART Cookie</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>{t("dartCookie")}</h3>
         <p style={{ marginBottom: 16 }}>
-          Google is one of the third-party vendors on our site. It also uses cookies, known as DART cookies, to serve ads to our site visitors based upon their visit to our site and other sites on the internet. However, visitors may choose to decline the use of DART cookies by visiting the Google ad and content network Privacy Policy at the following URL – <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", textDecoration: "none" }}>https://policies.google.com/technologies/ads</a>.
+          {t("dartCookieDesc")}
+          <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8", textDecoration: "none" }}>
+            https://policies.google.com/technologies/ads
+          </a>.
         </p>
 
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Our Advertising Partners</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>{t("adPartners")}</h3>
         <p style={{ marginBottom: 16 }}>
-          Some of advertisers on our site may use cookies and web beacons. Our advertising partners include:
+          {t("adPartnersDesc")}
           <br/>
-          * **Google AdSense**: Google AdSense uses cookies to serve relevant advertisements to users based on their browsing history.
+          * <strong>Google AdSense</strong>: {t("adSenseDesc")}
         </p>
 
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Third-Party Privacy Policies</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>{t("thirdPartyPolicies")}</h3>
         <p style={{ marginBottom: 16 }}>
-          Damtoday's Privacy Policy does not apply to other advertisers or websites. Thus, we are advising you to consult the respective Privacy Policies of these third-party ad servers for more detailed information. It may include their practices and instructions about how to opt-out of certain options.
+          {t("thirdPartyPoliciesDesc")}
         </p>
 
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>Questions</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginTop: 24, marginBottom: 8 }}>{t("questions")}</h3>
         <p style={{ marginBottom: 16 }}>
-          If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us by email at **damtoday4@gmail.com**.
+          {t("questionsDesc")}
         </p>
       </div>
     </div>
   );
 }
-
 const getDamSlug = (name) => {
   return name
     .toLowerCase()
@@ -2789,6 +2884,93 @@ const ZONE_MAP = {
   "Central": ["Madhya Pradesh", "Uttar Pradesh"]
 };
 
+
+const getLocalizedState = (stateName, lang) => {
+  const s = stateName || "Karnataka";
+  if (s === "Karnataka") {
+    if (lang === "hi") return "कर्नाटक";
+    if (lang === "kn") return "ಕರ್ನಾಟಕ";
+    if (lang === "te") return "కర్ణాటక";
+    if (lang === "ta") return "கர்நாடகா";
+    if (lang === "ml") return "ಕರ್ನಾಟಕ";
+  }
+  if (s === "Tamil Nadu") {
+    if (lang === "hi") return "तमिलनाडु";
+    if (lang === "kn") return "ತಮಿಳುನಾಡು";
+    if (lang === "te") return "తమిళనాడు";
+    if (lang === "ta") return "தமிழ்நாடு";
+    if (lang === "ml") return "തമിഴ്നാട്";
+  }
+  if (s === "Kerala") {
+    if (lang === "hi") return "केरल";
+    if (lang === "kn") return "ಕೇರಳ";
+    if (lang === "te") return "కేరళ";
+    if (lang === "ta") return "கேரளா";
+    if (lang === "ml") return "കേരളം";
+  }
+  if (s === "Andhra Pradesh") {
+    if (lang === "hi") return "आंध्र प्रदेश";
+    if (lang === "kn") return "ಆಂಧ್ರ ಪ್ರದೇಶ";
+    if (lang === "te") return "ఆంధ్రప్రదేశ్";
+    if (lang === "ta") return "ஆந்திரப் பிரதேசம்";
+    if (lang === "ml") return "ஆന്ധ്രാപ്രദേശ്";
+  }
+  if (s === "Telangana") {
+    if (lang === "hi") return "तेलंगाना";
+    if (lang === "kn") return "ತೆಲಂಗಾಣ";
+    if (lang === "te") return "తెలంగాణ";
+    if (lang === "ta") return "தெலுங்கானா";
+    if (lang === "ml") return "തെലങ്കാന";
+  }
+  return s;
+};
+
+const getLocalizedZone = (zone, lang) => {
+  if (zone === "All") {
+    if (lang === "hi") return "सभी";
+    if (lang === "kn") return "ಎಲ್ಲಾ";
+    if (lang === "te") return "అన్నీ";
+    if (lang === "ta") return "அனைத்தும்";
+    if (lang === "ml") return "എല്ലാം";
+  }
+  if (zone === "North") {
+    if (lang === "hi") return "उत्तर";
+    if (lang === "kn") return "ಉತ್ತರ";
+    if (lang === "te") return "ఉత్తర";
+    if (lang === "ta") return "வடக்கு";
+    if (lang === "ml") return "വടക്ക്";
+  }
+  if (zone === "South") {
+    if (lang === "hi") return "दक्षिण";
+    if (lang === "kn") return "ದಕ್ಷಿಣ";
+    if (lang === "te") return "ದಕ್ಷಿಣ";
+    if (lang === "ta") return "தெற்கு";
+    if (lang === "ml") return "തെക്ക്";
+  }
+  if (zone === "East") {
+    if (lang === "hi") return "पूर्व";
+    if (lang === "kn") return "ಪೂರ್ವ";
+    if (lang === "te") return "తూర్పు";
+    if (lang === "ta") return "கிழக்கு";
+    if (lang === "ml") return "കിഴക്ക്";
+  }
+  if (zone === "West") {
+    if (lang === "hi") return "पश्चिम";
+    if (lang === "kn") return "ಪಶ್ಚಿಮ";
+    if (lang === "te") return "పడమర";
+    if (lang === "ta") return "மேற்கு";
+    if (lang === "ml") return "പടിഞ്ഞാറ്";
+  }
+  if (zone === "Central") {
+    if (lang === "hi") return "मध्य";
+    if (lang === "kn") return "ಮಧ್ಯ";
+    if (lang === "te") return "మధ్య";
+    if (lang === "ta") return "மத்திய";
+    if (lang === "ml") return "മധ്യം";
+  }
+  return zone;
+};
+
 function useRouter() {
   const [path, setPath] = useState(window.location.pathname);
 
@@ -2826,6 +3008,22 @@ export default function App() {
   const [searchQuery,setSearchQuery] = useState("");
   const [goStats,setGoStats] = useState(false);
   const statsRef = useRef(null);
+
+  // i18n support
+  const [lang, setLang] = useState(() => localStorage.getItem("dam_lang") || "en");
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const t = (key) => TRANSLATIONS[lang]?.[key] || TRANSLATIONS["en"]?.[key] || key;
+  const td = (detailObj) => {
+    if (!detailObj) return "";
+    if (typeof detailObj === 'string') return detailObj;
+    return detailObj[lang] || detailObj["en"] || "";
+  };
+  const selectLanguage = (newLang) => {
+    setLang(newLang);
+    localStorage.setItem("dam_lang", newLang);
+    setLangDropdownOpen(false);
+  };
+
 
   useEffect(() => {
     const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
@@ -2916,32 +3114,96 @@ export default function App() {
       setSelectedState("all");
       setSelectedZone("All");
       setSelectedDam(null);
-      const title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
-      const desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
+      let title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
+      let desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
+      if (lang === "hi") {
+        title = "डैमटुडे - भारत के जलाशयों के जल स्तर, आवक और निकासी की लाइव जानकारी";
+        desc = "भारत में जलाशयों के जल स्तर, भंडारण क्षमता, आवक और निकासी के दैनिक अपडेट देखें। कृषि और सार्वजनिक संसाधन योजना के लिए सत्यापित जल टेलीमेट्री जानकारी।";
+      } else if (lang === "kn") {
+        title = "ಡ್ಯಾಮ್‌ಟುಡೇ - ಭಾರತದ ಪ್ರಮುಖ ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟ, ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವಿನ ನೇರ ಮಾಹಿತಿ";
+        desc = "ಭಾರತದ ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟಗಳು, ಸಂಗ್ರಹಣಾ ಸಾಮರ್ಥ್ಯಗಳು, ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವಿನ ದೈನಂದಿನ ನವೀಕರಣಗಳನ್ನು ಪರಿಶೀಲಿಸಿ. ಕೃಷಿ ಮತ್ತು ಸಾರ್ವಜನಿಕ ಯೋಜನೆಯ ವಿಶ್ವಾಸಾರ್ಹ ಟೆಲಿಮೆಟ್ರಿ ಮಾಹಿತಿ.";
+      } else if (lang === "te") {
+        title = "డ్యామ్‌టుడే - భారతదేశ రిజర్వాయర్ల నీటి మట్టాలు, ఇన్‌ఫ్లో & అవుట్‌ఫ్లోల లైవ్ సమాచారం";
+        desc = "భారతదేశంలో రిజర్వాయర్ల నీటి మట్టాలు, నిల్వ సామర్థ్యాలు, ఇన్‌ఫ్లో మరియు అవుట్‌ఫ్లోల రోజువారీ లైవ్ అప్‌డేట్‌లను చూడండి. వ్యవసాయ మరియు ప్రజా ప్రణాళిక కొరకు ధృవీకరించబడిన సమాచారం.";
+      } else if (lang === "ta") {
+        title = "டேம்டுடே - இந்தியாவின் முக்கிய நீர்த்தೇக்கங்களின் நீர் மட்டங்கள், நீர்வரத்து மற்றும் வெளியேற்ற நேரடித் தகவல்";
+        desc = "இந்தியாவில் உள்ள நீர்த்தேக்கங்களின் நீர் மட்டங்கள், கொள்ளளவு, நீர்வரத்து மற்றும் நீர்வெளியேற்றம் குறித்த தினசரி நேரடித் தகவాలనుப் பார்க்கவும். விவசாய மற்றும் பொது வள திட்டமிடலுக்கான சரிபார்க்கப்பட்ட தகவல்.";
+      } else if (lang === "ml") {
+        title = "ഡാംടുഡേ - ഇന്ത്യയിലെ അണക്കെട്ടുകളുടെ ജലനിരപ്പ്, നീരൊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് തത്സമയ വിവരങ്ങൾ";
+        desc = "ഇന്ത്യയിലെ പ്രധാന ഡാമുകളിലെ ജലനിരപ്പ്, സംഭരണശേഷി, നീരൊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് എന്നിവയുടെ ദൈനംദിന അപ്ഡേറ്റുകൾ ഇവിടെ പരിശോധിക്കാം. കൃഷിക്കും പൊതു ആവശ്യങ്ങൾക്കുമുള്ള കൃത്യമായ വിവരങ്ങൾ.";
+      }
       document.title = title;
       setMetaDescription(desc);
       setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (path === "/about") {
       setView("about");
-      const title = "About Us - Open Reservoir Telemetry Integrity - Damtoday";
-      const desc = "Learn about the mission of Damtoday. We provide transparent, daily public reports on major India reservoirs verified from official state and national water monitoring agencies.";
+      let title = "About Us - Open Reservoir Telemetry Integrity - Damtoday";
+      let desc = "Learn about the mission of Damtoday. We provide transparent, daily public reports on major India reservoirs verified from official state and national water monitoring agencies.";
+      if (lang === "hi") {
+        title = "हमारे बारे में - स्वतंत्र जलाशय टेलीमेट्री - डैमटुडे";
+        desc = "डैमटुडे के मिशन के बारे में जानें। हम आधिकारिक राज्य और राष्ट्रीय जल निगरानी एजेंसियों से सत्यापित प्रमुख भारतीय जलाशयों पर पारदर्शी, दैनिक सार्वजनिक रिपोर्ट प्रदान करते हैं।";
+      } else if (lang === "kn") {
+        title = "ನಮ್ಮ ಬಗ್ಗೆ - ಜಲಾಶಯಗಳ ಟೆಲಿಮೆಟ್ರಿ ಮಾಹಿತಿ - ಡ್ಯಾಮ್‌ಟುಡೇ";
+        desc = "ಡ್ಯಾಮ್‌ಟುಡೇನ ಧ್ಯೇಯದ ಬಗ್ಗೆ ತಿಳಿಯಿರಿ. ನಾವು ಅಧಿಕೃತ ರಾಜ್ಯ ಮತ್ತು ರಾಷ್ಟ್ರೀಯ ಜಲ ಮೇಲ್ವಿಚಾರಣಾ ಏಜೆನ್ಸಿಗಳಿಂದ ಪರಿಶೀಲಿಸಿದ ಪ್ರಮುಖ ಭಾರತೀಯ ಜಲಾಶಯಗಳ ಬಗ್ಗೆ ಪಾರದರ್ಶಕ ವರದಿಗಳನ್ನು ಒದಗಿಸುತ್ತೇವೆ।";
+      } else if (lang === "te") {
+        title = "మా గురించి - రిజర్వాయర్ టెలిమెట్రీ విశ్వసనీయత - డ్యామ్‌టుడే";
+        desc = "డ్యామ్‌టుడే యొక్క లక్ష్యం గురించి తెలుసుకోండి. మేము అధికారిక రాష్ట్ర మరియు జాతీయ నీటి పర్యవేక్షణ సంస్థల నుండి ధృవీకరించబడిన రిజర్వాయర్ల రోజువారీ నివేదికలను అందిస్తాము.";
+      } else if (lang === "ta") {
+        title = "எங்களைப் பற்றி - நீர்த்தேக்க கண்காணிப்பு நம்பகத்தன்மை - டேம்டுடே";
+        desc = "டேம்டுடே தளத்தின் நோக்கத்தைப் பற்றி அறிந்து கொள்ளுங்கள். அதிகாரப்பூர்வ அரசு நிறுவனங்களின் மூலம் சரிபார்க்கப்பட்ட இந்திய நீர்த்தேக்கங்களின் தினசரி அறிக்கைகளை நாங்கள் வழங்குகிறோம்.";
+      } else if (lang === "ml") {
+        title = "ഞങ്ങളെക്കുറിച്ച് - സുതാര്യമായ ഡാം നിരീക്ഷണം - ഡാംടുഡേ";
+        desc = "ഡാംടുഡേയുടെ ദൗത്യത്തെക്കുറിച്ച് അറിയുക. സംസ്ഥാന, ദേശീയ ഏജൻസികളിൽ നിന്നുള്ള വിവരങ്ങൾ പരിശോധിച്ചു സുതാര്യമായ അപ്ഡേറ്റുകൾ ഞങ്ങൾ ദിവസവും നൽകുന്നു.";
+      }
       document.title = title;
       setMetaDescription(desc);
       setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (path === "/contact") {
       setView("contact");
-      const title = "Contact Us - Data Inquiries & Feedback - Damtoday";
-      const desc = "Have feedback or data discrepancy reports? Contact the Damtoday support team directly at damtoday4@gmail.com or submit our online feedback form.";
+      let title = "Contact Us - Data Inquiries & Feedback - Damtoday";
+      let desc = "Have feedback or data discrepancy reports? Contact the Damtoday support team directly at damtoday4@gmail.com or submit our online feedback form.";
+      if (lang === "hi") {
+        title = "संपर्क करें - डेटा पूछताछ और प्रतिक्रिया - डैमटुडे";
+        desc = "प्रतिक्रिया या डेटा विसंगति रिपोर्ट है? डैमटुडे सहायता टीम से सीधे damtoday4@gmail.com पर संपर्क करें या हमारा ऑनलाइन फ़ॉर्म भरें।";
+      } else if (lang === "kn") {
+        title = "ಸಂಪರ್ಕಿಸಿ - ದತ್ತಾಂಶ ವಿಚಾರಣೆ ಮತ್ತು ಪ್ರತಿಕ್ರಿಯೆ - ಡ್ಯಾಮ್‌ಟುಡೇ";
+        desc = "ಯಾವುದೇ ಪ್ರತಿಕ್ರಿಯೆ ಅಥವಾ ದತ್ತಾಂಶದ ವ್ಯತ್ಯಾಸಗಳ ವರದಿಗಳಿವೆಯೇ? ಡ್ಯಾಮ್‌ಟುಡೇ ತಂಡವನ್ನು ನೇರವಾಗಿ damtoday4@gmail.com ನಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ ಅಥವಾ ಆನ್‌ಲೈನ್ ಫಾರ್ಮ್ ಸಲ್ಲಿಸಿ।";
+      } else if (lang === "te") {
+        title = "సంప్రదించండి - సమాచార విచారణలు & అభిప్రాయాలు - డ్యామ్‌టుడే";
+        desc = "ఏదైనా అభిప్రాయం లేదా డేటా వ్యత్యాసాల నివేదికలు ఉన్నాయా? డ్యామ్‌టుడే సహాయ బృందాన్ని damtoday4@gmail.com లో నేరుగా సంప్రదించండి లేదా మా ఆన్‌లైన్ ఫారమ్‌ను పూరించండి.";
+      } else if (lang === "ta") {
+        title = "தொடர்புகொள்ள - தரவு விசாரணைகள் & கருத்துக்கள் - டேம்டுடே";
+        desc = "ஏதேனும் கருத்துக்கள் அல்லது தரவு முரண்பாடுகள் ఉన్నதா? டேம்டுடே ஆதரவு குழுவை damtoday4@gmail.com என்ற மின்னஞ்சலில் தொடர்பு கொள்ளவும் அல்லது படிவத்தை நிரப்பவும்.";
+      } else if (lang === "ml") {
+        title = "ബന്ധപ്പെടുക - സംശയങ്ങളും നിർദ്ദേശങ്ങളും - ഡാംടുഡേ";
+        desc = "അഭിപ്രായങ്ങളും ഡാറ്റയിലെ തെറ്റുകളും റിപ്പോർട്ട് ചെയ്യാൻ ഡാംടുഡേ ടീമിനെ നേരിട്ട് damtoday4@gmail.com എന്ന വിലാസത്തിൽ ബന്ധപ്പെടുക അല്ലെങ്കിൽ ഫോം പൂരിപ്പിക്കുക.";
+      }
       document.title = title;
       setMetaDescription(desc);
       setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (path === "/privacy") {
       setView("privacy");
-      const title = "Privacy Policy - User Consent & Cookies - Damtoday";
-      const desc = "Read the Privacy Policy for Damtoday. Information regarding user cookies, ad beacons (Google AdSense), data collection methods, and contact email.";
+      let title = "Privacy Policy - User Consent & Cookies - Damtoday";
+      let desc = "Read the Privacy Policy for Damtoday. Information regarding user cookies, ad beacons (Google AdSense), data collection methods, and contact email.";
+      if (lang === "hi") {
+        title = "गोपनीयता नीति - उपयोगकर्ता सहमति और कुकीज़ - डैमटुडे";
+        desc = "डैमटुडे की गोपनीयता नीति पढ़ें। उपयोगकर्ता कुकीज़, विज्ञापन बीकन (गूगल एडसेंस), डेटा संग्रह विधियों और संपर्क ईमेल के बारे में जानकारी।";
+      } else if (lang === "kn") {
+        title = "ಗೌಪ್ಯತಾ ನೀತಿ - ಬಳಕೆದಾರರ ಸಮ್ಮತಿ ಮತ್ತು ಕುಕಿಗಳು - ಡ್ಯಾಮ್‌ಟುಡೇ";
+        desc = "ಡ್ಯಾಮ್‌ಟುಡೇನ ಗೌಪ್ಯತಾ ನೀತಿಯನ್ನು ಓದಿ. ಬಳಕೆದಾರರ ಕುಕಿಗಳು, ಜಾಹೀರಾತು ಬೀಕನ್‌ಗಳು (ಗೂಗಲ್ ಆಡ್ಸೆನ್ಸ್), ದತ್ತಾಂಶ ಸಂಗ್ರಹಣಾ ವಿಧಾನಗಳು ಮತ್ತು ಸಂಪರ್ಕ ಇಮೇಲ್ ಮಾಹಿತಿ।";
+      } else if (lang === "te") {
+        title = "గోప్యతా విధానం - వినియోగదారు సమ్మతి & కుకీలు - డ్యామ్‌టుడే";
+        desc = "డ్యామ్‌టుడే గోప్యతా విధానాన్ని చదవండి. యూజర్ కుకీలు, ప్రకటన బీకాన్లు (గూగుల్ యాడ్‌సెన్స్), డేటా సేకరణ పద్ధతులు మరియు సంప్రదింపు ఈమెయిల్ వివరాలు.";
+      } else if (lang === "ta") {
+        title = "தனியுரிமைக் கொள்கை - பயனர் சம்மதம் & குக்கீகள் - டேம்டுடே";
+        desc = "டேம்டுடே தளத்தின் தனியுரிமைக் கொள்கையைப் படிக்கவும். பயனர் குக்கீகள், கூகுள் ஆட்சென்ஸ் விளம்பரங்கள், தரவு சேகரிப்பு முறைகள் மற்றும் தொடர்பு மின்னஞ்சல் பற்றிய தகவல்.";
+      } else if (lang === "ml") {
+        title = "സ്വകാര്യതാ നയം - കുക്കികളും വിവര ശേഖരണവും - ഡാംടുഡേ";
+        desc = "ഡാംടുഡേയുടെ സ്വകാര്യതാ നയം വായിക്കുക. കുക്കികൾ, പരസ്യങ്ങൾ (ഗൂഗിൾ ആഡ്സെൻസ്), വിവര ശേഖരണ രീതികൾ, ഇമെയിൽ എന്നിവയെക്കുറിച്ചുള്ള വിവരങ്ങൾ.";
+      }
       document.title = title;
       setMetaDescription(desc);
       setOpenGraphTags(title, desc, currentUrl);
@@ -2968,12 +3230,24 @@ export default function App() {
         let seoTitle = "";
         let seoDesc = "";
 
-        if (shortName) {
-          seoTitle = `${plainName} (${shortName}) Water Level Today - Live Reservoir Status | Damtoday`;
-          seoDesc = `Check live daily updates for ${plainName} (${shortName}) water level today. Get real-time ${shortName} dam storage capacity in TMC, inflow cusecs, outflow cusecs, and flow trend details.`;
+        if (lang === "hi") {
+          seoTitle = `${plainName}${shortName ? ` (${shortName})` : ""} जल स्तर आज - लाइव जलाशय स्थिति | डैमटुडे`;
+          seoDesc = `आज ${plainName}${shortName ? ` (${shortName})` : ""} का लाइव जल स्तर देखें। टीएमसी (TMC) में लाइव भंडारण क्षमता, आवक (क्यूसेक), निकासी (क्यूसेक) और प्रवाह के रुझान की विस्तृत जानकारी प्राप्त करें।`;
+        } else if (lang === "kn") {
+          seoTitle = `${plainName}${shortName ? ` (${shortName})` : ""} ನೀರಿನ ಮಟ್ಟ ಇಂದು - ಲೈವ್ ಜಲಾಶಯದ ಸ್ಥಿತಿ | ಡ್ಯಾಮ್‌ಟುಡೇ`;
+          seoDesc = `ಇಂದು ${plainName}${shortName ? ` (${shortName})` : ""} ನ ಲೈವ್ ನೀರಿನ ಮಟ್ಟವನ್ನು ಪರಿಶೀಲಿಸಿ. ಟಿಎಂಸಿ ಯಲ್ಲಿ ಲೈವ್ ಶೇಖರಣಾ ಸಾಮರ್ಥ್ಯ, ಒಳಹರಿವು (ಕ್ಯೂಸೆಕ್), ಹೊರಹರಿವು (ಕ್ಯೂಸೆಕ್) ಮತ್ತು ಹರಿವಿನ ಪ್ರವೃತ್ತಿಯ ವಿವರಗಳನ್ನು ಪಡೆಯಿರಿ.`;
+        } else if (lang === "te") {
+          seoTitle = `${plainName}${shortName ? ` (${shortName})` : ""} నీటి మట్టం ఈ రోజు - లైవ్ రిజర్వాయర్ నిల్వ స్థితి | డ్యామ్‌టుడే`;
+          seoDesc = `ఈ రోజు ${plainName}${shortName ? ` (${shortName})` : ""} రిజర్వాయర్ నీటి మట్టాన్ని తనిఖీ చేయండి. టీఎంసీ లలలో లైవ్ నిల్వ సామర్థ్యం, ఇన్‌ఫ్లో (క్యూసెక్స్), అవుట్‌ఫ్లో (క్యూసెక్స్) మరియు ప్రవాహ వివరాలను పొందండి.`;
+        } else if (lang === "ta") {
+          seoTitle = `${plainName}${shortName ? ` (${shortName})` : ""} நீர் மட்டம் இன்று - நேரடி நீர்த்தேக்க நிலை | டேம்டுடே`;
+          seoDesc = `இன்று ${plainName}${shortName ? ` (${shortName})` : ""} அணை நீர் மட்டத்தைச் சரிபார்க்கவும். டிஎம்சி கொள்ளளவு, நீர்வரத்து (கனஅடி), நீர்வெளியேற்றம் (கனஅடி) மற்றும் ஓட்டப் போக்கு விவரங்களைப் பெறுங்கள்.`;
+        } else if (lang === "ml") {
+          seoTitle = `${plainName}${shortName ? ` (${shortName})` : ""} ജലനിരപ്പ് ಇಂದು - തത്സമയ ഡാം സംഭരണ വിവരങ്ങൾ | ഡാംടുഡേ`;
+          seoDesc = `ഇന്ന് ${plainName}${shortName ? ` (${shortName})` : ""} ഡാമിന്റെ ജലനിരപ്പ് പരിശോധിക്കുക. ടിഎംസിയിലെ സംഭരണശേഷി, നീരൊഴുക്ക് (ക്യൂസെക്സ്), പുറത്തേക്കുള്ള ഒഴുക്ക് (ക്യൂസെക്സ്), ജലപ്രവാഹത്തിന്റെ ദിശ എന്നിവ മനസ്സിലാക്കാം.`;
         } else {
-          seoTitle = `${plainName} Dam Water Level Today - Live Reservoir Status | Damtoday`;
-          seoDesc = `Check live daily updates for ${plainName} dam water level today. Get real-time reservoir storage capacity in TMC, inflow cusecs, outflow cusecs, and flow trend details.`;
+          seoTitle = `${plainName}${shortName ? ` (${shortName})` : ""} Water Level Today - Live Reservoir Status | Damtoday`;
+          seoDesc = `Check live daily updates for ${plainName}${shortName ? ` (${shortName})` : ""} water level today. Get real-time reservoir storage capacity in TMC, inflow cusecs, outflow cusecs, and flow trend details.`;
         }
 
         document.title = seoTitle;
@@ -3004,7 +3278,7 @@ export default function App() {
               {
                 "@type": "PropertyValue",
                 "name": "Live Water Storage Capacity",
-                "value": `${(found.capacity * safeLevel / 100).toFixed(2)} TMC`
+                "value": `${((found.capacity * safeLevel / 100).toFixed(2))} TMC`
               },
               {
                 "@type": "PropertyValue",
@@ -3032,7 +3306,7 @@ export default function App() {
                 "name": `What is the water level of ${plainName} dam today?`,
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": `As of today, the water storage level of ${found.name} is ${safeLevel.toFixed(1)}% of its total design capacity. The current storage volume is ${(found.capacity * safeLevel / 100).toFixed(2)} TMC.`
+                  "text": `As of today, the water storage level of ${found.name} is ${safeLevel.toFixed(1)}% of its total design capacity. The current storage volume is ${((found.capacity * safeLevel / 100).toFixed(2))} TMC.`
                 }
               },
               {
@@ -3064,8 +3338,29 @@ export default function App() {
       setSelectedState("all");
       setView("main");
       setSelectedDam(null);
-      const title = `${zoneName} India Reservoir Water Levels - Live Daily Telemetry | Damtoday`;
-      const desc = `Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${zoneName} India. View active capacity and total daily volume accumulation.`;
+
+      const zoneLocal = getLocalizedZone(zoneName, lang);
+      let title = "";
+      let desc = "";
+      if (lang === "hi") {
+        title = `${zoneLocal} भारत जलाशय जल स्तर - लाइव दैनिक टेलीमेट्री | डैमटुडे`;
+        desc = `${zoneLocal} भारत में सभी प्रमुख जलाशयों और बांधों के लाइव दैनिक जल स्तर, आवक और निकासी की जानकारी। सक्रिय क्षमता और कुल दैनिक संचय दर देखें।`;
+      } else if (lang === "kn") {
+        title = `${zoneLocal} ಭಾರತದ ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟಗಳು - ಲೈವ್ ಟೆಲಿಮೆಟ್ರಿ ಮಾಹಿತಿ | ಡ್ಯಾಮ್‌ಟುಡೇ`;
+        desc = `${zoneLocal} ಭಾರತದಾದ್ಯಂತ ಇರುವ ಎಲ್ಲಾ ಪ್ರಮುಖ ಜಲಾಶಯಗಳು ಮತ್ತು ಅಣೆಕಟ್ಟುಗಳ ಲೈವ್ ನೀರಿನ ಮಟ್ಟಗಳು, ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವು ವಿವರಗಳು। ಶೇಖರಣಾ ಸಾಮರ್ಥ್ಯ ಮತ್ತು ದೈನಂದಿನ ಶೇಖರಣಾ ಪ್ರಮಾಣವನ್ನು ವೀಕ್ಷಿಸಿ।`;
+      } else if (lang === "te") {
+        title = `${zoneLocal} భారతదేశ రిజర్వాయర్ నీటి మట్టాలు - లైవ్ డైలీ టెలిమెట్రీ | డ్యామ్‌టుడే`;
+        desc = `${zoneLocal} భారతదేశంలోని అన్ని ప్రధాన రిజర్వాయర్లు మరియు డ్యామ్‌ల లైవ్ రోజువారీ నీటి మట్టాలు, ఇన్‌ఫ్లోలు మరియు అవుట్‌ఫ్లోలు. నిల్వ సామర్థ్యం మరియు రోజువారీ ప్రవాహ వివరాలను చూడండి।`;
+      } else if (lang === "ta") {
+        title = `${zoneLocal} இந்திய நீர்த்தேக்க நீர் மட்டங்கள் - நேரடித் தகவல் | டேம்டுடே`;
+        desc = `${zoneLocal} இந்தியாவின் सभी முக்கிய நீர்த்தேக்கங்கள் மற்றும் அணைகளின் நேரடி நீர் மட்டங்கள், நீர்வரத்து மற்றும் வெளியேற்ற விவரங்கள். கொள்ளளவு மற்றும் சேமிப்பு போக்குகளைப் பார்க்கவும்.`;
+      } else if (lang === "ml") {
+        title = `${zoneLocal} ഇന്ത്യയിലെ അണക്കെട്ടുകളുടെ ജലനിരപ്പ് - തത്സമയ വിവരങ്ങൾ | ഡാംടുഡേ`;
+        desc = `${zoneLocal} ഇന്ത്യയിലെ എല്ലാ പ്രധാന അണക്കെട്ടുകളുടെയും തത്സമയ ജലനിരപ്പ്, നീരൊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് വിവരങ്ങൾ. സംഭരണശേഷിയും സംഭരണ തോതും പരിശോധിക്കാം.`;
+      } else {
+        title = `${zoneName} India Reservoir Water Levels - Live Daily Telemetry | Damtoday`;
+        desc = `Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${zoneName} India. View active capacity and total daily volume accumulation.`;
+      }
       document.title = title;
       setMetaDescription(desc);
       setOpenGraphTags(title, desc, currentUrl);
@@ -3082,21 +3377,56 @@ export default function App() {
       setView("main");
       setSelectedDam(null);
 
+      const stateLocal = getLocalizedState(stateName, lang);
       let title = "";
       let desc = "";
       if (stateName !== "all") {
-        title = `${stateName} Reservoir Water Levels Today - Live Daily Telemetry | Damtoday`;
-        desc = `Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${stateName}, India. View active capacity and total daily volume accumulation.`;
+        if (lang === "hi") {
+          title = `${stateLocal} जलाशय जल स्तर आज - लाइव दैनिक टेलीमेट्री | डैमटुडे`;
+          desc = `${stateLocal} में सभी प्रमुख जलाशयों और बांधों के लाइव दैनिक जल स्तर, आवक और निकासी की जानकारी। सक्रिय क्षमता और कुल दैनिक संचय दर देखें।`;
+        } else if (lang === "kn") {
+          title = `${stateLocal} ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟಗಳು ಇಂದು - ಲೈವ್ ಟೆಲಿಮೆಟ್ರಿ ಮಾಹಿತಿ | ಡ್ಯಾಮ್‌ಟುಡೇ`;
+          desc = `${stateLocal} ನ ಎಲ್ಲಾ ಪ್ರಮುಖ ಜಲಾಶಯಗಳು এবং ಅಣೆಕಟ್ಟುಗಳ ಲೈವ್ ನೀರಿನ ಮಟ್ಟಗಳು, ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವಿನ ವಿವರಗಳು. ಶೇಖರಣಾ ಸಾಮರ್ಥ್ಯ ಮತ್ತು ದೈನಂದಿನ ಶೇಖರಣಾ ಪ್ರಮಾಣವನ್ನು ವೀಕ್ಷಿಸಿ।`;
+        } else if (lang === "te") {
+          title = `${stateLocal} రిజర్వాయర్ నీటి మట్టాలు ఈ రోజు - లైవ్ టెలిమెట్రీ | డ్యామ్‌టుడే`;
+          desc = `${stateLocal} లోని అన్ని ప్రధాన రిజర్వాయర్లు మరియు డ్యామ్‌ల లైవ్ రోజువారీ నీటి మట్టాలు, ఇన్‌ఫ్లోలు మరియు అవుట్‌ఫ్లోలు. నిల్వ సామర్థ్యం మరియు రోజువారీ ప్రవాహ వివరాలను చూడండి.`;
+        } else if (lang === "ta") {
+          title = `${stateLocal} நீர்த்தேக்க நீர் மட்டங்கள் இன்று - நேரடித் தகவல் | டேம்டுடே`;
+          desc = `${stateLocal} மாநிலத்தின் அனைத்து முக்கிய நீர்த்தேக்கங்கள் மற்றும் அணைகளின் நேரடி நீர் மட்டங்கள், நீர்வரத்து மற்றும் வெளியேற்ற விவரங்கள். கொள்ளளவு மற்றும் சேமிப்பு போக்குகளைப் பார்க்கவும்.`;
+        } else if (lang === "ml") {
+          title = `${stateLocal} ഡാമുകളിലെ ജലനിരപ്പ് ಇಂದು - തത്സമയ വിവരങ്ങൾ | ഡാംടുഡേ`;
+          desc = `${stateLocal} സംസ്ഥാനത്തെ എല്ലാ പ്രധാന അണക്കെട്ടുകളുടെയും തത്സമയ ജലനിരപ്പ്, നീരൊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് വിവരങ്ങൾ. സംഭരണശേഷിയും സംഭരണ തോതും പരിശോധിക്കാം.`;
+        } else {
+          title = `${stateName} Reservoir Water Levels Today - Live Daily Telemetry | Damtoday`;
+          desc = `Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${stateName}, India. View active capacity and total daily volume accumulation.`;
+        }
       } else {
-        title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
-        desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
+        if (lang === "hi") {
+          title = "डैमटुडे - भारत के जलाशयों के जल स्तर, आवक और निकासी की लाइव जानकारी";
+          desc = "भारत में जलाशयों के जल स्तर, भंडारण क्षमता, आवक और निकासी के दैनिक अपडेट देखें। कृषि और सार्वजनिक संसाधन योजना के लिए सत्यापित जल टेलीमेट्री जानकारी।";
+        } else if (lang === "kn") {
+          title = "ಡ್ಯಾಮ್‌ಟುಡೇ - ಭಾರತದ ಪ್ರಮುಖ ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟ, ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವಿನ ನೇರ ಮಾಹಿತಿ";
+          desc = "ಭಾರತದ ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟಗಳು, ಸಂಗ್ರಹಣಾ ಸಾಮರ್ಥ್ಯಗಳು, ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವಿನ ದೈನಂದಿನ ನವೀಕರಣಗಳನ್ನು ಪರಿಶೀಲಿಸಿ. ಕೃಷಿ ಮತ್ತು ಸಾರ್ವಜನಿಕ ಯೋಜನೆಯ ವಿಶ್ವಾಸಾರ್ಹ ಟೆಲಿಮೆಟ್ರಿ ಮಾಹಿತಿ.";
+        } else if (lang === "te") {
+          title = "డ్యామ్‌టుడే - భారతదేశ రిజర్వాయర్ల నీటి మట్టాలు, ఇన్‌ఫ్లో & అవుట్‌ఫ్లోల లైవ్ సమాచారం";
+          desc = "భారతదేశంలో రిజర్వాయర్ల నీటి మట్టాలు, నిల్వ సామర్థ్యాలు, ఇన్‌ఫ్లో మరియు అవుట్‌ఫ్లోల రోజువారీ లైవ్ అప్‌డేట్‌లను చూడండి. వ్యవసాయ మరియు ప్రజా ప్రణాళిక కొరకు ధృవీకరించబడిన సమాచారం.";
+        } else if (lang === "ta") {
+          title = "டேம்டுடே - இந்தியாவின் முக்கிய நீர்த்தேக்கங்களின் நீர் மட்டங்கள், நீர்வரத்து மற்றும் வெளியேற்ற நேரடித் தகவல்";
+          desc = "இந்தியாவில் உள்ள நீர்த்தேக்கங்களின் நீர் மட்டங்கள், கொள்ளளவு, நீர்வரத்து மற்றும் நீர்வெளியேற்றம் குறித்த தினசரி நேரடித் தகவல்களைப் பார்க்கவும். விவசாய மற்றும் பொது வள திட்டமிடலுக்கான சரிபார்க்கப்பட்ட தகவல்.";
+        } else if (lang === "ml") {
+          title = "ഡാംടുഡേ - ഇന്ത്യയിലെ അണക്കെട്ടുകളുടെ ജലനിരപ്പ്, നീരൊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് തത്സമയ വിവരങ്ങൾ";
+          desc = "ഇന്ത്യയിലെ പ്രധാന ഡാമുകളിലെ ജലനിരപ്പ്, സംഭരണശേഷി, നീരೊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് എന്നിവയുടെ ദൈനംദിന അപ്ഡേറ്റുകൾ ഇവിടെ പരിശോധിക്കാം. കൃഷിക്കും പൊതു ആവശ്യങ്ങൾക്കുമുള്ള കൃത്യമായ വിവരങ്ങൾ.";
+        } else {
+          title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
+          desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
+        }
       }
       document.title = title;
       setMetaDescription(desc);
       setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     }
-  }, [path, navigate]);
+  }, [path, navigate, lang]);
 
   // Track MongoDB Page View on Site Load
   useEffect(() => {
@@ -3285,7 +3615,7 @@ export default function App() {
               }}>&#128167;</div>
               <div>
                 <div style={{ fontWeight: 900, fontSize: 15, color: "#E0F2FE", letterSpacing: 0.3 }}>Damtoday</div>
-                <div style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.33)", letterSpacing: 2, textTransform: "uppercase" }}>All India</div>
+                <div style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.33)", letterSpacing: 2, textTransform: "uppercase" }}>{t("brandSub")}</div>
               </div>
             </a>
 
@@ -3306,7 +3636,7 @@ export default function App() {
                 onMouseEnter={e => e.target.style.color = "#38bdf8"}
                 onMouseLeave={e => e.target.style.color = view === "about" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
               >
-                About Us
+                {t("about")}
               </a>
               <a
                 href="/contact"
@@ -3324,7 +3654,7 @@ export default function App() {
                 onMouseEnter={e => e.target.style.color = "#38bdf8"}
                 onMouseLeave={e => e.target.style.color = view === "contact" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
               >
-                Contact Us
+                {t("contact")}
               </a>
               <a
                 href="/privacy"
@@ -3342,10 +3672,108 @@ export default function App() {
                 onMouseEnter={e => e.target.style.color = "#38bdf8"}
                 onMouseLeave={e => e.target.style.color = view === "privacy" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
               >
-                Privacy
+                {t("privacy")}
               </a>
+
+              {/* Premium Glassmorphic Language Selector */}
+              <div style={{ position: "relative", zIndex: 101 }}>
+                <button
+                  onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.05)",
+                    backdropFilter: "blur(12px)",
+                    border: "1px solid rgba(6, 182, 212, 0.25)",
+                    borderRadius: "8px",
+                    color: "#E0F2FE",
+                    padding: "6px 12px",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)";
+                    e.currentTarget.style.borderColor = "rgba(6, 182, 212, 0.5)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
+                    e.currentTarget.style.borderColor = "rgba(6, 182, 212, 0.25)";
+                  }}
+                >
+                  <span>
+                    {lang === "en" ? "English" :
+                     lang === "hi" ? "हिन्दी" :
+                     lang === "kn" ? "ಕನ್ನಡ" :
+                     lang === "te" ? "తెలుగు" :
+                     lang === "ta" ? "தமிழ்" :
+                     lang === "ml" ? "മലയാളം" : "Language"}
+                  </span>
+                  <span style={{ transition: "transform 0.2s", transform: langDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+                </button>
+
+                {langDropdownOpen && (
+                  <div style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "125%",
+                    background: "rgba(3, 10, 20, 0.92)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(6, 182, 212, 0.25)",
+                    borderRadius: "10px",
+                    padding: "6px 0",
+                    width: 130,
+                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    animation: "fadeSlideUp 0.15s ease-out"
+                  }}>
+                    {[
+                      { code: "en", label: "English" },
+                      { code: "hi", label: "हिन्दी" },
+                      { code: "kn", label: "ಕನ್ನಡ" },
+                      { code: "te", label: "తెలుగు" },
+                      { code: "ta", label: "தமிழ்" },
+                      { code: "ml", label: "മലയാളം" }
+                    ].map(option => (
+                      <button
+                        key={option.code}
+                        onClick={() => selectLanguage(option.code)}
+                        style={{
+                          background: lang === option.code ? "rgba(6, 182, 212, 0.15)" : "transparent",
+                          border: "none",
+                          color: lang === option.code ? "#38bdf8" : "rgba(224, 242, 254, 0.7)",
+                          padding: "8px 14px",
+                          fontSize: 12,
+                          fontWeight: lang === option.code ? 700 : 500,
+                          textAlign: "left",
+                          cursor: "pointer",
+                          transition: "all 0.15s",
+                          width: "100%",
+                          display: "block"
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)";
+                          e.currentTarget.style.color = "#38bdf8";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = lang === option.code ? "rgba(6, 182, 212, 0.15)" : "transparent";
+                          e.currentTarget.style.color = lang === option.code ? "#38bdf8" : "rgba(224, 242, 254, 0.7)";
+                        }}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.35)", marginLeft: 10 }}>
-                &#128338; <span style={{ color: "#67E8F9", fontWeight: 600 }}>Updated : Today 10:00 AM IST</span>
+                &#128338; <span style={{ color: "#67E8F9", fontWeight: 600 }}>{t("updatedToday")} 10:00 AM IST</span>
               </div>
             </div>
           </nav>
@@ -3353,13 +3781,13 @@ export default function App() {
           {/* Main content body */}
           <div style={{ flexGrow: 1 }}>
             {view === "detail" && selectedDam ? (
-              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} />
+              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} t={t} td={td} lang={lang} />
             ) : view === "about" ? (
-              <AboutUsPage navigate={navigate} setView={setView} />
+              <AboutUsPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : view === "contact" ? (
-              <ContactUsPage navigate={navigate} setView={setView} />
+              <ContactUsPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : view === "privacy" ? (
-              <PrivacyPolicyPage navigate={navigate} setView={setView} />
+              <PrivacyPolicyPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : (
               <>
                 {/* HERO */}
@@ -3415,7 +3843,14 @@ export default function App() {
                 color:"rgba(34,211,238,0.72)",padding:"5px 18px",borderRadius:20,display:"inline-block",
                 border:"1px solid rgba(34,211,238,0.18)",background:"rgba(34,211,238,0.06)",
                 animation:"fadeSlideUp 0.6s ease both"
-              }}>Damtoday &middot; Daily Water Level Bulletin</div>
+              }}>
+                {lang === "hi" ? "डैमटुडे · दैनिक जल स्तर बुलेटिन" :
+                 lang === "kn" ? "ಡ್ಯಾಮ್‌ಟುಡೇ · ದೈನಂದಿನ ನೀರಿನ ಮಟ್ಟದ ಬುಲೆಟಿನ್" :
+                 lang === "te" ? "డ్యామ్‌టుడే · రోజువారీ నీటి మట్టాల బులెటిన్" :
+                 lang === "ta" ? "டேம்டுடே · தினசரி நீர் மட்ட அறிக்கை" :
+                 lang === "ml" ? "ഡാംടുഡേ · ദിന ജലനിരപ്പ് ബുലറ്റിൻ" :
+                 "Damtoday · Daily Water Level Bulletin"}
+              </div>
 
               <h1 style={{
                 fontSize:"clamp(32px,6vw,56px)",fontWeight:900,lineHeight:1.15,
@@ -3424,14 +3859,38 @@ export default function App() {
                 backgroundSize:"200% auto",backgroundClip:"text",WebkitBackgroundClip:"text",
                 WebkitTextFillColor:"transparent",animation:"shimmer 7s linear infinite,fadeSlideUp 0.8s ease 0.1s both"
               }}>
-                Live {selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState} Reservoir Water Levels
+                {lang === "hi" ? (
+                  <span>लाइव {selectedState === "all" ? (selectedZone === "All" ? "भारत" : `${getLocalizedZone(selectedZone, lang)} भारत`) : getLocalizedState(selectedState, lang)} जलाशय जल स्तर</span>
+                ) : lang === "kn" ? (
+                  <span>ಲೈವ್ {selectedState === "all" ? (selectedZone === "All" ? "ಭಾರತದ" : `${getLocalizedZone(selectedZone, lang)} ಭಾರತದ`) : getLocalizedState(selectedState, lang)} ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟ</span>
+                ) : lang === "te" ? (
+                  <span>లైవ్ {selectedState === "all" ? (selectedZone === "All" ? "భารతదేశ" : `${getLocalizedZone(selectedZone, lang)} భారతదేశ`) : getLocalizedState(selectedState, lang)} రిజర్వాయర్ నీటి మట్టాలు</span>
+                ) : lang === "ta" ? (
+                  <span>நேரடி {selectedState === "all" ? (selectedZone === "All" ? "இந்திய" : `${getLocalizedZone(selectedZone, lang)} இந்திய`) : getLocalizedState(selectedState, lang)} நீர்நிலைகளின் நீர் மட்டங்கள்</span>
+                ) : lang === "ml" ? (
+                  <span>തത്സമയ {selectedState === "all" ? (selectedZone === "All" ? "ഇന്ത്യൻ" : `${getLocalizedZone(selectedZone, lang)} ഇന്ത്യൻ`) : getLocalizedState(selectedState, lang)} അണക്കെട്ടുകളിലെ ജലനിരപ്പ്</span>
+                ) : (
+                  <span>Live {selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState} Reservoir Water Levels</span>
+                )}
               </h1>
 
               <p style={{
                 fontSize:16,color:"rgba(224,242,254,0.46)",maxWidth:400,lineHeight:1.6,
                 marginBottom:24,animation:"fadeSlideUp 0.8s ease 0.2s both"
               }}>
-                Real-time daily monitoring of reservoir levels, capacity, inflows, and outflows across {selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState}.
+                {lang === "hi" ? (
+                  <span>{selectedState === "all" ? (selectedZone === "All" ? "भारत" : `${getLocalizedZone(selectedZone, lang)} भारत`) : getLocalizedState(selectedState, lang)} के जलाशयों के जल स्तर, आवक और निकासी की लाइव दैनिक निगरानी।</span>
+                ) : lang === "kn" ? (
+                  <span>{selectedState === "all" ? (selectedZone === "All" ? "ಭಾರತದ" : `${getLocalizedZone(selectedZone, lang)} ಭಾರತದ`) : getLocalizedState(selectedState, lang)} ಪ್ರಮುಖ ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟ, ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವಿನ ನೇರ ದೈನಂದಿನ ವರದಿಗಳು.</span>
+                ) : lang === "te" ? (
+                  <span>{selectedState === "all" ? (selectedZone === "All" ? "భారతదేశ" : `${getLocalizedZone(selectedZone, lang)} భారతదేశ`) : getLocalizedState(selectedState, lang)} అంతటా రిజర్వాయర్ నీటి మట్టాలు, ఇన్‌ఫ్లోలు మరియు అవుట్‌ఫ్లోల రోజువారీ ప్రత్యక్ష పర్యవేక్షణ.</span>
+                ) : lang === "ta" ? (
+                  <span>{selectedState === "all" ? (selectedZone === "All" ? "இந்தியா" : `${getLocalizedZone(selectedZone, lang)} இந்தியா`) : getLocalizedState(selectedState, lang)} முழுவதும் உள்ள நீர்நிலைகளின் அளவுகள், வரத்து மற்றும் வெளியேற்றத்தின் தினசரி நேரடி கண்காணிப்பு.</span>
+                ) : lang === "ml" ? (
+                  <span>{selectedState === "all" ? (selectedZone === "All" ? "ഇന്ത്യ" : `${getLocalizedZone(selectedZone, lang)} ഇന്ത്യ`) : getLocalizedState(selectedState, lang)}യിലുടനീളമുള്ള അണക്കെട്ടുകളുടെ ജലനിരപ്പ്, നീരൊഴുക്ക്, ഒഴുക്ക് എന്നിവയുടെ തത്സമയ നിരീക്ഷണം.</span>
+                ) : (
+                  <span>Real-time daily monitoring of reservoir levels, capacity, inflows, and outflows across {selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState}.</span>
+                )}
               </p>
 
               <div style={{ display:"flex", gap:16, animation:"fadeSlideUp 0.8s ease 0.3s both" }}>
@@ -3447,7 +3906,12 @@ export default function App() {
                   onMouseEnter={e => { e.target.style.transform="translateY(-2px)"; e.target.style.boxShadow="0 6px 24px rgba(6,182,212,0.5)"; }}
                   onMouseLeave={e => { e.target.style.transform="none"; e.target.style.boxShadow="0 4px 20px rgba(6,182,212,0.35)"; }}
                 >
-                  Monitor Reservoirs
+                  {lang === "hi" ? "जलाशयों की निगरानी करें" :
+                   lang === "kn" ? "ಜಲಾಶಯಗಳ ಪರಿಶೀಲನೆ" :
+                   lang === "te" ? "రిజర్వాయర్ల పర్యవేక్షణ" :
+                   lang === "ta" ? "நீர்த்தேக்கங்களை கண்காணிக்க" :
+                   lang === "ml" ? "ഡാമുകൾ നിരീക്ഷിക്കുക" :
+                   "Monitor Reservoirs"}
                 </button>
               </div>
             </div>
@@ -3468,9 +3932,9 @@ export default function App() {
           }}>
             <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:24 }}>
               {[
-                { label:"Monitored Dams", val:cTotal, color:"#67E8F9", sub:"Dams in selected region" },
-                { label:"Average Level", val:`${cAvg}%`, color:"#22D3EE", sub:"Average capacity percentage" },
-                { label:"Total Capacity", val:cCapacity, color:"#38BDF8", sub:"Total volume in TMC" }
+                { label: t("monitoredDams"), val:cTotal, color:"#67E8F9", sub: t("monitoredDamsSub") },
+                { label: t("averageLevel"), val:`${cAvg}%`, color:"#22D3EE", sub: t("averageLevelSub") },
+                { label: t("totalCapacity"), val:cCapacity, color:"#38BDF8", sub: t("totalCapacitySub") }
               ].map(s => (
                 <div key={s.label} style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)", borderRadius:16, padding:24, textAlign:"center" }}>
                   <div style={{ fontSize:12, color:"rgba(224,242,254,0.4)", textTransform:"uppercase", letterSpacing:1.5, marginBottom:8 }}>{s.label}</div>
@@ -3480,7 +3944,6 @@ export default function App() {
               ))}
             </div>
           </div>
-
           {/* DAMS SECTION */}
           <div id="dams-section" style={{ padding:"80px 20px", maxWidth:1200, margin:"0 auto", position:"relative", zIndex:6 }}>
 
@@ -3511,7 +3974,7 @@ export default function App() {
               {/* Zone Selector */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
-                  Select Region Zone
+                  {t("selectRegion")}
                 </span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", padding: 4, borderRadius: 20 }}>
                   {["All", "North", "South", "East", "West", "Central"].map(zone => {
@@ -3541,7 +4004,7 @@ export default function App() {
                           transition: "all 0.2s"
                         }}
                       >
-                        {zone}
+                        {getLocalizedZone(zone, lang)}
                       </a>
                     );
                   })}
@@ -3551,7 +4014,7 @@ export default function App() {
               {/* State Dropdown Selector */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8, position: "relative", width: "100%", maxWidth: 280, zIndex: 100 }}>
                 <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
-                  Filter by State
+                  {t("filterState")}
                 </span>
                 
                 {/* Dropdown Toggle Button */}
@@ -3575,9 +4038,9 @@ export default function App() {
                     backdropFilter: "blur(4px)"
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
-                  onMouseLeave={e => { if(!isDropdownOpen) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.background = "rgba(255,255,255,0.02)"; } }}
+                  onMouseLeave={e => { if(!isDropdownOpen) { e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)"; e.currentTarget.style.background = "rgba(255, 255, 255, 0.02)"; } }}
                 >
-                  <span>{selectedState === "all" ? "All States" : selectedState}</span>
+                  <span>{selectedState === "all" ? t("allStates") : getLocalizedState(selectedState, lang)}</span>
                   <span style={{ transition: "transform 0.2s", transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
                 </button>
 
@@ -3589,7 +4052,7 @@ export default function App() {
                     right: 0,
                     left: 0,
                     background: "linear-gradient(148deg, #091a2f 0%, #030b15 100%)",
-                    border: "1px solid rgba(6, 182, 212, 0.2)",
+                    border: "1px solid rgba(6, 182, 212, 0.25)",
                     borderRadius: 14,
                     boxShadow: "0 12px 32px rgba(0,0,0,0.5), 0 0 16px rgba(6, 182, 212, 0.1)",
                     overflow: "hidden",
@@ -3601,7 +4064,7 @@ export default function App() {
                     <div style={{ position: "relative", marginBottom: 6 }}>
                       <input
                         type="text"
-                        placeholder="Search state..."
+                        placeholder={t("searchState")}
                         value={stateSearchQuery}
                         onChange={e => setStateSearchQuery(e.target.value)}
                         style={{
@@ -3646,7 +4109,7 @@ export default function App() {
                           onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
                           onMouseLeave={e => { e.currentTarget.style.background = selectedState === "all" ? "rgba(6, 182, 212, 0.12)" : "transparent"; }}
                         >
-                          All States
+                          {t("allStates")}
                         </a>
                       )}
 
@@ -3674,7 +4137,7 @@ export default function App() {
                                 marginTop: 4,
                                 marginBottom: 4
                               }}>
-                                {zone} Zone
+                                {getLocalizedZone(zone, lang)} {lang === "hi" ? "जोन" : lang === "kn" ? "ವಲಯ" : lang === "te" ? "జోన్" : lang === "ta" ? "மண்டலம்" : lang === "ml" ? "മേഖല" : "Zone"}
                               </div>
                               
                               {/* States inside zone */}
@@ -3708,7 +4171,7 @@ export default function App() {
                                     onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
                                     onMouseLeave={e => { e.currentTarget.style.background = isActive ? "rgba(6, 182, 212, 0.12)" : "transparent"; }}
                                   >
-                                    {state}
+                                    {getLocalizedState(state, lang)}
                                   </a>
                                 );
                               })}
@@ -3720,21 +4183,32 @@ export default function App() {
                 )}
               </div>
             </div>
-
             {/* Header, search, sub-filters */}
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:32, gap:20, flexWrap:"wrap" }}>
               <div>
                 <h2 style={{ fontSize:28, fontWeight:900, color:"#E0F2FE", letterSpacing:"-0.5px" }}>
-                  {selectedState === "all" ? (selectedZone === "All" ? "All India" : `${selectedZone} India`) : selectedState} Reservoirs
+                  {lang === "hi" ? (
+                    <span>{selectedState === "all" ? (selectedZone === "All" ? "अखिल भारतीय" : `${getLocalizedZone(selectedZone, lang)} भारत`) : getLocalizedState(selectedState, lang)} जलाशय</span>
+                  ) : lang === "kn" ? (
+                    <span>{selectedState === "all" ? (selectedZone === "All" ? "ಅಖಿಲ ಭಾರತ" : `${getLocalizedZone(selectedZone, lang)} ಭಾರತದ`) : getLocalizedState(selectedState, lang)} ಜಲಾಶಯಗಳು</span>
+                  ) : lang === "te" ? (
+                    <span>{selectedState === "all" ? (selectedZone === "All" ? "భారతదేశం" : `${getLocalizedZone(selectedZone, lang)} భారతదేశ`) : getLocalizedState(selectedState, lang)} రిజర్వాయర్లు</span>
+                  ) : lang === "ta" ? (
+                    <span>{selectedState === "all" ? (selectedZone === "All" ? "அனைத்திந்தியா" : `${getLocalizedZone(selectedZone, lang)} இந்திய`) : getLocalizedState(selectedState, lang)} அணைகள்</span>
+                  ) : lang === "ml" ? (
+                    <span>{selectedState === "all" ? (selectedZone === "All" ? "ഭാരതമൊട്ടാകെ" : `${getLocalizedZone(selectedZone, lang)} ഇന്ത്യൻ`) : getLocalizedState(selectedState, lang)} അണക്കെട്ടുകൾ</span>
+                  ) : (
+                    <span>{selectedState === "all" ? (selectedZone === "All" ? "All India" : `${selectedZone} India`) : selectedState} Reservoirs</span>
+                  )}
                 </h2>
-                <p style={{ fontSize:14, color:"rgba(224,242,254,0.4)", marginTop:4 }}>Search and select capacity filters</p>
+                <p style={{ fontSize:14, color:"rgba(224,242,254,0.4)", marginTop:4 }}>{t("searchAndSelectFilters")}</p>
               </div>
 
               <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
                 <div style={{ position:"relative", width:300 }}>
                   <input
                     type="text"
-                    placeholder="&#128269; Search name, river, district..."
+                    placeholder={"\uD83D\uDD0D " + t("searchPlaceholderMain")}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     style={{
@@ -3751,7 +4225,7 @@ export default function App() {
 
                 <div style={{ display:"flex", gap:6, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)", padding:4, borderRadius:20 }}>
                   {["all","high","normal","low"].map(tab => {
-                    const label = tab==="all"?"All Levels":tab==="high"?"70%+":tab==="normal"?"45-70%":"<45%";
+                    const label = tab==="all"? t("allLevels") : tab==="high"? t("highLevel") || "70%+" : tab==="normal"? t("normalLevel") || "45-70%" : t("lowLevel") || "<45%";
                     const isActive = filter === tab;
                     return (
                       <button
@@ -3793,7 +4267,7 @@ export default function App() {
                 borderRadius:16, background:"rgba(255,255,255,0.01)"
               }}>
                 <div style={{ fontSize:24, marginBottom:8 }}>&#128269;</div>
-                <div style={{ fontSize:16, color:"rgba(224,242,254,0.5)" }}>No dams match the selected criteria.</div>
+                <div style={{ fontSize:16, color:"rgba(224,242,254,0.5)" }}>{t("noDamsMatch")}</div>
               </div>
             )}
           </div>
@@ -3803,81 +4277,79 @@ export default function App() {
 
     {/* FOOTER */}
     <footer style={{
-            background:"#01070F", borderTop:"1px solid rgba(255,255,255,0.05)",
-            padding:"40px 20px", textAlign:"center", position:"relative", zIndex:6
-          }}>
-            <div style={{ maxWidth:600, margin:"0 auto" }}>
-              <p style={{ fontSize:11, color:"rgba(224,242,254,0.25)", lineHeight:1.6, marginBottom:16 }}>
-                Disclaimer: Water levels, inflows, and outflows shown are scraped from live state bulletins and third-party resources.
-                Real-time data should be verified from official bulletins published by state disaster management authorities (KSNDMC, TNWRD, APWRD)
-                and the Central Water Commission (CWC).
-              </p>
-              <div style={{ borderTop:"1px solid rgba(255,255,255,0.03)", paddingTop:16, fontSize:12, color:"rgba(224,242,254,0.35)" }}>
-                &copy; {new Date().getFullYear()} Damtoday. Created as a local public information resource.
-              </div>
-              <div style={{ marginTop:24, display:"flex", justifyContent:"center", gap:20, flexWrap:"wrap", fontSize:11 }}>
-                <a
-                  href="/about"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/about");
-                  }}
-                  style={{
-                    textDecoration: "none",
-                    background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
-                    transition:"color 0.2s"
-                  }}
-                  onMouseEnter={e => e.target.style.color="#38bdf8"}
-                  onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
-                >
-                  About Us
-                </a>
-                <a
-                  href="/contact"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/contact");
-                  }}
-                  style={{
-                    textDecoration: "none",
-                    background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
-                    transition:"color 0.2s"
-                  }}
-                  onMouseEnter={e => e.target.style.color="#38bdf8"}
-                  onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
-                >
-                  Contact Us
-                </a>
-                <a
-                  href="/privacy"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/privacy");
-                  }}
-                  style={{
-                    textDecoration: "none",
-                    background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
-                    transition:"color 0.2s"
-                  }}
-                  onMouseEnter={e => e.target.style.color="#38bdf8"}
-                  onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
-                >
-                  Privacy Policy
-                </a>
-                <button
-                  onClick={() => setShowPinModal(true)}
-                  style={{
-                    background:"none", border:"none", color:"rgba(224,242,254,0.15)", cursor:"pointer",
-                    transition:"color 0.2s"
-                  }}
-                  onMouseEnter={e => e.target.style.color="rgba(6,182,212,0.6)"}
-                  onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.15)"}
-                >
-                  &#128274; Admin Portal
-                </button>
-              </div>
-            </div>
-          </footer>
+      background:"#01070F", borderTop:"1px solid rgba(255,255,255,0.05)",
+      padding:"40px 20px", textAlign:"center", position:"relative", zIndex:6
+    }}>
+      <div style={{ maxWidth:600, margin:"0 auto" }}>
+        <p style={{ fontSize:11, color:"rgba(224,242,254,0.25)", lineHeight:1.6, marginBottom:16 }}>
+          {t("disclaimerText")}
+        </p>
+        <div style={{ borderTop:"1px solid rgba(255,255,255,0.03)", paddingTop:16, fontSize:12, color:"rgba(224,242,254,0.35)" }}>
+          &copy; {new Date().getFullYear()} Damtoday. {t("createdAsLocal")}
+        </div>
+        <div style={{ marginTop:24, display:"flex", justifyContent:"center", gap:20, flexWrap:"wrap", fontSize:11 }}>
+          <a
+            href="/about"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/about");
+            }}
+            style={{
+              textDecoration: "none",
+              background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
+              transition:"color 0.2s"
+            }}
+            onMouseEnter={e => e.target.style.color="#38bdf8"}
+            onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
+          >
+            {t("about")}
+          </a>
+          <a
+            href="/contact"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/contact");
+            }}
+            style={{
+              textDecoration: "none",
+              background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
+              transition:"color 0.2s"
+            }}
+            onMouseEnter={e => e.target.style.color="#38bdf8"}
+            onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
+          >
+            {t("contact")}
+          </a>
+          <a
+            href="/privacy"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/privacy");
+            }}
+            style={{
+              textDecoration: "none",
+              background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
+              transition:"color 0.2s"
+            }}
+            onMouseEnter={e => e.target.style.color="#38bdf8"}
+            onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
+          >
+            {t("privacy")}
+          </a>
+          <button
+            onClick={() => setShowPinModal(true)}
+            style={{
+              background:"none", border:"none", color:"rgba(224,242,254,0.15)", cursor:"pointer",
+              transition:"color 0.2s"
+            }}
+            onMouseEnter={e => e.target.style.color="rgba(6,182,212,0.6)"}
+            onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.15)"}
+          >
+            &#128274; {lang === "hi" ? "एडमिन पोर्टल" : lang === "kn" ? "ನಿರ್ವಾಹಕ ಪೋರ್ಟಲ್" : lang === "te" ? "అడ్మిన్ పోర్టల్" : lang === "ta" ? "நிர்வாகి போர்டல்" : lang === "ml" ? "അഡ്മിൻ പോർട്ടൽ" : "Admin Portal"}
+          </button>
+        </div>
+      </div>
+    </footer>
         </div>
       )}
 
