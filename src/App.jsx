@@ -158,7 +158,7 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
             <stop offset="100%" stopColor="#e0f2fe" stopOpacity="0" />
           </radialGradient>
           <clipPath id={`res-clip-${uid}`}>
-            <rect x="0" y={crestY} width={upX} height={resBaseY - crestY + 1} />
+            <polygon points={`0,${crestY} ${upX},${crestY} ${upX},102 ${upX + 2.5},102 ${upX + 2.5},114 ${upX},114 ${upX},${resBaseY + 1} 0,${resBaseY + 1}`} />
           </clipPath>
           <clipPath id={`down-clip-${uid}`}>
             <rect x={toeX} y="0" width={300 - toeX} height="155" />
@@ -178,39 +178,6 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
           d="M 0,114 L 140,114 M 140,138 L 300,138"
           stroke="#1e3a5f" strokeWidth="1.2"
         />
-
-        {/* Reservoir water body (clipped to upstream zone) */}
-        <g clipPath={`url(#res-clip-${uid})`}>
-          <rect x="0" y={waterY} width={upX} height={resBaseY - waterY} fill={`url(#res-${uid})`} />
-
-          {/* Subtle grid lines for reference */}
-          {[0.25,0.5,0.75].map(f => (
-            <line key={f}
-              x1="0" y1={crestY + resH * f}
-              x2={upX} y2={crestY + resH * f}
-              stroke="rgba(255,255,255,0.04)" strokeWidth="0.6" strokeDasharray="4,5"
-            />
-          ))}
-
-          {/* Animated water surface waves */}
-          <path
-            d={`M -80,${waterY} C -60,${waterY-3} -40,${waterY+3} -20,${waterY} C 0,${waterY-3} 20,${waterY+3} 40,${waterY} C 60,${waterY-3} 80,${waterY+3} 100,${waterY} C 120,${waterY-3} 140,${waterY+3} 160,${waterY} C 180,${waterY-3} 200,${waterY+3} 220,${waterY} C 240,${waterY-3} 260,${waterY+3} 280,${waterY}`}
-            fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.3">
-            <animateTransform attributeName="transform" type="translate" from="0,0" to="80,0" dur="3s" repeatCount="indefinite" />
-          </path>
-          <path
-            d={`M -40,${waterY+2} C -20,${waterY+4} 0,${waterY} 20,${waterY+2} C 40,${waterY+4} 60,${waterY} 80,${waterY+2} C 100,${waterY+4} 120,${waterY} 140,${waterY+2} C 160,${waterY+4} 180,${waterY} 200,${waterY+2}`}
-            fill="none" stroke="rgba(0,210,255,0.28)" strokeWidth="0.9">
-            <animateTransform attributeName="transform" type="translate" from="80,0" to="0,0" dur="4.5s" repeatCount="indefinite" />
-          </path>
-
-          {/* Deep underwater shimmer */}
-          <path
-            d={`M 20,${waterY+8} Q 60,${waterY+5} 100,${waterY+8} Q 140,${waterY+11} 160,${waterY+8}`}
-            fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.7">
-            <animateTransform attributeName="transform" type="translate" from="-40,0" to="40,0" dur="5s" repeatCount="indefinite" />
-          </path>
-        </g>
 
         {/* ============ DAM BODY ============ */}
         {/* Main concrete gravity dam: upstream vertical, downstream sloped */}
@@ -251,8 +218,8 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
           <rect key={i} x={gx} y={crestY - 5} width="3" height="5" rx="0.5" fill="#1f2937" stroke="#374151" strokeWidth="0.3" />
         ))}
 
-        {/* Upstream face: wet sheen line */}
-        <line x1={upX} y1={waterY > crestY ? waterY : crestY} x2={upX} y2={resBaseY}
+        {/* Upstream face: wet sheen line (ends at 102 - top of tunnel roof) */}
+        <line x1={upX} y1={waterY > crestY ? waterY : crestY} x2={upX} y2={Math.min(102, resBaseY)}
           stroke="rgba(14,165,233,0.22)" strokeWidth="1.8" />
 
         {/* ============ TUNNEL INTERIOR ============ */}
@@ -262,28 +229,18 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
           fill="#1e293b" stroke="#0f172a" strokeWidth="1"
         />
 
-        {/* ============ TUNNEL GATE ============ */}
-        {/* Gate door that slides up/down */}
-        <rect
-          x="142" y={hasFlow ? 86 : 102}
-          width="3" height="12" fill="#475569" stroke="#0f172a" strokeWidth="0.5"
-          style={{ transition: 'y 0.7s ease' }}
-        />
-        {/* Vertical gate shaft leading up to crest */}
-        <rect x="142" y={crestY} width="3" height="84" fill="#0f172a" />
-
         {/* ============ OUTFLOW ANIMATION ============ */}
         {hasFlow && (
           <g>
             {/* Water flowing through the tunnel */}
             <path
-              d="M 140,108 L 146,108 L 220,132"
+              d="M 135,108 L 146,108 L 220,132"
               fill="none" stroke="#0ea5e9" strokeWidth={streamW}
               strokeLinejoin="round" opacity="0.95"
             />
             {/* Bright core in tunnel */}
             <path
-              d="M 140,108 L 146,108 L 220,132"
+              d="M 135,108 L 146,108 L 220,132"
               fill="none" stroke="#bae6fd" strokeWidth={streamW * 0.4}
               strokeLinejoin="round" opacity="0.9"
             />
@@ -306,6 +263,18 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
               strokeDasharray="4,5" opacity="0.82">
               <animate attributeName="strokeDashoffset" values="40;0" dur={`${flowSpeed}s`} repeatCount="indefinite" />
             </path>
+
+            {/* Dynamic Water Particles flowing through dam */}
+            {[...Array(5)].map((_, i) => (
+              <circle key={i} r="1.5" fill="#ffffff" opacity="0.85" filter="drop-shadow(0px 0px 1px #bae6fd)">
+                <animateMotion
+                  path={`M 135,108 L 146,108 L 220,132 C 228,132 ${jetEndX - 8},${baseY - 4} ${jetEndX},${baseY}`}
+                  dur={`${flowSpeed * 1.5}s`}
+                  begin={`${i * (flowSpeed * 1.5) / 5}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
+            ))}
 
             {/* Plunge pool (water pool where jet hits river) */}
             <ellipse cx={jetEndX} cy={baseY} rx={3 + ratioR * 10} ry={1.5 + ratioR * 3} fill={`url(#pool-${uid})`} opacity="0.92" />
@@ -345,6 +314,49 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
             </g>
           </g>
         )}
+
+        {/* Reservoir water body (clipped to upstream zone, covers the dam & tunnel boundary strokes) */}
+        <g clipPath={`url(#res-clip-${uid})`}>
+          <rect x="0" y={waterY} width={upX + 2.5} height={resBaseY - waterY} fill={`url(#res-${uid})`} />
+
+          {/* Subtle grid lines for reference */}
+          {[0.25,0.5,0.75].map(f => (
+            <line key={f}
+              x1="0" y1={crestY + resH * f}
+              x2={upX} y2={crestY + resH * f}
+              stroke="rgba(255,255,255,0.04)" strokeWidth="0.6" strokeDasharray="4,5"
+            />
+          ))}
+
+          {/* Animated water surface waves */}
+          <path
+            d={`M -80,${waterY} C -60,${waterY-3} -40,${waterY+3} -20,${waterY} C 0,${waterY-3} 20,${waterY+3} 40,${waterY} C 60,${waterY-3} 80,${waterY+3} 100,${waterY} C 120,${waterY-3} 140,${waterY+3} 160,${waterY} C 180,${waterY-3} 200,${waterY+3} 220,${waterY} C 240,${waterY-3} 260,${waterY+3} 280,${waterY}`}
+            fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.3">
+            <animateTransform attributeName="transform" type="translate" from="0,0" to="80,0" dur="3s" repeatCount="indefinite" />
+          </path>
+          <path
+            d={`M -40,${waterY+2} C -20,${waterY+4} 0,${waterY} 20,${waterY+2} C 40,${waterY+4} 60,${waterY} 80,${waterY+2} C 100,${waterY+4} 120,${waterY} 140,${waterY+2} C 160,${waterY+4} 180,${waterY} 200,${waterY+2}`}
+            fill="none" stroke="rgba(0,210,255,0.28)" strokeWidth="0.9">
+            <animateTransform attributeName="transform" type="translate" from="80,0" to="0,0" dur="4.5s" repeatCount="indefinite" />
+          </path>
+
+          {/* Deep underwater shimmer */}
+          <path
+            d={`M 20,${waterY+8} Q 60,${waterY+5} 100,${waterY+8} Q 140,${waterY+11} 160,${waterY+8}`}
+            fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.7">
+            <animateTransform attributeName="transform" type="translate" from="-40,0" to="40,0" dur="5s" repeatCount="indefinite" />
+          </path>
+        </g>
+
+        {/* ============ TUNNEL GATE ============ */}
+        {/* Gate door that slides up/down - drawn on top of water to block it when closed */}
+        <rect
+          x="142" y={hasFlow ? 86 : 102}
+          width="3" height="12" fill="#475569" stroke="#0f172a" strokeWidth="0.5"
+          style={{ transition: 'y 0.7s ease' }}
+        />
+        {/* Vertical gate shaft leading up to crest */}
+        <rect x="142" y={crestY} width="3" height="84" fill="#0f172a" />
 
         {/* Water level TMC badge */}
         <rect x="6" y="6" width="76" height="24" rx="7"
@@ -1358,6 +1370,13 @@ function HistoricalCharts({ dam, safeLevel }) {
     return d > today ? d : today;
   }, [filledHistoryData]);
 
+  const earliestDataTime = useMemo(() => {
+    if (filledHistoryData.length === 0) return null;
+    const t = new Date(filledHistoryData[0].timestamp);
+    t.setHours(0, 0, 0, 0);
+    return t.getTime();
+  }, [filledHistoryData]);
+
   const { cutoff, daysCount, minTime, maxTime, timeRange, midDate } = useMemo(() => {
     let daysCount = 7;
     if (period === "30D") daysCount = 30;
@@ -1367,19 +1386,22 @@ function HistoricalCharts({ dam, safeLevel }) {
     cutoff.setDate(latestDate.getDate() - (daysCount - 1));
     cutoff.setHours(0, 0, 0, 0);
     
-    const minTime = cutoff.getTime();
+    let minTime = cutoff.getTime();
+    if (earliestDataTime && earliestDataTime > minTime) {
+      minTime = earliestDataTime;
+    }
     const maxTime = latestDate.getTime();
     const timeRange = maxTime - minTime || 1;
     
     const midDate = new Date(minTime + timeRange / 2);
     
     return { cutoff, daysCount, minTime, maxTime, timeRange, midDate };
-  }, [latestDate, period]);
+  }, [latestDate, period, earliestDataTime]);
 
   const filteredData = useMemo(() => {
     if (filledHistoryData.length === 0) return [];
-    return filledHistoryData.filter(d => new Date(d.timestamp) >= cutoff);
-  }, [filledHistoryData, cutoff]);
+    return filledHistoryData.filter(d => new Date(d.timestamp).getTime() >= minTime);
+  }, [filledHistoryData, minTime]);
 
   // Chart coordinates calculation
   const width = 600;
@@ -1424,27 +1446,34 @@ function HistoricalCharts({ dam, safeLevel }) {
 
   const handleMouseMove = (e) => {
     if (filteredData.length === 0) return;
+    
+    if (e.type === 'touchmove' || e.type === 'touchstart') {
+      if (e.cancelable) e.preventDefault();
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
-    const clientX = e.clientX - rect.left;
-    const chartWidth = rect.width * ((width - margin.left - margin.right) / width);
-    const chartLeft = rect.width * (margin.left / width);
+    const clientX = (e.touches && e.touches.length > 0)
+      ? e.touches[0].clientX - rect.left
+      : e.clientX - rect.left;
     
-    const relativeX = clientX - chartLeft;
-    const pct = Math.max(0, Math.min(1, relativeX / chartWidth));
+    const svgX = clientX * (width / rect.width);
     
-    const dayOffset = Math.round(pct * (daysCount - 1));
-    const targetDate = new Date(cutoff);
-    targetDate.setDate(cutoff.getDate() + dayOffset);
-    targetDate.setHours(0, 0, 0, 0);
-    
-    const matched = filteredData.find(d => {
-      const t = new Date(d.timestamp);
-      t.setHours(0, 0, 0, 0);
-      return t.getTime() === targetDate.getTime();
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    filteredData.forEach((d, idx) => {
+      const time = new Date(d.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * (width - margin.left - margin.right);
+      const diff = Math.abs(x - svgX);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
+      }
     });
     
+    const matched = filteredData[closestIdx];
     if (matched) {
-      const x = margin.left + (dayOffset / (daysCount - 1)) * (width - margin.left - margin.right);
+      const time = new Date(matched.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * (width - margin.left - margin.right);
       const y = margin.top + (1 - (matched.level - yMin) / (yMax - yMin || 1)) * (height - margin.top - margin.bottom);
       setHoveredPoint({
         ...matched,
@@ -1537,27 +1566,34 @@ function HistoricalCharts({ dam, safeLevel }) {
 
   const handleInflowMouseMove = (e) => {
     if (filteredData.length === 0) return;
+    
+    if (e.type === 'touchmove' || e.type === 'touchstart') {
+      if (e.cancelable) e.preventDefault();
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
-    const clientX = e.clientX - rect.left;
-    const chartWidth = rect.width * ((width - margin.left - margin.right) / width);
-    const chartLeft = rect.width * (margin.left / width);
+    const clientX = (e.touches && e.touches.length > 0)
+      ? e.touches[0].clientX - rect.left
+      : e.clientX - rect.left;
     
-    const relativeX = clientX - chartLeft;
-    const pct = Math.max(0, Math.min(1, relativeX / chartWidth));
+    const svgX = clientX * (width / rect.width);
     
-    const dayOffset = Math.round(pct * (daysCount - 1));
-    const targetDate = new Date(cutoff);
-    targetDate.setDate(cutoff.getDate() + dayOffset);
-    targetDate.setHours(0, 0, 0, 0);
-    
-    const matched = filteredData.find(d => {
-      const t = new Date(d.timestamp);
-      t.setHours(0, 0, 0, 0);
-      return t.getTime() === targetDate.getTime();
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    filteredData.forEach((d, idx) => {
+      const time = new Date(d.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * (width - margin.left - margin.right);
+      const diff = Math.abs(x - svgX);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
+      }
     });
     
+    const matched = filteredData[closestIdx];
     if (matched) {
-      const x = margin.left + (dayOffset / (daysCount - 1)) * (width - margin.left - margin.right);
+      const time = new Date(matched.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * (width - margin.left - margin.right);
       const val = typeof matched.inflow === 'number' ? matched.inflow : parseFloat(matched.inflow) || 0;
       const y = margin.top + (1 - val / maxInflowVal) * (height - margin.top - margin.bottom);
       setHoveredInflowPoint({
@@ -1577,27 +1613,34 @@ function HistoricalCharts({ dam, safeLevel }) {
 
   const handleOutflowMouseMove = (e) => {
     if (filteredData.length === 0) return;
+    
+    if (e.type === 'touchmove' || e.type === 'touchstart') {
+      if (e.cancelable) e.preventDefault();
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
-    const clientX = e.clientX - rect.left;
-    const chartWidth = rect.width * ((width - margin.left - margin.right) / width);
-    const chartLeft = rect.width * (margin.left / width);
+    const clientX = (e.touches && e.touches.length > 0)
+      ? e.touches[0].clientX - rect.left
+      : e.clientX - rect.left;
     
-    const relativeX = clientX - chartLeft;
-    const pct = Math.max(0, Math.min(1, relativeX / chartWidth));
+    const svgX = clientX * (width / rect.width);
     
-    const dayOffset = Math.round(pct * (daysCount - 1));
-    const targetDate = new Date(cutoff);
-    targetDate.setDate(cutoff.getDate() + dayOffset);
-    targetDate.setHours(0, 0, 0, 0);
-    
-    const matched = filteredData.find(d => {
-      const t = new Date(d.timestamp);
-      t.setHours(0, 0, 0, 0);
-      return t.getTime() === targetDate.getTime();
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    filteredData.forEach((d, idx) => {
+      const time = new Date(d.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * (width - margin.left - margin.right);
+      const diff = Math.abs(x - svgX);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
+      }
     });
     
+    const matched = filteredData[closestIdx];
     if (matched) {
-      const x = margin.left + (dayOffset / (daysCount - 1)) * (width - margin.left - margin.right);
+      const time = new Date(matched.timestamp).getTime();
+      const x = margin.left + ((time - minTime) / timeRange) * (width - margin.left - margin.right);
       const val = typeof matched.outflow === 'number' ? matched.outflow : parseFloat(matched.outflow) || 0;
       const y = margin.top + (1 - val / maxOutflowVal) * (height - margin.top - margin.bottom);
       setHoveredOutflowPoint({
@@ -1697,9 +1740,12 @@ function HistoricalCharts({ dam, safeLevel }) {
             width="100%"
             height={height}
             viewBox={`0 0 ${width} ${height}`}
-            style={{ overflow: "visible", cursor: "crosshair" }}
+            style={{ overflow: "visible", cursor: "crosshair", touchAction: "none" }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
+            onTouchStart={handleMouseMove}
+            onTouchMove={handleMouseMove}
+            onTouchEnd={handleMouseLeave}
           >
             <defs>
               <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
@@ -1776,7 +1822,7 @@ function HistoricalCharts({ dam, safeLevel }) {
             {filteredData.length > 0 && (
               <g>
                 <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {cutoff.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </text>
                 <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
                   {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
@@ -1832,9 +1878,12 @@ function HistoricalCharts({ dam, safeLevel }) {
             width="100%"
             height={height}
             viewBox={`0 0 ${width} ${height}`}
-            style={{ overflow: "visible", cursor: "crosshair" }}
+            style={{ overflow: "visible", cursor: "crosshair", touchAction: "none" }}
             onMouseMove={handleInflowMouseMove}
             onMouseLeave={handleInflowMouseLeave}
+            onTouchStart={handleInflowMouseMove}
+            onTouchMove={handleInflowMouseMove}
+            onTouchEnd={handleInflowMouseLeave}
           >
             <defs>
               <linearGradient id="inflowGrad" x1="0" y1="0" x2="0" y2="1">
@@ -1911,7 +1960,7 @@ function HistoricalCharts({ dam, safeLevel }) {
             {filteredData.length > 0 && (
               <g>
                 <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {cutoff.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </text>
                 <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
                   {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
@@ -1961,9 +2010,12 @@ function HistoricalCharts({ dam, safeLevel }) {
             width="100%"
             height={height}
             viewBox={`0 0 ${width} ${height}`}
-            style={{ overflow: "visible", cursor: "crosshair" }}
+            style={{ overflow: "visible", cursor: "crosshair", touchAction: "none" }}
             onMouseMove={handleOutflowMouseMove}
             onMouseLeave={handleOutflowMouseLeave}
+            onTouchStart={handleOutflowMouseMove}
+            onTouchMove={handleOutflowMouseMove}
+            onTouchEnd={handleOutflowMouseLeave}
           >
             <defs>
               <linearGradient id="outflowGrad" x1="0" y1="0" x2="0" y2="1">
@@ -2040,7 +2092,7 @@ function HistoricalCharts({ dam, safeLevel }) {
             {filteredData.length > 0 && (
               <g>
                 <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {cutoff.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </text>
                 <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
                   {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
