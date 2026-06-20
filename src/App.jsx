@@ -3877,7 +3877,7 @@ export default function App() {
                 ) : lang === "kn" ? (
                   <span>ಲೈವ್ {selectedState === "all" ? (selectedZone === "All" ? "ಭಾರತದ" : `${getLocalizedZone(selectedZone, lang)} ಭಾರತದ`) : getLocalizedState(selectedState, lang)} ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟ</span>
                 ) : lang === "te" ? (
-                  <span>లైవ్ {selectedState === "all" ? (selectedZone === "All" ? "భารతదేశ" : `${getLocalizedZone(selectedZone, lang)} భారతదేశ`) : getLocalizedState(selectedState, lang)} రిజర్వాయర్ నీటి మట్టాలు</span>
+                  <span>లైవ్ {selectedState === "all" ? (selectedZone === "All" ? "భారతదేశ" : `${getLocalizedZone(selectedZone, lang)} భారతదేశ`) : getLocalizedState(selectedState, lang)} రిజర్వాయర్ నీటి మట్టాలు</span>
                 ) : lang === "ta" ? (
                   <span>நேரடி {selectedState === "all" ? (selectedZone === "All" ? "இந்திய" : `${getLocalizedZone(selectedZone, lang)} இந்திய`) : getLocalizedState(selectedState, lang)} நீர்நிலைகளின் நீர் மட்டங்கள்</span>
                 ) : lang === "ml" ? (
