@@ -1,7 +1,7 @@
 {
-  "last_run_timestamp": "2026-06-21 04:43 AM",
+  "last_run_timestamp": "2026-06-21 08:46 AM",
   "success": true,
-  "duration_seconds": 10.39,
+  "duration_seconds": 9.36,
   "sources": {
     "tungabhadra": {
       "status": "Operational",
@@ -25,12 +25,45 @@
     }
   },
   "metrics": {
-    "dams_changed": 24,
-    "storage_delta_tmc": -1.432,
-    "inflow_delta_cusecs": 5509,
-    "outflow_delta_cusecs": 179
+    "dams_changed": 1,
+    "storage_delta_tmc": -0.04,
+    "inflow_delta_cusecs": 0,
+    "outflow_delta_cusecs": 0
   },
   "history": [
+    {
+      "timestamp": "2026-06-21 08:46 AM",
+      "success": true,
+      "duration_seconds": 9.36,
+      "sources": {
+        "tungabhadra": {
+          "status": "Operational",
+          "ok": true,
+          "count": 1
+        },
+        "tamil_nadu": {
+          "status": "Operational",
+          "ok": true,
+          "count": 19
+        },
+        "oneindia": {
+          "status": "Operational",
+          "ok": true,
+          "count": 15
+        },
+        "bbmb": {
+          "status": "Operational",
+          "ok": true,
+          "count": 2
+        }
+      },
+      "metrics": {
+        "dams_changed": 1,
+        "storage_delta_tmc": -0.04,
+        "inflow_delta_cusecs": 0,
+        "outflow_delta_cusecs": 0
+      }
+    },
     {
       "timestamp": "2026-06-21 04:43 AM",
       "success": true,
@@ -382,34 +415,6 @@
         "storage_delta_tmc": 0.0,
         "inflow_delta_cusecs": 0,
         "outflow_delta_cusecs": 0
-      }
-    },
-    {
-      "timestamp": "2026-06-13 10:35 PM",
-      "success": true,
-      "duration_seconds": 1.63,
-      "sources": {
-        "tungabhadra": {
-          "status": "Operational",
-          "ok": true,
-          "count": 1
-        },
-        "tamil_nadu": {
-          "status": "Operational",
-          "ok": true,
-          "count": 19
-        },
-        "oneindia": {
-          "status": "Operational",
-          "ok": true,
-          "count": 15
-        }
-      },
-      "metrics": {
-        "dams_changed": 23,
-        "storage_delta_tmc": 1.344,
-        "inflow_delta_cusecs": -8733,
-        "outflow_delta_cusecs": 989
       }
     },
     {
