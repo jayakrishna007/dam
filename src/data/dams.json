@@ -4,10 +4,10 @@
     "name": "Krishna Raja Sagara (KRS)",
     "river": "Cauvery",
     "district": "Mysuru",
-    "level": 23.23,
+    "level": 24.08,
     "capacity": 49.452,
-    "inflow": 4291,
-    "outflow": 764,
+    "inflow": 5734,
+    "outflow": 777,
     "state": "Karnataka"
   },
   {
@@ -15,9 +15,9 @@
     "name": "Kabini",
     "river": "Kabini",
     "district": "Mysuru",
-    "level": 34.56,
+    "level": 36.25,
     "capacity": 19.516,
-    "inflow": 5774,
+    "inflow": 4394,
     "outflow": 500,
     "state": "Karnataka"
   },
@@ -26,9 +26,9 @@
     "name": "Harangi",
     "river": "Harangi",
     "district": "Kodagu",
-    "level": 44.02,
+    "level": 45.49,
     "capacity": 8.5,
-    "inflow": 1344,
+    "inflow": 1657,
     "outflow": 180,
     "state": "Karnataka"
   },
@@ -37,179 +37,190 @@
     "name": "Hemavathy",
     "river": "Hemavathy",
     "district": "Hassan",
-    "level": 44.85,
+    "level": 46.84,
     "capacity": 37.103,
-    "inflow": 6294,
+    "inflow": 8901,
     "outflow": 300,
     "state": "Karnataka"
   },
   {
     "id": 5,
-    "name": "Mettur",
-    "river": "Cauvery",
-    "district": "Salem",
-    "level": 41.33,
-    "capacity": 93.47,
-    "inflow": 40,
-    "outflow": 3003,
-    "state": "Tamil Nadu"
+    "name": "Tungabhadra",
+    "river": "Tungabhadra",
+    "district": "Vijayanagara",
+    "level": 10.61,
+    "capacity": 105.788,
+    "inflow": 17507,
+    "outflow": 170,
+    "state": "Karnataka"
   },
   {
     "id": 6,
-    "name": "Bhavanisagar",
-    "river": "Bhavani",
-    "district": "Erode",
-    "level": 17.52,
-    "capacity": 32.8,
-    "inflow": 579,
-    "outflow": 586,
+    "name": "Mettur",
+    "river": "Cauvery",
+    "district": "Salem",
+    "level": 41.04,
+    "capacity": 93.47,
+    "inflow": 27,
+    "outflow": 3002,
     "state": "Tamil Nadu"
   },
   {
     "id": 7,
-    "name": "Amaravathi",
-    "river": "Amaravathy",
-    "district": "Tiruppur",
-    "level": 23.57,
-    "capacity": 4.047,
-    "inflow": 394,
-    "outflow": 50,
+    "name": "Bhavanisagar",
+    "river": "Bhavani",
+    "district": "Erode",
+    "level": 18.11,
+    "capacity": 32.8,
+    "inflow": 3000,
+    "outflow": 703,
     "state": "Tamil Nadu"
   },
   {
     "id": 8,
-    "name": "Periyar",
-    "river": "Periyar",
-    "district": "Theni",
-    "level": 12.56,
-    "capacity": 10.57,
-    "inflow": 462,
-    "outflow": 356,
+    "name": "Amaravathi",
+    "river": "Amaravathy",
+    "district": "Tiruppur",
+    "level": 24.14,
+    "capacity": 4.047,
+    "inflow": 297,
+    "outflow": 30,
     "state": "Tamil Nadu"
   },
   {
     "id": 9,
+    "name": "Periyar",
+    "river": "Periyar",
+    "district": "Theni",
+    "level": 12.49,
+    "capacity": 10.57,
+    "inflow": 277,
+    "outflow": 356,
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": 10,
     "name": "Vaigai",
     "river": "Vaigai",
     "district": "Theni",
-    "level": 8.39,
+    "level": 9.05,
     "capacity": 6.091,
     "inflow": 215,
     "outflow": 86,
     "state": "Tamil Nadu"
   },
   {
-    "id": 10,
+    "id": 11,
     "name": "Papanasam",
     "river": "Thamirabarani",
     "district": "Tirunelveli",
-    "level": 39.62,
+    "level": 38.69,
     "capacity": 5.5,
-    "inflow": 773,
+    "inflow": 464,
     "outflow": 1505,
     "state": "Tamil Nadu"
   },
   {
-    "id": 11,
+    "id": 12,
     "name": "Manimuthar",
     "river": "Manimuthar",
     "district": "Tirunelveli",
-    "level": 33.08,
+    "level": 32.83,
     "capacity": 5.511,
-    "inflow": 149,
+    "inflow": 25,
     "outflow": 175,
     "state": "Tamil Nadu"
   },
   {
-    "id": 12,
+    "id": 13,
     "name": "Pechiparai",
     "river": "Kodayar",
     "district": "Kanyakumari",
-    "level": 57.08,
+    "level": 56.62,
     "capacity": 4.35,
-    "inflow": 342,
-    "outflow": 454,
-    "state": "Tamil Nadu"
-  },
-  {
-    "id": 13,
-    "name": "Perunchani",
-    "river": "Paralayar",
-    "district": "Kanyakumari",
-    "level": 68.79,
-    "capacity": 2.89,
-    "inflow": 128,
-    "outflow": 250,
+    "inflow": 249,
+    "outflow": 480,
     "state": "Tamil Nadu"
   },
   {
     "id": 14,
-    "name": "Krishnagiri",
-    "river": "Thenpennai",
-    "district": "Krishnagiri",
-    "level": 84.99,
-    "capacity": 1.666,
-    "inflow": 243,
-    "outflow": 243,
+    "name": "Perunchani",
+    "river": "Paralayar",
+    "district": "Kanyakumari",
+    "level": 68.37,
+    "capacity": 2.89,
+    "inflow": 166,
+    "outflow": 300,
     "state": "Tamil Nadu"
   },
   {
     "id": 15,
+    "name": "Krishnagiri",
+    "river": "Thenpennai",
+    "district": "Krishnagiri",
+    "level": 85.29,
+    "capacity": 1.666,
+    "inflow": 303,
+    "outflow": 243,
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": 16,
     "name": "Sathanur",
     "river": "Thenpennai",
     "district": "Tiruvannamalai",
-    "level": 30.36,
+    "level": 30.3,
     "capacity": 7.321,
     "inflow": null,
     "outflow": null,
     "state": "Tamil Nadu"
   },
   {
-    "id": 16,
+    "id": 17,
     "name": "Sholayar",
     "river": "Sholayar",
     "district": "Coimbatore",
-    "level": 34.74,
+    "level": 33.85,
     "capacity": 5.046,
-    "inflow": 781,
-    "outflow": 1363,
-    "state": "Tamil Nadu"
-  },
-  {
-    "id": 17,
-    "name": "Parambikulam",
-    "river": "Parambikulam",
-    "district": "Palakkad",
-    "level": 18.69,
-    "capacity": 13.454,
-    "inflow": 1059,
-    "outflow": 590,
+    "inflow": 853,
+    "outflow": 1366,
     "state": "Tamil Nadu"
   },
   {
     "id": 18,
-    "name": "Aliyar",
-    "river": "Aliyar",
-    "district": "Coimbatore",
-    "level": 10.69,
-    "capacity": 3.864,
-    "inflow": 184,
-    "outflow": 150,
+    "name": "Parambikulam",
+    "river": "Parambikulam",
+    "district": "Palakkad",
+    "level": 19.08,
+    "capacity": 13.454,
+    "inflow": 1243,
+    "outflow": 620,
     "state": "Tamil Nadu"
   },
   {
     "id": 19,
-    "name": "Thirumurthy",
-    "river": "Thirumurthy",
-    "district": "Tiruppur",
-    "level": 45.18,
-    "capacity": 1.744,
-    "inflow": 429,
-    "outflow": 1090,
+    "name": "Aliyar",
+    "river": "Aliyar",
+    "district": "Coimbatore",
+    "level": 10.82,
+    "capacity": 3.864,
+    "inflow": 213,
+    "outflow": 150,
     "state": "Tamil Nadu"
   },
   {
     "id": 20,
+    "name": "Thirumurthy",
+    "river": "Thirumurthy",
+    "district": "Tiruppur",
+    "level": 41.97,
+    "capacity": 1.744,
+    "inflow": 445,
+    "outflow": 1090,
+    "state": "Tamil Nadu"
+  },
+  {
+    "id": 21,
     "name": "Anayirankal",
     "river": "Panniyar",
     "district": "Idukki",
@@ -220,7 +231,7 @@
     "state": "Kerala"
   },
   {
-    "id": 21,
+    "id": 22,
     "name": "Banasurasagar",
     "river": "Karamanathodu",
     "district": "Wayanad",
@@ -231,7 +242,7 @@
     "state": "Kerala"
   },
   {
-    "id": 22,
+    "id": 23,
     "name": "Idamalayar",
     "river": "Idamalayar",
     "district": "Ernakulam",
@@ -242,7 +253,7 @@
     "state": "Kerala"
   },
   {
-    "id": 23,
+    "id": 24,
     "name": "Idukki",
     "river": "Periyar",
     "district": "Idukki",
@@ -253,7 +264,7 @@
     "state": "Kerala"
   },
   {
-    "id": 24,
+    "id": 25,
     "name": "Kakki",
     "river": "Kakkad",
     "district": "Pathanamthitta",
@@ -264,7 +275,7 @@
     "state": "Kerala"
   },
   {
-    "id": 25,
+    "id": 26,
     "name": "Alaganuru Balancing",
     "river": "Alaganuru",
     "district": "Kurnool",
@@ -275,29 +286,29 @@
     "state": "Andhra Pradesh"
   },
   {
-    "id": 26,
+    "id": 27,
     "name": "Brahmamsagar",
     "river": "Kunduleru",
     "district": "Kadapa",
-    "level": 55.69,
+    "level": 55.64,
     "capacity": 17.74,
     "inflow": null,
     "outflow": null,
     "state": "Andhra Pradesh"
   },
   {
-    "id": 27,
+    "id": 28,
     "name": "Chitravati Balancing",
     "river": "Chitravathi",
     "district": "Anantapur",
-    "level": 38.32,
+    "level": 38.03,
     "capacity": 10.23,
     "inflow": null,
     "outflow": null,
     "state": "Andhra Pradesh"
   },
   {
-    "id": 28,
+    "id": 29,
     "name": "Donkarayi",
     "river": "Sileru",
     "district": "East Godavari",
@@ -308,18 +319,18 @@
     "state": "Andhra Pradesh"
   },
   {
-    "id": 29,
+    "id": 30,
     "name": "Gandikota",
     "river": "Penna",
     "district": "Kadapa",
-    "level": 70.58,
+    "level": 70.5,
     "capacity": 26.85,
     "inflow": null,
     "outflow": null,
     "state": "Andhra Pradesh"
   },
   {
-    "id": 30,
+    "id": 31,
     "name": "Akkampally",
     "river": "Krishna",
     "district": "Nalgonda",
@@ -330,7 +341,7 @@
     "state": "Telangana"
   },
   {
-    "id": 31,
+    "id": 32,
     "name": "Himayathsagar",
     "river": "Esi",
     "district": "Hyderabad",
@@ -341,7 +352,7 @@
     "state": "Telangana"
   },
   {
-    "id": 32,
+    "id": 33,
     "name": "Manjira",
     "river": "Manjira",
     "district": "Medak",
@@ -352,7 +363,7 @@
     "state": "Telangana"
   },
   {
-    "id": 33,
+    "id": 34,
     "name": "Nagarjunsagar",
     "river": "Krishna",
     "district": "Nalgonda",
@@ -363,7 +374,7 @@
     "state": "Telangana"
   },
   {
-    "id": 34,
+    "id": 35,
     "name": "Osmansagar",
     "river": "Musi",
     "district": "Hyderabad",
@@ -374,29 +385,29 @@
     "state": "Telangana"
   },
   {
-    "id": 35,
+    "id": 36,
     "name": "Bhakra (Gobind Sagar)",
     "river": "Sutlej",
     "district": "Bilaspur",
-    "level": 23.21,
+    "level": 23.94,
     "capacity": 197.7,
-    "inflow": 38018,
-    "outflow": 23229,
-    "state": "Himachal Pradesh"
-  },
-  {
-    "id": 36,
-    "name": "Pong (Maharana Pratap Sagar)",
-    "river": "Beas",
-    "district": "Kangra",
-    "level": 20.4,
-    "capacity": 257.0,
-    "inflow": 17875,
-    "outflow": 15500,
+    "inflow": 39834,
+    "outflow": 24287,
     "state": "Himachal Pradesh"
   },
   {
     "id": 37,
+    "name": "Pong (Maharana Pratap Sagar)",
+    "river": "Beas",
+    "district": "Kangra",
+    "level": 20.57,
+    "capacity": 257.0,
+    "inflow": 21459,
+    "outflow": 17219,
+    "state": "Himachal Pradesh"
+  },
+  {
+    "id": 38,
     "name": "Bhadra",
     "river": "Bhadra",
     "district": "Chikkamagaluru",
@@ -407,7 +418,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 38,
+    "id": 39,
     "name": "Almatti",
     "river": "Krishna",
     "district": "Vijayapura",
@@ -418,7 +429,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 39,
+    "id": 40,
     "name": "Linganamakki",
     "river": "Sharavathi",
     "district": "Shivamogga",
@@ -429,7 +440,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 40,
+    "id": 41,
     "name": "Supa",
     "river": "Kali",
     "district": "Uttara Kannada",
@@ -440,7 +451,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 41,
+    "id": 42,
     "name": "Malaprabha",
     "river": "Malaprabha",
     "district": "Belagavi",
@@ -451,7 +462,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 42,
+    "id": 43,
     "name": "Ghataprabha",
     "river": "Ghataprabha",
     "district": "Belagavi",
@@ -462,7 +473,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 43,
+    "id": 44,
     "name": "Varahi",
     "river": "Varahi",
     "district": "Udupi",
@@ -473,7 +484,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 44,
+    "id": 45,
     "name": "Sardar Sarovar",
     "river": "Narmada",
     "district": "Narmada",
@@ -484,7 +495,7 @@
     "state": "Gujarat"
   },
   {
-    "id": 45,
+    "id": 46,
     "name": "Indira Sagar",
     "river": "Narmada",
     "district": "Khandwa",
@@ -495,7 +506,7 @@
     "state": "Madhya Pradesh"
   },
   {
-    "id": 46,
+    "id": 47,
     "name": "Hirakud",
     "river": "Mahanadi",
     "district": "Sambalpur",
@@ -506,7 +517,7 @@
     "state": "Odisha"
   },
   {
-    "id": 47,
+    "id": 48,
     "name": "Rihand",
     "river": "Rihand",
     "district": "Sonbhadra",
@@ -517,7 +528,7 @@
     "state": "Uttar Pradesh"
   },
   {
-    "id": 48,
+    "id": 49,
     "name": "Maithon",
     "river": "Barakar",
     "district": "Dhanbad",
