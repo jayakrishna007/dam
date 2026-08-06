@@ -48,10 +48,10 @@
     "name": "Tungabhadra",
     "river": "Tungabhadra",
     "district": "Vijayanagara",
-    "level": 56.45,
+    "level": 61.27,
     "capacity": 105.788,
-    "inflow": 100750,
-    "outflow": 1443,
+    "inflow": 60751,
+    "outflow": 1449,
     "state": "Karnataka"
   },
   {
@@ -224,7 +224,7 @@
     "name": "Anayirankal",
     "river": "Panniyar",
     "district": "Idukki",
-    "level": 0.92,
+    "level": 0.93,
     "capacity": 42.625,
     "inflow": null,
     "outflow": null,
@@ -235,7 +235,7 @@
     "name": "Banasurasagar",
     "river": "Karamanathodu",
     "district": "Wayanad",
-    "level": 15.31,
+    "level": 15.64,
     "capacity": 27.39,
     "inflow": null,
     "outflow": null,
@@ -246,7 +246,7 @@
     "name": "Idamalayar",
     "river": "Idamalayar",
     "district": "Ernakulam",
-    "level": 50.15,
+    "level": 50.95,
     "capacity": 35.943,
     "inflow": null,
     "outflow": null,
@@ -257,7 +257,7 @@
     "name": "Idukki",
     "river": "Periyar",
     "district": "Idukki",
-    "level": 45.06,
+    "level": 46.27,
     "capacity": 51.559,
     "inflow": null,
     "outflow": null,
@@ -268,7 +268,7 @@
     "name": "Kakki",
     "river": "Kakkad",
     "district": "Pathanamthitta",
-    "level": 23.83,
+    "level": 24.55,
     "capacity": 34.66,
     "inflow": null,
     "outflow": null,
@@ -386,28 +386,6 @@
   },
   {
     "id": 36,
-    "name": "Bhakra (Gobind Sagar)",
-    "river": "Sutlej",
-    "district": "Bilaspur",
-    "level": 44.34,
-    "capacity": 197.7,
-    "inflow": 46663,
-    "outflow": 23269,
-    "state": "Himachal Pradesh"
-  },
-  {
-    "id": 37,
-    "name": "Pong (Maharana Pratap Sagar)",
-    "river": "Beas",
-    "district": "Kangra",
-    "level": 41.35,
-    "capacity": 257.0,
-    "inflow": 23380,
-    "outflow": 13715,
-    "state": "Himachal Pradesh"
-  },
-  {
-    "id": 38,
     "name": "Bhadra",
     "river": "Bhadra",
     "district": "Chikkamagaluru",
@@ -418,7 +396,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 39,
+    "id": 37,
     "name": "Almatti",
     "river": "Krishna",
     "district": "Vijayapura",
@@ -429,7 +407,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 40,
+    "id": 38,
     "name": "Linganamakki",
     "river": "Sharavathi",
     "district": "Shivamogga",
@@ -440,7 +418,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 41,
+    "id": 39,
     "name": "Supa",
     "river": "Kali",
     "district": "Uttara Kannada",
@@ -451,7 +429,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 42,
+    "id": 40,
     "name": "Malaprabha",
     "river": "Malaprabha",
     "district": "Belagavi",
@@ -462,7 +440,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 43,
+    "id": 41,
     "name": "Ghataprabha",
     "river": "Ghataprabha",
     "district": "Belagavi",
@@ -473,7 +451,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 44,
+    "id": 42,
     "name": "Varahi",
     "river": "Varahi",
     "district": "Udupi",
@@ -484,7 +462,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 45,
+    "id": 43,
     "name": "Sardar Sarovar",
     "river": "Narmada",
     "district": "Narmada",
@@ -495,7 +473,7 @@
     "state": "Gujarat"
   },
   {
-    "id": 46,
+    "id": 44,
     "name": "Indira Sagar",
     "river": "Narmada",
     "district": "Khandwa",
@@ -506,7 +484,7 @@
     "state": "Madhya Pradesh"
   },
   {
-    "id": 47,
+    "id": 45,
     "name": "Hirakud",
     "river": "Mahanadi",
     "district": "Sambalpur",
@@ -517,7 +495,7 @@
     "state": "Odisha"
   },
   {
-    "id": 48,
+    "id": 46,
     "name": "Rihand",
     "river": "Rihand",
     "district": "Sonbhadra",
@@ -528,7 +506,7 @@
     "state": "Uttar Pradesh"
   },
   {
-    "id": 49,
+    "id": 47,
     "name": "Maithon",
     "river": "Barakar",
     "district": "Dhanbad",
