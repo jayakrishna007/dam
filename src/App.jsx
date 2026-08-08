@@ -3618,7 +3618,62 @@ export default function App() {
         .hero-nav-arrow:hover{background:#06B6D4;border-color:#06B6D4}
         .hero-mini-card{border-radius:18px;overflow:hidden;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);flex-shrink:0;border:1px solid rgba(255,255,255,0.1);position:relative}
         .hero-mini-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(6,182,212,0.5);box-shadow:0 20px 50px rgba(0,0,0,0.55)}
-        @media (max-width:768px){.nav-search-container{display:none!important}.hero-cards-panel{display:none!important}.hero-vert-nav{display:none!important}}
+        @media (max-width:768px){
+          .nav-search-container{display:none!important}
+          .hero-cards-panel{display:none!important}
+          .hero-vert-nav{display:none!important}
+          .hero-slider-container {
+            height: auto !important;
+            min-height: calc(100vh - 40px) !important;
+            padding-top: 40px !important;
+            padding-bottom: 70px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+          }
+          .hero-left-content {
+            position: relative !important;
+            left: 0 !important;
+            top: 0 !important;
+            transform: none !important;
+            max-width: 100% !important;
+            padding: 16px 18px 0px 18px !important;
+          }
+          .hero-slide-title {
+            font-size: 2.2rem !important;
+            line-height: 1.0 !important;
+            margin-bottom: 8px !important;
+          }
+          .hero-slide-desc {
+            font-size: 0.8rem !important;
+            line-height: 1.45 !important;
+            margin-bottom: 14px !important;
+            max-width: 100% !important;
+          }
+          .hero-slide-data {
+            max-width: 100% !important;
+            padding: 12px 14px !important;
+            margin-bottom: 16px !important;
+          }
+          .hero-slide-btns {
+            gap: 8px !important;
+            flex-wrap: nowrap !important;
+          }
+          .hero-slide-btns button {
+            padding: 10px 14px !important;
+            font-size: 0.8rem !important;
+            flex: 1 1 50% !important;
+            justify-content: center !important;
+            white-space: nowrap !important;
+          }
+          .hero-slide-counter {
+            display: none !important;
+          }
+          .hero-bottom-nav {
+            bottom: 18px !important;
+            gap: 10px !important;
+          }
+        }
 
         .dam-detail-grid {
           display: grid;
@@ -3944,6 +3999,25 @@ export default function App() {
                     const prev = () => goTo((slide - 1 + sliderDams.length) % sliderDams.length);
                     const next = () => goTo((slide + 1) % sliderDams.length);
 
+                    // Touch swipe support for mobile (80% traffic)
+                    const [touchStart, setTouchStart] = useState(null);
+                    const [touchEnd, setTouchEnd] = useState(null);
+                    const minSwipeDistance = 40;
+
+                    const handleTouchStart = (e) => {
+                      setTouchEnd(null);
+                      setTouchStart(e.targetTouches[0].clientX);
+                    };
+                    const handleTouchMove = (e) => {
+                      setTouchEnd(e.targetTouches[0].clientX);
+                    };
+                    const handleTouchEnd = () => {
+                      if (!touchStart || !touchEnd) return;
+                      const distance = touchStart - touchEnd;
+                      if (distance > minSwipeDistance) next();
+                      if (distance < -minSwipeDistance) prev();
+                    };
+
                     // Auto-advance every 6s
                     useEffect(() => {
                       const id = setInterval(() => {
@@ -3972,11 +4046,17 @@ export default function App() {
                     ];
 
                     return (
-                      <div style={{
-                        position:'relative', width:'100%', height:'100vh',
-                        overflow:'hidden', background:pal.bg,
-                        transition:'background 1s ease'
-                      }}>
+                      <div
+                        className="hero-slider-container"
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
+                        style={{
+                          position:'relative', width:'100%', height:'100vh',
+                          overflow:'hidden', background:pal.bg,
+                          transition:'background 1s ease'
+                        }}
+                      >
 
                         {/* ── Real Dam Photo Background ── */}
                         <div key={`bg-photo-${slide}`} style={{
@@ -4073,7 +4153,7 @@ export default function App() {
                         </div>
 
                         {/* LEFT SLIDE CONTENT */}
-                        <div key={`content-${animKey}`} style={{
+                        <div key={`content-${animKey}`} className="hero-left-content" style={{
                           position:'absolute', left:64, top:'50%', transform:'translateY(-50%)',
                           zIndex:10, maxWidth:480, paddingTop:30
                         }}>
@@ -4272,7 +4352,7 @@ export default function App() {
                         </div>
 
                         {/* BOTTOM CENTER — arrow nav + dot pagination */}
-                        <div style={{
+                        <div className="hero-bottom-nav" style={{
                           position:'absolute', bottom:80, left:'50%',
                           transform:'translateX(-50%)',
                           zIndex:15, display:'flex', alignItems:'center', gap:16
