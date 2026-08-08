@@ -84,19 +84,57 @@ const formatLastUpdated = (timestamp, t) => {
   }
 };
 
-function useCountUp(target, go) {
-  const [v,setV]=useState(0);
-  useEffect(()=>{
-    if(!go) return;
-    const steps=50; let i=0;
-    const t=setInterval(()=>{
-      i++;
-      setV(parseFloat((target*i/steps).toFixed(1)));
-      if(i>=steps){ clearInterval(t); setV(target); }
-    }, 22);
-    return()=>clearInterval(t);
-  },[go,target]);
-  return v;
+function StatCard({ label, target, active, suffix = "", color, sub, decimals = 1 }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    if (!active || typeof target !== 'number') return;
+    let startTime = null;
+    let animFrameId = null;
+    const duration = 1000;
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const current = target * easeOut;
+
+      setDisplayValue(decimals === 0 ? Math.round(current) : parseFloat(current.toFixed(decimals)));
+
+      if (progress < 1) {
+        animFrameId = requestAnimationFrame(animate);
+      } else {
+        setDisplayValue(target);
+      }
+    };
+
+    animFrameId = requestAnimationFrame(animate);
+    return () => {
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+    };
+  }, [active, target, decimals]);
+
+  return (
+    <div style={{
+      background: "rgba(255,255,255,0.02)",
+      border: "1px solid rgba(255,255,255,0.05)",
+      borderRadius: 16,
+      padding: 24,
+      textAlign: "center",
+      willChange: "transform, opacity",
+      transform: "translateZ(0)"
+    }}>
+      <div style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
+        {label}
+      </div>
+      <div style={{ fontSize: 40, fontWeight: 900, color: color, fontFamily: "monospace" }}>
+        {displayValue}{suffix}
+      </div>
+      <div style={{ fontSize: 12, color: "rgba(224,242,254,0.3)", marginTop: 4 }}>
+        {sub}
+      </div>
+    </div>
+  );
 }
 
 // ===================== WATER VIZ - REALISTIC DAM ANIMATION =====================
@@ -3584,10 +3622,6 @@ export default function App() {
     ? parseFloat((stateFilteredDams.reduce((s,d)=>s+d.capacity,0)).toFixed(1))
     : 0.0;
 
-  const cAvg   = useCountUp(currentAvgLevel, goStats);
-  const cTotal = useCountUp(currentTotalDams, goStats);
-  const cCapacity = useCountUp(currentTotalCapacity, goStats);
-
   useEffect(()=>{
     const obs=new IntersectionObserver(([e])=>{ if(e.isIntersecting) setGoStats(true); },{threshold:0.4});
     if(statsRef.current) obs.observe(statsRef.current);
@@ -3635,15 +3669,15 @@ export default function App() {
         @keyframes heroBgZoom{from{transform:scale(1.06)}to{transform:scale(1)}}
         @keyframes slideInLeft{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
         @keyframes slideInRight{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
-        .hero-slide-tag{animation:slideInLeft 0.5s ease 0.05s both}
-        .hero-slide-title{animation:slideInLeft 0.55s ease 0.15s both;font-family:'Barlow Condensed',system-ui,sans-serif!important}
-        .hero-slide-desc{animation:slideInLeft 0.55s ease 0.25s both}
-        .hero-slide-data{animation:slideInLeft 0.55s ease 0.35s both}
-        .hero-slide-btns{animation:slideInLeft 0.55s ease 0.45s both}
-        .hero-slide-counter{animation:slideInLeft 0.55s ease 0.5s both}
-        .hero-card-1{animation:slideInRight 0.55s ease 0.28s both}
-        .hero-card-2{animation:slideInRight 0.55s ease 0.4s both}
-        .hero-card-3{animation:slideInRight 0.55s ease 0.52s both}
+        .hero-slide-tag{animation:slideInLeft 0.5s ease 0.05s both;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-slide-title{animation:slideInLeft 0.55s ease 0.15s both;font-family:'Barlow Condensed',system-ui,sans-serif!important;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-slide-desc{animation:slideInLeft 0.55s ease 0.25s both;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-slide-data{animation:slideInLeft 0.55s ease 0.35s both;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-slide-btns{animation:slideInLeft 0.55s ease 0.45s both;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-slide-counter{animation:slideInLeft 0.55s ease 0.5s both;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-card-1{animation:slideInRight 0.55s ease 0.28s both;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-card-2{animation:slideInRight 0.55s ease 0.4s both;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-card-3{animation:slideInRight 0.55s ease 0.52s both;will-change:transform,opacity;backface-visibility:hidden}
         .hero-vert-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.35s ease;border:none;padding:0}
         .hero-vert-dot.active{background:#06B6D4;width:8px;height:8px;box-shadow:0 0 8px rgba(6,182,212,0.6)}
         .hero-dot-pag{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;transition:all 0.35s ease;border:none;padding:0}
@@ -4064,11 +4098,13 @@ export default function App() {
                       if (distance < -minSwipeDistance) prev();
                     };
 
-                    // Auto-advance every 6s
+                    // Auto-advance every 6s (only when hero section is in view)
                     useEffect(() => {
                       const id = setInterval(() => {
-                        setSlide(s => (s+1) % sliderDams.length);
-                        setAnimKey(k => k+1);
+                        if (typeof window !== 'undefined' && window.scrollY < window.innerHeight * 1.2) {
+                          setSlide(s => (s+1) % sliderDams.length);
+                          setAnimKey(k => k+1);
+                        }
                       }, 6000);
                       return () => clearInterval(id);
                     }, [sliderDams.length]);
@@ -4436,17 +4472,9 @@ export default function App() {
             borderBottom:"1px solid rgba(255,255,255,0.03)", position:"relative", zIndex:6
           }}>
             <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:24 }}>
-              {[
-                { label: t("monitoredDams"), val:cTotal, color:"#67E8F9", sub: t("monitoredDamsSub") },
-                { label: t("averageLevel"), val:`${cAvg}%`, color:"#22D3EE", sub: t("averageLevelSub") },
-                { label: t("totalCapacity"), val:cCapacity, color:"#38BDF8", sub: t("totalCapacitySub") }
-              ].map(s => (
-                <div key={s.label} style={{ background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)", borderRadius:16, padding:24, textAlign:"center" }}>
-                  <div style={{ fontSize:12, color:"rgba(224,242,254,0.4)", textTransform:"uppercase", letterSpacing:1.5, marginBottom:8 }}>{s.label}</div>
-                  <div style={{ fontSize:40, fontWeight:900, color:s.color, fontFamily:"monospace" }}>{s.val}</div>
-                  <div style={{ fontSize:12, color:"rgba(224,242,254,0.3)", marginTop:4 }}>{s.sub}</div>
-                </div>
-              ))}
+              <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={t("monitoredDamsSub")} decimals={0} />
+              <StatCard label={t("averageLevel")} target={currentAvgLevel} active={goStats} suffix="%" color="#22D3EE" sub={t("averageLevelSub")} decimals={1} />
+              <StatCard label={t("totalCapacity")} target={currentTotalCapacity} active={goStats} color="#38BDF8" sub={t("totalCapacitySub")} decimals={1} />
             </div>
           </div>
           {/* DAMS SECTION */}
