@@ -36,10 +36,30 @@ export default async function handler(req, res) {
       if (isNaN(damId)) {
         return res.status(400).json({ error: 'dam_id query parameter is required' });
       }
-      const documents = await collection.find({ dam_id: damId })
-        .sort({ timestamp: -1 })
-        .limit(90)
-        .toArray();
+
+      const filter = { dam_id: damId };
+      if (req.query.start_date || req.query.end_date) {
+        filter.timestamp = {};
+        if (req.query.start_date) {
+          filter.timestamp.$gte = new Date(req.query.start_date);
+        }
+        if (req.query.end_date) {
+          const endDate = new Date(req.query.end_date);
+          endDate.setHours(23, 59, 59, 999);
+          filter.timestamp.$lte = endDate;
+        }
+      }
+
+      let cursor = collection.find(filter).sort({ timestamp: -1 });
+      const limitParam = req.query.limit;
+      if (limitParam && limitParam !== 'all' && limitParam !== '0') {
+        const parsedLimit = parseInt(limitParam);
+        if (!isNaN(parsedLimit) && parsedLimit > 0) {
+          cursor = cursor.limit(parsedLimit);
+        }
+      }
+
+      const documents = await cursor.toArray();
       return res.status(200).json({ documents });
     }
 

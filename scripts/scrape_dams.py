@@ -464,7 +464,8 @@ def main():
             print(f"Error reading scrape_status.json: {e}")
 
     import datetime
-    now_str = datetime.datetime.now().strftime("%Y-%m-%d %I:%M %p")
+    ist_tz = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
+    now_str = datetime.datetime.now(ist_tz).strftime("%Y-%m-%d %I:%M %p")
     duration = round(time.time() - start_time, 2)
 
     new_run = {

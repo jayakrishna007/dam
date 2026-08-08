@@ -6,5 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: parseInt(process.env.PORT) || 5173,
+    proxy: {
+      '/api': {
+        target: 'https://damtoday.com',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   },
 })

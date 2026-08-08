@@ -36,7 +36,7 @@ jobs:
           git add src/data/dams.json src/data/scrape_status.json
           # Only commit if there are changes to the water level data or run status
           if ! git diff --cached --quiet; then
-            git commit -m "chore: auto-update dam levels (10:00 AM IST)"
+            git commit -m "chore: auto-update dam levels"
             git push
           else
             echo "No changes in water level data."

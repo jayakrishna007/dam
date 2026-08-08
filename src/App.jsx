@@ -67,6 +67,23 @@ const fmtK = n => {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 };
 
+const formatLastUpdated = (timestamp, t) => {
+  if (!timestamp) return `${t("lastUpdated")}: --`;
+  try {
+    const parts = timestamp.trim().split(" ");
+    const datePart = parts[0];
+    const timePart = parts.slice(1).join(" ");
+    const todayIST = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+    if (datePart === todayIST) {
+      return `${t("updatedToday")} ${timePart} IST`;
+    } else {
+      return `${t("lastUpdated")}: ${timestamp} IST`;
+    }
+  } catch (e) {
+    return `${t("lastUpdated")}: ${timestamp} IST`;
+  }
+};
+
 function useCountUp(target, go) {
   const [v,setV]=useState(0);
   useEffect(()=>{
@@ -697,7 +714,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
       ok: scrapeStatus.sources.bbmb?.ok || false 
     },
     { 
-      source: "Daily Cron Trigger (10:00 AM IST)", 
+      source: "Daily Scheduled Scraper", 
       status: isFresh ? "Active" : "Delayed", 
       detail: `Frequency: Daily. Last run duration: ${scrapeStatus.duration_seconds}s.`, 
       ok: isFresh 
@@ -776,9 +793,9 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
         <span style={{ fontSize: 16 }}>{isFresh ? "🟢" : "🔴"}</span>
         <span>
           {isFresh ? (
-            <><strong>Operational:</strong> Daily data refresh at 10:00 AM IST succeeded. Last sync completed successfully on <strong>{scrapeStatus.last_run_timestamp}</strong>.</>
+            <><strong>Operational:</strong> Data refresh active. Last sync completed successfully on <strong>{scrapeStatus.last_run_timestamp} IST</strong>.</>
           ) : (
-            <><strong>Alert:</strong> Data refresh is stale. Last successful scrape was on <strong>{scrapeStatus.last_run_timestamp}</strong>. Daily scheduler (10 AM IST) might be failing or inactive.</>
+            <><strong>Alert:</strong> Data refresh is stale. Last successful scrape was on <strong>{scrapeStatus.last_run_timestamp} IST</strong>. Daily scheduler might be delayed or inactive.</>
           )}
         </span>
       </div>
@@ -868,7 +885,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
           }}>
             <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", marginBottom: 4 }}>Daily Refresh & Value Change Log</h3>
             <p style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.4)", marginBottom: 20 }}>
-              Verifies if data refreshed successfully daily at 10 AM IST and if values changed.
+              Verifies if data refreshed successfully and if values changed.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, maxHeight: 400, overflowY: "auto", paddingRight: 4 }}>
               {scrapeStatus.history.map((run, idx) => {
@@ -1231,91 +1248,62 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
 }
 
 // ===================== DAM DETAIL PAGE =====================
-function generateFallbackHistory(dam, safeLevel) {
-  const cutoffDate = new Date("2026-06-13T00:00:00");
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  
-  const result = [];
-  const currentDate = new Date(cutoffDate);
-  
-  const inflowBase = typeof dam.inflow === 'number' ? dam.inflow : parseFloat(dam.inflow) || 1200;
-  const outflowBase = typeof dam.outflow === 'number' ? dam.outflow : parseFloat(dam.outflow) || 800;
-  
-  let dayIndex = 0;
-  while (currentDate <= today) {
-    // Level slowly changes towards safeLevel
-    const level = Math.max(0, Math.min(100, safeLevel - (3 - dayIndex) * 0.4 + (Math.sin(dayIndex) * 0.1)));
-    const inflow = Math.max(0, inflowBase * (0.85 + Math.sin(dayIndex) * 0.15));
-    const outflow = Math.max(0, outflowBase * (0.9 + Math.cos(dayIndex) * 0.1));
-    
-    result.push({
-      dam_id: dam.id,
-      name: dam.name,
-      level,
-      capacity: dam.capacity,
-      inflow,
-      outflow,
-      timestamp: currentDate.toISOString()
-    });
-    
-    currentDate.setDate(currentDate.getDate() + 1);
-    dayIndex++;
-  }
-  return result;
-}
-
 function HistoricalCharts({ dam, safeLevel }) {
-  const [period, setPeriod] = useState("7D");
+  const [period, setPeriod] = useState("7D"); // "7D", "30D", "90D", "6M", "1Y", "ALL", "CUSTOM"
+  const [customStartDate, setCustomStartDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [historyData, setHistoryData] = useState([]);
   const [hoveredPoint, setHoveredPoint] = useState(null);
-  const [activeTab, setActiveTab] = useState("level"); // "level" or "flow"
+  const [activeTab, setActiveTab] = useState("level"); // "level", "inflow", or "outflow"
 
   useEffect(() => {
     setLoading(true);
 
-    fetch(`/api/dam-history?dam_id=${dam.id}`)
+    const apiPath = `/api/dam-history?dam_id=${dam.id}&limit=all`;
+    const prodPath = `https://damtoday.com/api/dam-history?dam_id=${dam.id}&limit=all`;
+
+    fetch(apiPath)
       .then(res => {
-        if (!res.ok) throw new Error("Failed to load historical data");
+        if (!res.ok) throw new Error("Local API not ok");
         return res.json();
       })
       .then(data => {
         const docs = data.documents || [];
-        if (docs.length === 0) {
-          const isDev = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-          if (isDev) {
-            setHistoryData(generateFallbackHistory(dam, safeLevel));
-          } else {
-            setHistoryData([]);
-          }
-        } else {
-          docs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-          setHistoryData(docs);
+        if (docs.length === 0 && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+          return fetch(prodPath).then(r => r.json()).then(pData => {
+            const pDocs = pData.documents || [];
+            pDocs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            setHistoryData(pDocs);
+            setLoading(false);
+          });
         }
+        docs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        setHistoryData(docs);
         setLoading(false);
       })
       .catch(err => {
-        console.error("Historical data fetch failed:", err);
-        const isDev = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-        if (isDev) {
-          setHistoryData(generateFallbackHistory(dam, safeLevel));
-        } else {
-          setHistoryData([]);
-        }
-        setLoading(false);
+        console.warn("Primary historical data fetch failed, attempting production API:", err);
+        fetch(prodPath)
+          .then(r => r.json())
+          .then(pData => {
+            const pDocs = pData.documents || [];
+            pDocs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            setHistoryData(pDocs);
+            setLoading(false);
+          })
+          .catch(err2 => {
+            console.error("All historical data fetches failed:", err2);
+            setHistoryData([]);
+            setLoading(false);
+          });
       });
   }, [dam, safeLevel]);
 
   const filledHistoryData = useMemo(() => {
     if (historyData.length === 0) return [];
     
-    // Discard any records before June 13, 2026 (ignore dummy/test data)
-    const cutoffDate = new Date("2026-06-13T00:00:00");
-    const sorted = [...historyData]
-      .filter(d => new Date(d.timestamp) >= cutoffDate)
-      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-    
+    const sorted = [...historyData].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     if (sorted.length === 0) return [];
     
     const earliestDate = new Date(sorted[0].timestamp);
@@ -1325,12 +1313,9 @@ function HistoricalCharts({ dam, safeLevel }) {
     
     const result = [];
     const currentDate = new Date(earliestDate);
-    
-    // Helper to find the record closest to or on currentDate
     let lastRecord = sorted[0];
     
     while (currentDate <= latestDate) {
-      // Find if we have an exact record for this calendar day
       const dayStart = new Date(currentDate);
       const dayEnd = new Date(currentDate);
       dayEnd.setDate(dayEnd.getDate() + 1);
@@ -1341,20 +1326,17 @@ function HistoricalCharts({ dam, safeLevel }) {
       });
       
       if (recordsForDay.length > 0) {
-        // Use the last record of that day
         lastRecord = recordsForDay[recordsForDay.length - 1];
         result.push({
           ...lastRecord,
-          timestamp: currentDate.toISOString() // normalize to calendar day
+          timestamp: currentDate.toISOString()
         });
       } else {
-        // Carry forward the last known record (backfill/interpolate)
         result.push({
           ...lastRecord,
-          timestamp: currentDate.toISOString() // normalize to calendar day
+          timestamp: currentDate.toISOString()
         });
       }
-      
       currentDate.setDate(currentDate.getDate() + 1);
     }
     
@@ -1367,7 +1349,6 @@ function HistoricalCharts({ dam, safeLevel }) {
     if (filledHistoryData.length === 0) return today;
     const d = new Date(filledHistoryData[filledHistoryData.length - 1].timestamp);
     d.setHours(0, 0, 0, 0);
-    // Anchor timeline to today (current local date) to show "half cut" appropriately
     return d > today ? d : today;
   }, [filledHistoryData]);
 
@@ -1378,31 +1359,65 @@ function HistoricalCharts({ dam, safeLevel }) {
     return t.getTime();
   }, [filledHistoryData]);
 
-  const { cutoff, daysCount, minTime, maxTime, timeRange, midDate } = useMemo(() => {
+  const { minTime, maxTime, timeRange, midDate } = useMemo(() => {
     let daysCount = 7;
     if (period === "30D") daysCount = 30;
-    if (period === "90D") daysCount = 90;
-    
-    const cutoff = new Date(latestDate);
-    cutoff.setDate(latestDate.getDate() - (daysCount - 1));
-    cutoff.setHours(0, 0, 0, 0);
-    
-    let minTime = cutoff.getTime();
-    if (earliestDataTime && earliestDataTime > minTime) {
-      minTime = earliestDataTime;
+    else if (period === "90D") daysCount = 90;
+    else if (period === "6M") daysCount = 180;
+    else if (period === "1Y") daysCount = 365;
+
+    let minT, maxT;
+    const maxDateAnchor = latestDate.getTime();
+
+    if (period === "ALL") {
+      minT = earliestDataTime || (latestDate.getTime() - 7 * 86400000);
+      maxT = maxDateAnchor;
+    } else if (period === "CUSTOM") {
+      if (customStartDate) {
+        const sD = new Date(customStartDate + "T00:00:00");
+        minT = sD.getTime();
+      } else {
+        minT = earliestDataTime || (latestDate.getTime() - 30 * 86400000);
+      }
+      if (customEndDate) {
+        const eD = new Date(customEndDate + "T23:59:59");
+        maxT = eD.getTime();
+      } else {
+        maxT = maxDateAnchor;
+      }
+    } else {
+      const cutoff = new Date(latestDate);
+      cutoff.setDate(latestDate.getDate() - (daysCount - 1));
+      cutoff.setHours(0, 0, 0, 0);
+      minT = cutoff.getTime();
+      maxT = maxDateAnchor;
     }
-    const maxTime = latestDate.getTime();
-    const timeRange = maxTime - minTime || 1;
+
+    if (minT > maxT) {
+      const tmp = minT;
+      minT = maxT;
+      maxT = tmp;
+    }
+
+    // If selected period (e.g. 6M, 1Y, ALL) extends before earliest available real data in DB,
+    // start graph from the earliest real data point available.
+    if (earliestDataTime && earliestDataTime > minT) {
+      minT = earliestDataTime;
+    }
+
+    const timeRange = maxT - minT || 1;
+    const midDate = new Date(minT + timeRange / 2);
     
-    const midDate = new Date(minTime + timeRange / 2);
-    
-    return { cutoff, daysCount, minTime, maxTime, timeRange, midDate };
-  }, [latestDate, period, earliestDataTime]);
+    return { minTime: minT, maxTime: maxT, timeRange, midDate };
+  }, [latestDate, period, earliestDataTime, customStartDate, customEndDate]);
 
   const filteredData = useMemo(() => {
     if (filledHistoryData.length === 0) return [];
-    return filledHistoryData.filter(d => new Date(d.timestamp).getTime() >= minTime);
-  }, [filledHistoryData, minTime]);
+    return filledHistoryData.filter(d => {
+      const t = new Date(d.timestamp).getTime();
+      return t >= minTime && t <= maxTime;
+    });
+  }, [filledHistoryData, minTime, maxTime]);
 
   // Chart coordinates calculation
   const width = 600;
@@ -1707,22 +1722,48 @@ function HistoricalCharts({ dam, safeLevel }) {
         </div>
         
         {/* Period Selectors */}
-        <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10 }}>
-          {["7D", "30D", "90D"].map(p => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              style={{
-                padding: "4px 12px", borderRadius: 8, border: "none",
-                background: period === p ? "rgba(6,182,212,0.15)" : "transparent",
-                color: period === p ? "#67E8F9" : "rgba(224,242,254,0.5)",
-                fontSize: 12, fontWeight: period === p ? 700 : 500, cursor: "pointer",
-                transition: "all 0.15s"
-              }}
-            >
-              {p}
-            </button>
-          ))}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+          <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10, flexWrap: "wrap" }}>
+            {["7D", "30D", "90D", "6M", "1Y", "ALL", "CUSTOM"].map(p => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                style={{
+                  padding: "4px 10px", borderRadius: 8, border: "none",
+                  background: period === p ? "rgba(6,182,212,0.15)" : "transparent",
+                  color: period === p ? "#67E8F9" : "rgba(224,242,254,0.5)",
+                  fontSize: 11, fontWeight: period === p ? 700 : 500, cursor: "pointer",
+                  transition: "all 0.15s"
+                }}
+              >
+                {p === "CUSTOM" ? "Custom Range" : p}
+              </button>
+            ))}
+          </div>
+          {period === "CUSTOM" && (
+            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", background: "rgba(6,182,212,0.06)", border: "1px solid rgba(6,182,212,0.15)", padding: "6px 12px", borderRadius: 8 }}>
+              <label style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.7)" }}>From:</label>
+              <input
+                type="date"
+                value={customStartDate}
+                onChange={(e) => setCustomStartDate(e.target.value)}
+                style={{
+                  background: "#071727", border: "1px solid rgba(224,242,254,0.2)",
+                  color: "#67e8f9", padding: "3px 6px", borderRadius: 6, fontSize: 11, colorScheme: "dark"
+                }}
+              />
+              <label style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.7)" }}>To:</label>
+              <input
+                type="date"
+                value={customEndDate}
+                onChange={(e) => setCustomEndDate(e.target.value)}
+                style={{
+                  background: "#071727", border: "1px solid rgba(224,242,254,0.2)",
+                  color: "#67e8f9", padding: "3px 6px", borderRadius: 6, fontSize: 11, colorScheme: "dark"
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -1823,13 +1864,13 @@ function HistoricalCharts({ dam, safeLevel }) {
             {filteredData.length > 0 && (
               <g>
                 <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
                 <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
                 <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {latestDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(maxTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
               </g>
             )}
@@ -1961,13 +2002,13 @@ function HistoricalCharts({ dam, safeLevel }) {
             {filteredData.length > 0 && (
               <g>
                 <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
                 <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
                 <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {latestDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(maxTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
               </g>
             )}
@@ -2093,13 +2134,13 @@ function HistoricalCharts({ dam, safeLevel }) {
             {filteredData.length > 0 && (
               <g>
                 <text x={margin.left} y={height - 12} fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(minTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
                 <text x={margin.left + (width - margin.left - margin.right) / 2} y={height - 12} textAnchor="middle" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {midDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
                 <text x={width - margin.right} y={height - 12} textAnchor="end" fill="rgba(224,242,254,0.3)" style={{ fontSize: 10 }}>
-                  {latestDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  {new Date(maxTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: (maxTime - minTime) > 180 * 86400000 ? '2-digit' : undefined })}
                 </text>
               </g>
             )}
@@ -2283,9 +2324,8 @@ function HistoricalCharts({ dam, safeLevel }) {
               </div>
               {SCRAPE_STATUS?.last_run_timestamp && (
                 <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "3px 8px", borderRadius: 6 }}>
-                  <span style={{ fontSize: 11, color: "rgba(224,242,254,0.5)" }}>{t("lastUpdated")}:</span>
                   <time dateTime={SCRAPE_STATUS.last_run_timestamp.split(" ")[0]} style={{ fontSize: 11, fontWeight: 600, color: "#67e8f9" }}>
-                    {SCRAPE_STATUS.last_run_timestamp}
+                    &#128338; {formatLastUpdated(SCRAPE_STATUS.last_run_timestamp, t)}
                   </time>
                 </div>
               )}
@@ -3786,7 +3826,7 @@ export default function App() {
               </div>
 
               <div style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.35)", marginLeft: 10 }}>
-                &#128338; <span style={{ color: "#67E8F9", fontWeight: 600 }}>{t("updatedToday")} 10:00 AM IST</span>
+                &#128338; <span style={{ color: "#67E8F9", fontWeight: 600 }}>{formatLastUpdated(SCRAPE_STATUS?.last_run_timestamp, t)}</span>
               </div>
             </div>
           </nav>
