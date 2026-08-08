@@ -3622,6 +3622,16 @@ export default function App() {
           .nav-search-container{display:none!important}
           .hero-cards-panel{display:none!important}
           .hero-vert-nav{display:none!important}
+          .main-nav-bar {
+            padding: 8px 14px !important;
+            min-height: 50px !important;
+          }
+          .main-nav-links {
+            display: none !important;
+          }
+          .main-nav-timestamp {
+            display: none !important;
+          }
           .hero-slider-container {
             height: auto !important;
             min-height: calc(100vh - 40px) !important;
@@ -3731,7 +3741,7 @@ export default function App() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
           {/* Global Sticky Navigation Header */}
-          <nav style={{
+          <nav className="main-nav-bar" style={{
             display: "flex", justifyContent: "space-between", alignItems: "center",
             padding: "14px 22px", zIndex: 100, position: "sticky", top: 0,
             background: "rgba(3, 10, 20, 0.85)", backdropFilter: "blur(18px)",
@@ -3758,61 +3768,63 @@ export default function App() {
               </div>
             </a>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap", justifyContent: "flex-end" }}>
-              <a
-                href="/about"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/about");
-                }}
-                style={{
-                  textDecoration: "none",
-                  color: view === "about" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
-                  fontSize: 12,
-                  fontWeight: view === "about" ? 700 : 600,
-                  transition: "color 0.2s"
-                }}
-                onMouseEnter={e => e.target.style.color = "#38bdf8"}
-                onMouseLeave={e => e.target.style.color = view === "about" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
-              >
-                {t("about")}
-              </a>
-              <a
-                href="/contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/contact");
-                }}
-                style={{
-                  textDecoration: "none",
-                  color: view === "contact" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
-                  fontSize: 12,
-                  fontWeight: view === "contact" ? 700 : 600,
-                  transition: "color 0.2s"
-                }}
-                onMouseEnter={e => e.target.style.color = "#38bdf8"}
-                onMouseLeave={e => e.target.style.color = view === "contact" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
-              >
-                {t("contact")}
-              </a>
-              <a
-                href="/privacy"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate("/privacy");
-                }}
-                style={{
-                  textDecoration: "none",
-                  color: view === "privacy" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
-                  fontSize: 12,
-                  fontWeight: view === "privacy" ? 700 : 600,
-                  transition: "color 0.2s"
-                }}
-                onMouseEnter={e => e.target.style.color = "#38bdf8"}
-                onMouseLeave={e => e.target.style.color = view === "privacy" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
-              >
-                {t("privacy")}
-              </a>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div className="main-nav-links" style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                <a
+                  href="/about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/about");
+                  }}
+                  style={{
+                    textDecoration: "none",
+                    color: view === "about" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
+                    fontSize: 12,
+                    fontWeight: view === "about" ? 700 : 600,
+                    transition: "color 0.2s"
+                  }}
+                  onMouseEnter={e => e.target.style.color = "#38bdf8"}
+                  onMouseLeave={e => e.target.style.color = view === "about" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
+                >
+                  {t("about")}
+                </a>
+                <a
+                  href="/contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/contact");
+                  }}
+                  style={{
+                    textDecoration: "none",
+                    color: view === "contact" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
+                    fontSize: 12,
+                    fontWeight: view === "contact" ? 700 : 600,
+                    transition: "color 0.2s"
+                  }}
+                  onMouseEnter={e => e.target.style.color = "#38bdf8"}
+                  onMouseLeave={e => e.target.style.color = view === "contact" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
+                >
+                  {t("contact")}
+                </a>
+                <a
+                  href="/privacy"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/privacy");
+                  }}
+                  style={{
+                    textDecoration: "none",
+                    color: view === "privacy" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
+                    fontSize: 12,
+                    fontWeight: view === "privacy" ? 700 : 600,
+                    transition: "color 0.2s"
+                  }}
+                  onMouseEnter={e => e.target.style.color = "#38bdf8"}
+                  onMouseLeave={e => e.target.style.color = view === "privacy" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
+                >
+                  {t("privacy")}
+                </a>
+              </div>
 
               {/* Premium Glassmorphic Language Selector */}
               <div style={{ position: "relative", zIndex: 101 }}>
@@ -3911,7 +3923,7 @@ export default function App() {
                 )}
               </div>
 
-              <div style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.35)", marginLeft: 10 }}>
+              <div className="main-nav-timestamp" style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.35)", marginLeft: 10 }}>
                 &#128338; <span style={{ color: "#67E8F9", fontWeight: 600 }}>{formatLastUpdated(SCRAPE_STATUS?.last_run_timestamp, t)}</span>
               </div>
             </div>
