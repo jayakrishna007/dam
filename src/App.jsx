@@ -2183,7 +2183,8 @@ function HistoricalCharts({ dam, safeLevel }) {
 }
 
 // ===================== DAM DETAIL PAGE =====================
-function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
+
+function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
   const [shareCopied, setShareCopied] = useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
   
@@ -3575,6 +3576,7 @@ export default function App() {
   return (
     <div style={{background:"#030A14",minHeight:"100vh",color:"#DDEFFC",fontFamily:"system-ui,-apple-system,sans-serif",overflowX:"hidden"}}>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
         ::-webkit-scrollbar{width:4px;background:#030A14}
         ::-webkit-scrollbar-thumb{background:#163556;border-radius:2px}
@@ -3587,7 +3589,36 @@ export default function App() {
         @keyframes blink{0%,100%{opacity:1}50%{opacity:0.55}}
         @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-        @media (max-width:768px){.nav-search-container{display:none!important}}
+        @keyframes waterRise{0%{transform:translateY(6px)}50%{transform:translateY(-6px)}100%{transform:translateY(6px)}}
+        @keyframes jetPulse{0%,100%{opacity:0.85;stroke-width:2.5}50%{opacity:1;stroke-width:3.5}}
+        @keyframes scanLine{0%{transform:translateY(-100%)}100%{transform:translateY(2400%)}}
+        @keyframes floatBadge{0%,100%{transform:translateY(0px)}50%{transform:translateY(-5px)}}
+        @keyframes riverFlow{0%{stroke-dashoffset:200}100%{stroke-dashoffset:0}}
+        @keyframes mistPulse{0%,100%{opacity:0.4;r:12}50%{opacity:0.7;r:18}}
+        @keyframes particleMove{0%{transform:translate(0,0);opacity:0}20%{opacity:1}100%{transform:translate(60px,20px);opacity:0}}
+        @keyframes levelPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+        @keyframes heroSplit{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes heroBgZoom{from{transform:scale(1.06)}to{transform:scale(1)}}
+        @keyframes slideInLeft{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideInRight{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+        .hero-slide-tag{animation:slideInLeft 0.5s ease 0.05s both}
+        .hero-slide-title{animation:slideInLeft 0.55s ease 0.15s both;font-family:'Barlow Condensed',system-ui,sans-serif!important}
+        .hero-slide-desc{animation:slideInLeft 0.55s ease 0.25s both}
+        .hero-slide-data{animation:slideInLeft 0.55s ease 0.35s both}
+        .hero-slide-btns{animation:slideInLeft 0.55s ease 0.45s both}
+        .hero-slide-counter{animation:slideInLeft 0.55s ease 0.5s both}
+        .hero-card-1{animation:slideInRight 0.55s ease 0.28s both}
+        .hero-card-2{animation:slideInRight 0.55s ease 0.4s both}
+        .hero-card-3{animation:slideInRight 0.55s ease 0.52s both}
+        .hero-vert-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.35s ease;border:none;padding:0}
+        .hero-vert-dot.active{background:#06B6D4;width:8px;height:8px;box-shadow:0 0 8px rgba(6,182,212,0.6)}
+        .hero-dot-pag{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;transition:all 0.35s ease;border:none;padding:0}
+        .hero-dot-pag.active{width:22px;border-radius:4px;background:#06B6D4}
+        .hero-nav-arrow{width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:50%;color:#fff;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s;backdrop-filter:blur(8px)}
+        .hero-nav-arrow:hover{background:#06B6D4;border-color:#06B6D4}
+        .hero-mini-card{border-radius:18px;overflow:hidden;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);flex-shrink:0;border:1px solid rgba(255,255,255,0.1);position:relative}
+        .hero-mini-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(6,182,212,0.5);box-shadow:0 20px 50px rgba(0,0,0,0.55)}
+        @media (max-width:768px){.nav-search-container{display:none!important}.hero-cards-panel{display:none!important}.hero-vert-nav{display:none!important}}
 
         .dam-detail-grid {
           display: grid;
@@ -3843,140 +3874,435 @@ export default function App() {
               <PrivacyPolicyPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : (
               <>
-                {/* HERO */}
-                <div style={{
-                  position: "relative", minHeight: "95vh", overflow: "hidden",
-                  background: "radial-gradient(ellipse 140% 70% at 50% -15%, #082848 0%, #030A14 60%)",
-                  display: "flex", flexDirection: "column"
-                }}>
-                  {/* Ambient glows */}
-                  <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-                    <div style={{ position: "absolute", width: 560, height: 320, top: 0, left: "50%", transform: "translateX(-50%)",
-                      background: "radial-gradient(ellipse, rgba(6, 182, 212, 0.1), transparent 70%)" }} />
-                    <div style={{ position: "absolute", width: 320, height: 320, top: "30%", left: "4%", borderRadius: "50%",
-                      background: "radial-gradient(circle, rgba(59, 130, 246, 0.07), transparent 70%)", animation: "glowPulse 7s ease infinite" }} />
-                    <div style={{ position: "absolute", width: 260, height: 260, top: "22%", right: "4%", borderRadius: "50%",
-                      background: "radial-gradient(circle, rgba(124, 58, 237, 0.06), transparent 70%)", animation: "glowPulse 10s ease infinite 3s" }} />
-                  </div>
+                {/* HERO — Travel-agency-style immersive dam slider */}
+                {(()=>{
+                  // ── Karnataka dams first, then other top dams by level ──
+                  const slideCount = Math.min(8, DAMS.length);
+                  const karnatakaDams = [...DAMS]
+                    .filter(d => (d.state||'').toLowerCase().includes('karnataka'))
+                    .sort((a,b)=>{
+                      const la=typeof a.level==='number'?a.level:parseFloat(a.level)||0;
+                      const lb=typeof b.level==='number'?b.level:parseFloat(b.level)||0;
+                      return lb-la;
+                    });
+                  const otherDams = [...DAMS]
+                    .filter(d => !(d.state||'').toLowerCase().includes('karnataka'))
+                    .sort((a,b)=>{
+                      const la=typeof a.level==='number'?a.level:parseFloat(a.level)||0;
+                      const lb=typeof b.level==='number'?b.level:parseFloat(b.level)||0;
+                      return lb-la;
+                    });
+                  const sliderDams = [...karnatakaDams, ...otherDams].slice(0, slideCount);
 
-                  {/* Rain */}
-                  {RAIN.map(r => (
-                    <div key={r.id} style={{
-                      position: "absolute", top: 0, left: r.left, width: "1.5px", height: r.h, pointerEvents: "none",
-                      background: "linear-gradient(to bottom, transparent, rgba(6, 182, 212, 0.5), transparent)",
-                      animation: `rain ${r.dur} linear ${r.delay} infinite`
-                    }} />
-                  ))}
+                  // Local authentic dam photographs saved in /images/dams/
+                  const DAM_PHOTOS = {
+                    "Krishna Raja Sagara (KRS)": "/images/dams/krs.jpg",
+                    "Kabini": "/images/dams/kabini.jpg",
+                    "Harangi": "/images/dams/harangi.jpg",
+                    "Hemavathy": "/images/dams/hemavathy.jpg",
+                    "Tungabhadra": "/images/dams/tungabhadra.jpg",
+                    "Bhadra": "/images/dams/bhadra.jpg",
+                    "Almatti": "/images/dams/almatti.jpg",
+                    "Linganamakki": "/images/dams/linganamakki.jpg",
+                    "Supa": "/images/dams/supa.jpg",
+                    "Mettur": "/images/dams/mettur.jpg",
+                    "Nagarjunsagar": "/images/dams/nagarjunsagar.jpg",
+                    "Bhakra (Gobind Sagar)": "/images/dams/bhakra.jpg",
+                    "Hirakud": "/images/dams/hirakud.jpg",
+                    "Sardar Sarovar": "/images/dams/sardarsarovar.jpg",
+                    "Idukki": "/images/dams/idukki.jpg"
+                  };
 
-                  {/* LIVE TICKER */}
-                  <div style={{
-                    height: 30, overflow: "hidden", display: "flex", alignItems: "center",
-                    background: "rgba(6, 182, 212, 0.045)", borderBottom: "1px solid rgba(6, 182, 212, 0.1)"
-                  }}>
-                    <div style={{ flexShrink: 0, height: "100%", display: "flex", alignItems: "center",
-                      padding: "0 14px", borderRight: "1px solid rgba(6, 182, 212, 0.14)", gap: 6 }}>
-                      <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#EF4444", animation: "blink 1.5s ease infinite" }} />
-                      <span style={{ fontSize: 10, fontWeight: 700, color: "rgba(224, 242, 254, 0.45)", letterSpacing: 1 }}>LIVE</span>
-                    </div>
-                    <div style={{ overflow: "hidden", flex: 1 }}>
+                  const getDamPhoto = (damObj, idx = 0) => {
+                    if (!damObj) return "/images/dams/krs.jpg";
+                    const cleanName = damObj.name.replace(/ \(.*\)/, '');
+                    return DAM_PHOTOS[damObj.name] || DAM_PHOTOS[cleanName] || "/images/dams/krs.jpg";
+                  };
+
+                  // Unique gradient palettes per slide (like travel agency photo backgrounds)
+                  const PALETTES = [
+                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2a4a 0%, #030A14 60%)', accent:'#06B6D4', glow:'rgba(6,182,212,0.12)'},
+                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0a1f3d 0%, #020810 60%)', accent:'#38BDF8', glow:'rgba(56,189,248,0.12)'},
+                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #1a1040 0%, #04020e 60%)', accent:'#A78BFA', glow:'rgba(167,139,250,0.1)'},
+                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0f2518 0%, #020d08 60%)', accent:'#34D399', glow:'rgba(52,211,153,0.1)'},
+                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #2a1200 0%, #0e0600 60%)', accent:'#FB923C', glow:'rgba(251,146,60,0.1)'},
+                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2233 0%, #030a14 60%)', accent:'#22D3EE', glow:'rgba(34,211,238,0.12)'},
+                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #250a2a 0%, #0a020c 60%)', accent:'#E879F9', glow:'rgba(232,121,249,0.1)'},
+                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0f1f0f 0%, #040804 60%)', accent:'#86EFAC', glow:'rgba(134,239,172,0.1)'},
+                  ];
+
+                  // ── Slider state (rendered inline via IIFE + React hooks) ──
+                  // We use a wrapper component so we can use hooks
+                  function HeroDamSlider() {
+                    const [slide, setSlide] = useState(0);
+                    const [animKey, setAnimKey] = useState(0);
+
+                    const goTo = (i) => {
+                      setSlide(i);
+                      setAnimKey(k=>k+1);
+                    };
+                    const prev = () => goTo((slide - 1 + sliderDams.length) % sliderDams.length);
+                    const next = () => goTo((slide + 1) % sliderDams.length);
+
+                    // Auto-advance every 6s
+                    useEffect(() => {
+                      const id = setInterval(() => {
+                        setSlide(s => (s+1) % sliderDams.length);
+                        setAnimKey(k => k+1);
+                      }, 6000);
+                      return () => clearInterval(id);
+                    }, [sliderDams.length]);
+
+                    const dam = sliderDams[slide];
+                    const pal = PALETTES[slide % PALETTES.length];
+                    const level = typeof dam.level==='number' ? dam.level : parseFloat(dam.level)||0;
+                    const inflow = typeof dam.inflow==='number' ? dam.inflow : parseFloat(dam.inflow)||0;
+                    const outflow = typeof dam.outflow==='number' ? dam.outflow : parseFloat(dam.outflow)||0;
+                    const tmc = ((dam.capacity||0) * level / 100).toFixed(2);
+                    const photoUrl = getDamPhoto(dam, slide);
+
+                    // Water level color
+                    const lvlColor = level>=90?'#F87171':level>=70?pal.accent:level>=45?'#60A5FA':'#FB923C';
+
+                    // Right panel: adjacent dams
+                    const rightCards = [
+                      sliderDams[(slide+1)%sliderDams.length],
+                      sliderDams[(slide+2)%sliderDams.length],
+                      sliderDams[(slide+3)%sliderDams.length],
+                    ];
+
+                    return (
                       <div style={{
-                        display: "inline-block", whiteSpace: "nowrap", fontFamily: "monospace",
-                        fontSize: 11, color: "rgba(103, 232, 249, 0.6)", letterSpacing: 0.4, paddingLeft: 14,
-                        animation: "tickerScroll 90s linear infinite"
-                      }}>{tickerText}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tickerText}</div>
-                    </div>
-                  </div>
+                        position:'relative', width:'100%', height:'100vh',
+                        overflow:'hidden', background:pal.bg,
+                        transition:'background 1s ease'
+                      }}>
 
-                  {/* HERO BODY */}
-            <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",
-              justifyContent:"center",padding:"52px 20px 116px",textAlign:"center"}}>
+                        {/* ── Real Dam Photo Background ── */}
+                        <div key={`bg-photo-${slide}`} style={{
+                          position:'absolute', inset:0, zIndex:0,
+                          overflow:'hidden'
+                        }}>
+                          <img
+                            src={photoUrl}
+                            alt={dam.name}
+                            referrerPolicy="no-referrer"
+                            style={{
+                              width:'100%', height:'100%', objectFit:'cover', objectPosition:'center',
+                              filter:'brightness(0.55) contrast(1.1)',
+                              animation:'heroBgZoom 8s ease both'
+                            }}
+                          />
+                        </div>
 
-              <div style={{
-                marginBottom:24,fontSize:11,fontWeight:600,letterSpacing:3,textTransform:"uppercase",
-                color:"rgba(34,211,238,0.72)",padding:"5px 18px",borderRadius:20,display:"inline-block",
-                border:"1px solid rgba(34,211,238,0.18)",background:"rgba(34,211,238,0.06)",
-                animation:"fadeSlideUp 0.6s ease both"
-              }}>
-                {lang === "hi" ? "डैमटुडे · दैनिक जल स्तर बुलेटिन" :
-                 lang === "kn" ? "ಡ್ಯಾಮ್‌ಟುಡೇ · ದೈನಂದಿನ ನೀರಿನ ಮಟ್ಟದ ಬುಲೆಟಿನ್" :
-                 lang === "te" ? "డ్యామ్‌టుడే · రోజువారీ నీటి మట్టాల బులెటిన్" :
-                 lang === "ta" ? "டேம்டுடே · தினசரி நீர் மட்ட அறிக்கை" :
-                 lang === "ml" ? "ഡാംടുഡേ · ദിന ജലനിരപ്പ് ബുലറ്റിൻ" :
-                 "Damtoday · Daily Water Level Bulletin"}
-              </div>
+                        {/* Large decorative dam cross-section — background visual */}
+                        <svg style={{
+                          position:'absolute', right:0, top:0, width:'62%', height:'100%',
+                          zIndex:1, opacity:0.18
+                        }} viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice">
+                          {/* Sky */}
+                          <rect width="500" height="400" fill="#020810"/>
+                          {/* Mountain silhouette */}
+                          <path d="M0,120 L40,60 L90,110 L130,30 L180,90 L220,20 L270,80 L310,100" fill="#071422" opacity="0.9"/>
+                          <path d="M0,130 L50,90 L100,120 L140,55 L190,105 L230,45 L280,95 L310,110 L310,270 L0,270" fill="#040e1c" opacity="0.95"/>
+                          {/* Ground */}
+                          <polygon points="0,270 200,270 200,300 500,300 500,400 0,400" fill="#060d18"/>
+                          {/* Dam body */}
+                          <polygon points="200,60 225,60 370,300 200,300" fill="#374151"/>
+                          <polygon points="225,60 240,60 385,300 370,300" fill="#1f2937"/>
+                          {/* Crest slab */}
+                          <rect x="200" y="50" width="40" height="10" fill="#4b5563"/>
+                          {/* Water */}
+                          <rect x="0" y={60+(1-level/100)*210} width="200" height={270-(60+(1-level/100)*210)} fill={pal.accent} opacity="0.18"/>
+                          {/* Wave on surface */}
+                          <path d={`M -60,${60+(1-level/100)*210} C -30,${60+(1-level/100)*210-6} 0,${60+(1-level/100)*210+6} 30,${60+(1-level/100)*210} C 60,${60+(1-level/100)*210-6} 90,${60+(1-level/100)*210+6} 120,${60+(1-level/100)*210} C 150,${60+(1-level/100)*210-6} 180,${60+(1-level/100)*210+6} 210,${60+(1-level/100)*210}`}
+                            fill="none" stroke={pal.accent} strokeWidth="2" opacity="0.4"/>
+                          {/* Outflow jet */}
+                          {outflow>0 && <path d="M 200,268 C 230,268 290,295 330,300" fill="none" stroke={pal.accent} strokeWidth="3" opacity="0.5"/>}
+                          {/* River */}
+                          <rect x="370" y="290" width="130" height="10" fill={pal.accent} opacity="0.12"/>
+                        </svg>
 
-              <h1 style={{
-                fontSize:"clamp(32px,6vw,56px)",fontWeight:900,lineHeight:1.15,
-                letterSpacing:"-2px",marginBottom:20,maxWidth:700,paddingBottom:"12px",
-                background:"linear-gradient(100deg,#BAE6FD 0%,#7DD3FC 18%,#FFFFFF 46%,#67E8F9 68%,#BAE6FD 100%)",
-                backgroundSize:"200% auto",backgroundClip:"text",WebkitBackgroundClip:"text",
-                WebkitTextFillColor:"transparent",animation:"shimmer 7s linear infinite,fadeSlideUp 0.8s ease 0.1s both"
-              }}>
-                {lang === "hi" ? (
-                  <span>लाइव {selectedState === "all" ? (selectedZone === "All" ? "भारत" : `${getLocalizedZone(selectedZone, lang)} भारत`) : getLocalizedState(selectedState, lang)} जलाशय जल स्तर</span>
-                ) : lang === "kn" ? (
-                  <span>ಲೈವ್ {selectedState === "all" ? (selectedZone === "All" ? "ಭಾರತದ" : `${getLocalizedZone(selectedZone, lang)} ಭಾರತದ`) : getLocalizedState(selectedState, lang)} ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟ</span>
-                ) : lang === "te" ? (
-                  <span>లైవ్ {selectedState === "all" ? (selectedZone === "All" ? "భారతదేశ" : `${getLocalizedZone(selectedZone, lang)} భారతదేశ`) : getLocalizedState(selectedState, lang)} రిజర్వాయర్ నీటి మట్టాలు</span>
-                ) : lang === "ta" ? (
-                  <span>நேரடி {selectedState === "all" ? (selectedZone === "All" ? "இந்திய" : `${getLocalizedZone(selectedZone, lang)} இந்திய`) : getLocalizedState(selectedState, lang)} நீர்நிலைகளின் நீர் மட்டங்கள்</span>
-                ) : lang === "ml" ? (
-                  <span>തത്സമയ {selectedState === "all" ? (selectedZone === "All" ? "ഇന്ത്യൻ" : `${getLocalizedZone(selectedZone, lang)} ഇന്ത്യൻ`) : getLocalizedState(selectedState, lang)} അണക്കെട്ടുകളിലെ ജലനിരപ്പ്</span>
-                ) : (
-                  <span>Live {selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState} Reservoir Water Levels</span>
-                )}
-              </h1>
+                        {/* Dark left-to-right gradient overlay — like travel agency */}
+                        <div style={{
+                          position:'absolute', inset:0, zIndex:2,
+                          background:'linear-gradient(105deg, rgba(3,10,20,0.88) 0%, rgba(3,10,20,0.6) 45%, rgba(3,10,20,0.12) 100%)'
+                        }}/>
 
-              <p style={{
-                fontSize:16,color:"rgba(224,242,254,0.46)",maxWidth:400,lineHeight:1.6,
-                marginBottom:24,animation:"fadeSlideUp 0.8s ease 0.2s both"
-              }}>
-                {lang === "hi" ? (
-                  <span>{selectedState === "all" ? (selectedZone === "All" ? "भारत" : `${getLocalizedZone(selectedZone, lang)} भारत`) : getLocalizedState(selectedState, lang)} के जलाशयों के जल स्तर, आवक और निकासी की लाइव दैनिक निगरानी।</span>
-                ) : lang === "kn" ? (
-                  <span>{selectedState === "all" ? (selectedZone === "All" ? "ಭಾರತದ" : `${getLocalizedZone(selectedZone, lang)} ಭಾರತದ`) : getLocalizedState(selectedState, lang)} ಪ್ರಮುಖ ಜಲಾಶಯಗಳ ನೀರಿನ ಮಟ್ಟ, ಒಳಹರಿವು ಮತ್ತು ಹೊರಹರಿವಿನ ನೇರ ದೈನಂದಿನ ವರದಿಗಳು.</span>
-                ) : lang === "te" ? (
-                  <span>{selectedState === "all" ? (selectedZone === "All" ? "భారతదేశ" : `${getLocalizedZone(selectedZone, lang)} భారతదేశ`) : getLocalizedState(selectedState, lang)} అంతటా రిజర్వాయర్ నీటి మట్టాలు, ఇన్‌ఫ్లోలు మరియు అవుట్‌ఫ్లోల రోజువారీ ప్రత్యక్ష పర్యవేక్షణ.</span>
-                ) : lang === "ta" ? (
-                  <span>{selectedState === "all" ? (selectedZone === "All" ? "இந்தியா" : `${getLocalizedZone(selectedZone, lang)} இந்தியா`) : getLocalizedState(selectedState, lang)} முழுவதும் உள்ள நீர்நிலைகளின் அளவுகள், வரத்து மற்றும் வெளியேற்றத்தின் தினசரி நேரடி கண்காணிப்பு.</span>
-                ) : lang === "ml" ? (
-                  <span>{selectedState === "all" ? (selectedZone === "All" ? "ഇന്ത്യ" : `${getLocalizedZone(selectedZone, lang)} ഇന്ത്യ`) : getLocalizedState(selectedState, lang)}യിലുടനീളമുള്ള അണക്കെട്ടുകളുടെ ജലനിരപ്പ്, നീരൊഴുക്ക്, ഒഴുക്ക് എന്നിവയുടെ തത്സമയ നിരീക്ഷണം.</span>
-                ) : (
-                  <span>Real-time daily monitoring of reservoir levels, capacity, inflows, and outflows across {selectedState === "all" ? (selectedZone === "All" ? "India" : `${selectedZone} India`) : selectedState}.</span>
-                )}
-              </p>
+                        {/* Rain streaks */}
+                        {RAIN.map(r=>(
+                          <div key={r.id} style={{
+                            position:'absolute', top:0, left:r.left, width:'1px', height:r.h+4,
+                            pointerEvents:'none', zIndex:3,
+                            background:`linear-gradient(to bottom, transparent, ${pal.accent}40, transparent)`,
+                            animation:`rain ${r.dur} linear ${r.delay} infinite`
+                          }}/>
+                        ))}
 
-              <div style={{ display:"flex", gap:16, animation:"fadeSlideUp 0.8s ease 0.3s both" }}>
-                <button
-                  onClick={() => document.getElementById("dams-section").scrollIntoView({ behavior: "smooth" })}
-                  style={{
-                    padding:"12px 24px", borderRadius:30, border:"none",
-                    background:"linear-gradient(135deg,#0284C7,#06B6D4)",
-                    color:"#FFF", fontWeight:700, fontSize:14, cursor:"pointer",
-                    boxShadow:"0 4px 20px rgba(6,182,212,0.35)",
-                    transition:"transform 0.2s, box-shadow 0.2s"
-                  }}
-                  onMouseEnter={e => { e.target.style.transform="translateY(-2px)"; e.target.style.boxShadow="0 6px 24px rgba(6,182,212,0.5)"; }}
-                  onMouseLeave={e => { e.target.style.transform="none"; e.target.style.boxShadow="0 4px 20px rgba(6,182,212,0.35)"; }}
-                >
-                  {lang === "hi" ? "जलाशयों की निगरानी करें" :
-                   lang === "kn" ? "ಜಲಾಶಯಗಳ ಪರಿಶೀಲನೆ" :
-                   lang === "te" ? "రిజర్వాయర్ల పర్యవేక్షణ" :
-                   lang === "ta" ? "நீர்த்தேக்கங்களை கண்காணிக்க" :
-                   lang === "ml" ? "ഡാമുകൾ നിരീക്ഷിക്കുക" :
-                   "Monitor Reservoirs"}
-                </button>
-              </div>
-            </div>
+                        {/* LIVE TICKER at top */}
+                        <div style={{
+                          position:'absolute', top:0, left:0, right:0, height:30, zIndex:20,
+                          overflow:'hidden', display:'flex', alignItems:'center',
+                          background:'rgba(0,0,0,0.35)', borderBottom:`1px solid ${pal.accent}22`,
+                          backdropFilter:'blur(6px)'
+                        }}>
+                          <div style={{ flexShrink:0, height:'100%', display:'flex', alignItems:'center',
+                            padding:'0 14px', borderRight:`1px solid ${pal.accent}22`, gap:6 }}>
+                            <div style={{ width:7, height:7, borderRadius:'50%', background:'#EF4444', animation:'blink 1.5s ease infinite' }}/>
+                            <span style={{ fontSize:10, fontWeight:700, color:'rgba(224,242,254,0.5)', letterSpacing:1 }}>LIVE</span>
+                          </div>
+                          <div style={{ overflow:'hidden', flex:1 }}>
+                            <div style={{
+                              display:'inline-block', whiteSpace:'nowrap', fontFamily:'monospace',
+                              fontSize:11, color:`${pal.accent}99`, letterSpacing:0.4, paddingLeft:14,
+                              animation:'tickerScroll 90s linear infinite'
+                            }}>{tickerText}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tickerText}</div>
+                          </div>
+                        </div>
 
-            {/* Wave at bottom of hero */}
-            <div style={{ position:"absolute", bottom:0, left:0, right:0, height:60, overflow:"hidden", zIndex:5, pointerEvents:"none" }}>
-              <svg viewBox="0 0 480 24" preserveAspectRatio="none"
-                style={{ width:"200%", height:"100%", position:"absolute", bottom:-5, left:0, animation:"wv1 12s linear infinite", transformOrigin:"bottom" }}>
-                <path d={WAVE} fill="#030A14" stroke="rgba(6,182,212,0.15)" strokeWidth="1" />
-              </svg>
-            </div>
-          </div>
+                        {/* LEFT VERTICAL DOT NAV */}
+                        <div className="hero-vert-nav" style={{
+                          position:'absolute', left:26, top:'50%', transform:'translateY(-50%)',
+                          zIndex:15, display:'flex', flexDirection:'column', alignItems:'center', gap:14
+                        }}>
+                          {sliderDams.map((_,i)=>(
+                            <button key={i} className={`hero-vert-dot${i===slide?' active':''}`}
+                              onClick={()=>goTo(i)} title={sliderDams[i].name}
+                              style={{ outline:'none' }}/>
+                          ))}
+                        </div>
+
+                        {/* LEFT SLIDE CONTENT */}
+                        <div key={`content-${animKey}`} style={{
+                          position:'absolute', left:64, top:'50%', transform:'translateY(-50%)',
+                          zIndex:10, maxWidth:480, paddingTop:30
+                        }}>
+                          {/* Tag */}
+                          <div className="hero-slide-tag" style={{
+                            display:'inline-block', fontSize:'0.72rem', fontWeight:700,
+                            letterSpacing:2, textTransform:'uppercase',
+                            color:pal.accent, marginBottom:10
+                          }}>
+                            🌊 {dam.river} · {dam.district}
+                          </div>
+
+                          {/* Short clean Barlow Condensed title */}
+                          {(() => {
+                            const rawName = dam.name || "";
+                            let shortTitle = rawName;
+                            if (rawName.includes("Krishna Raja Sagara")) {
+                              shortTitle = "KRS DAM";
+                            } else {
+                              shortTitle = rawName.replace(/\s*\(.*\)/, '').trim();
+                            }
+                            return (
+                              <h1 className="hero-slide-title" style={{
+                                fontFamily: "'Barlow Condensed', system-ui, sans-serif",
+                                fontSize: 'clamp(2.2rem, 4.2vw, 3.8rem)',
+                                fontWeight: 900,
+                                lineHeight: 1.02,
+                                letterSpacing: '-0.5px',
+                                textTransform: 'uppercase',
+                                marginBottom: 12,
+                                color: '#fff',
+                                textShadow: `0 2px 25px ${pal.glow}`
+                              }}>
+                                {shortTitle}
+                              </h1>
+                            );
+                          })()}
+
+                          {/* Description */}
+                          <p className="hero-slide-desc" style={{
+                            fontSize:'0.82rem', color:'rgba(255,255,255,0.6)',
+                            lineHeight:1.65, marginBottom:22, maxWidth:380
+                          }}>
+                            {`${dam.state || ''} reservoir — currently at `}
+                            <strong style={{color:lvlColor}}>{level.toFixed(1)}% capacity</strong>
+                            {`. Real-time monitoring of water levels, inflow and outflow from India's network of ${DAMS.length}+ reservoirs.`}
+                          </p>
+
+                          {/* LIVE DATA BLOCK — like travel agency pricing block */}
+                          <div className="hero-slide-data" style={{
+                            background:'rgba(255,255,255,0.06)',
+                            border:`1px solid ${pal.accent}30`,
+                            backdropFilter:'blur(14px)',
+                            borderRadius:16, padding:'16px 20px',
+                            marginBottom:24, maxWidth:360
+                          }}>
+                            {/* Fill level & TMC present */}
+                            <div style={{ display:'flex', alignItems:'baseline', gap:8, marginBottom:6, flexWrap:'wrap' }}>
+                              <span style={{
+                                fontFamily:"'Barlow Condensed', system-ui, sans-serif",
+                                fontSize:'2.4rem', fontWeight:900, color:lvlColor, letterSpacing:'-0.5px'
+                              }}>{level.toFixed(1)}%</span>
+                              <span style={{ fontSize:'0.88rem', color:pal.accent, fontWeight:700 }}>{tmc} TMC</span>
+                              <span style={{
+                                background: level>=90?'#F59E0B':level>=70?pal.accent:'#FB923C',
+                                color:'#fff', fontSize:'0.62rem', fontWeight:700,
+                                padding:'2px 8px', borderRadius:50, letterSpacing:0.5, marginLeft:'auto'
+                              }}>{level>=90?'WATCH':level>=70?'HIGH LEVEL':level>=45?'NORMAL':'LOW'}</span>
+                            </div>
+                            {/* Capacity summary */}
+                            <div style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.5)', fontWeight:500, marginBottom:10 }}>
+                              Total Gross Capacity: <strong style={{ color:'#fff' }}>{dam.capacity} TMC</strong>
+                            </div>
+                            {/* Inflow / Outflow row */}
+                            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                              <div>
+                                <div style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:1, marginBottom:3 }}>↑ Inflow</div>
+                                <div style={{ fontSize:'1rem', fontWeight:700, color:'#86EFAC', fontFamily:'monospace' }}>
+                                  {inflow>0?`${fmtK(inflow)} cusecs`:'—'}
+                                </div>
+                              </div>
+                              <div>
+                                <div style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:1, marginBottom:3 }}>↓ Outflow</div>
+                                <div style={{ fontSize:'1rem', fontWeight:700, color:'#FCA5A5', fontFamily:'monospace' }}>
+                                  {outflow>0?`${fmtK(outflow)} cusecs`:'—'}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* BUTTONS */}
+                          <div className="hero-slide-btns" style={{ display:'flex', alignItems:'center', gap:14 }}>
+                            <button
+                              onClick={()=>{ const d=DAMS.find(x=>x.name===dam.name); if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
+                              style={{
+                                background:pal.accent, color:'#fff', border:'none',
+                                padding:'13px 32px', borderRadius:50, fontSize:'0.88rem',
+                                fontWeight:700, letterSpacing:0.3, cursor:'pointer',
+                                transition:'all 0.3s ease', display:'flex', alignItems:'center', gap:6
+                              }}
+                              onMouseEnter={e=>{e.currentTarget.style.transform='translateX(4px)';e.currentTarget.style.boxShadow=`0 8px 28px ${pal.accent}50`;}}
+                              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none';}}
+                            >View Details &nbsp;→</button>
+                            <button
+                              onClick={()=>document.getElementById('dams-section')?.scrollIntoView({behavior:'smooth'})}
+                              style={{
+                                background:'rgba(255,255,255,0.1)',
+                                color:'#fff', border:'1px solid rgba(255,255,255,0.22)',
+                                padding:'13px 28px', borderRadius:50, fontSize:'0.88rem',
+                                fontWeight:600, backdropFilter:'blur(8px)', cursor:'pointer',
+                                transition:'all 0.3s ease'
+                              }}
+                              onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.18)';}}
+                              onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.1)';}}
+                            >All Reservoirs</button>
+                          </div>
+
+                          {/* Slide counter */}
+                          <div className="hero-slide-counter" style={{
+                            display:'flex', alignItems:'baseline', gap:2, marginTop:36
+                          }}>
+                            <span style={{
+                              fontFamily:"'Barlow Condensed',system-ui,sans-serif",
+                              fontSize:'2rem', fontWeight:800, color:'#fff'
+                            }}>{String(slide+1).padStart(2,'0')}</span>
+                            <span style={{ fontSize:'0.85rem', color:'rgba(255,255,255,0.3)', margin:'0 2px' }}>/</span>
+                            <span style={{ fontSize:'0.85rem', color:'rgba(255,255,255,0.35)', fontWeight:500 }}>
+                              {String(sliderDams.length).padStart(2,'0')}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* RIGHT FLOATING CARDS PANEL */}
+                        <div className="hero-cards-panel" style={{
+                          position:'absolute', right:0, top:'50%',
+                          transform:'translateY(-50%)',
+                          zIndex:10, display:'flex', alignItems:'center',
+                          gap:14, paddingRight:36, paddingTop:50
+                        }}>
+                          {rightCards.map((cd, ci)=>{
+                            const cdLevel = typeof cd.level==='number'?cd.level:parseFloat(cd.level)||0;
+                            const cdW = ci===0?155:ci===1?140:120;
+                            const cdH = ci===0?265:ci===1?245:215;
+                            const cdColor = cdLevel>=90?'#F87171':cdLevel>=70?pal.accent:cdLevel>=45?'#60A5FA':'#FB923C';
+                            const cdPhoto = getDamPhoto(cd, ci + 1);
+                            return (
+                              <div key={cd.name}
+                                className={`hero-mini-card hero-card-${ci+1}`}
+                                style={{
+                                  width:cdW, height:cdH,
+                                  backgroundImage:`url(${cdPhoto})`,
+                                  backgroundSize:'cover',
+                                  backgroundPosition:'center'
+                                }}
+                                onClick={()=>{ const d=DAMS.find(x=>x.name===cd.name); if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
+                              >
+                                {/* Card background overlay */}
+                                <div style={{
+                                  position:'absolute', inset:0,
+                                  background:`linear-gradient(to top, rgba(2,8,20,0.95) 0%, rgba(2,8,20,0.4) 50%, rgba(2,8,20,0.2) 100%)`,
+                                }}/>
+                                {/* Water level indicator line */}
+                                <div style={{
+                                  position:'absolute', bottom:0, left:0, right:0,
+                                  height:`${cdLevel}%`,
+                                  background:`linear-gradient(to top, ${pal.accent}44, transparent)`,
+                                  transition:'height 0.8s ease'
+                                }}/>
+                                {/* Bookmark */}
+                                <div style={{
+                                  position:'absolute', top:10, right:10,
+                                  width:28, height:28, background:'rgba(255,255,255,0.15)',
+                                  backdropFilter:'blur(8px)', borderRadius:'50%',
+                                  display:'flex', alignItems:'center', justifyContent:'center',
+                                  fontSize:'0.75rem', border:'1px solid rgba(255,255,255,0.2)'
+                                }}>🔖</div>
+                                {/* Info at bottom */}
+                                <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'12px 12px 10px' }}>
+                                  <div style={{ fontSize:'0.78rem', fontWeight:700, color:'#fff', marginBottom:4,
+                                    whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'
+                                  }}>{cd.name}</div>
+                                  {/* Star-like level dots */}
+                                  <div style={{ display:'flex', gap:3, marginBottom:5 }}>
+                                    {[0,1,2,3,4].map(s=>(
+                                      <div key={s} style={{ width:6, height:6, borderRadius:'50%',
+                                        background: s < Math.round(cdLevel/20) ? cdColor : 'rgba(255,255,255,0.2)' }}/>
+                                    ))}
+                                  </div>
+                                  <div style={{ fontSize:'0.68rem', color:cdColor, fontWeight:700 }}>
+                                    {cdLevel.toFixed(1)}% · {((cd.capacity||0)*cdLevel/100).toFixed(1)} TMC
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* BOTTOM CENTER — arrow nav + dot pagination */}
+                        <div style={{
+                          position:'absolute', bottom:80, left:'50%',
+                          transform:'translateX(-50%)',
+                          zIndex:15, display:'flex', alignItems:'center', gap:16
+                        }}>
+                          <button className="hero-nav-arrow" onClick={prev}>←</button>
+                          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                            {sliderDams.map((_,i)=>(
+                              <button key={i}
+                                className={`hero-dot-pag${i===slide?' active':''}`}
+                                onClick={()=>goTo(i)}
+                                style={{ outline:'none' }}
+                              />
+                            ))}
+                          </div>
+                          <button className="hero-nav-arrow" onClick={next}>→</button>
+                        </div>
+
+                        {/* Bottom wave transition */}
+                        <div style={{ position:'absolute', bottom:0, left:0, right:0, height:70, overflow:'hidden', zIndex:6, pointerEvents:'none' }}>
+                          <svg viewBox="0 0 480 28" preserveAspectRatio="none"
+                            style={{ width:'200%', height:'100%', position:'absolute', bottom:-4, left:0, animation:'wv1 14s linear infinite' }}>
+                            <path d={WAVE} fill="#030A14" stroke={`${pal.accent}18`} strokeWidth="1"/>
+                          </svg>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return <HeroDamSlider />;
+                })()}
+
 
           {/* STATS */}
           <div ref={statsRef} style={{
