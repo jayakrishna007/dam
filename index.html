@@ -2,33 +2,75 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Daily water levels, storage capacity, inflows, and outflows of major reservoirs in South India (Karnataka, Tamil Nadu, Kerala, Andhra Pradesh, Telangana). Features live alerts, graphs, and farmer guides." />
-    <title>Damtoday — Daily Reservoir Water Levels & Live Alerts</title>
+    <meta name="description" content="DamToday provides daily water levels, storage capacity, inflows, and outflows of major reservoirs in South India (Karnataka, Tamil Nadu, Kerala, Andhra Pradesh, Telangana). Features live alerts, graphs, and farmer guides." />
+    <title>DamToday — Daily Reservoir Water Levels & Live Alerts</title>
     
     <!-- Open Graph / WhatsApp / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://damtoday.com/" />
-    <meta property="og:site_name" content="Damtoday" />
-    <meta property="og:title" content="Damtoday — Daily Reservoir Water Levels & Live Alerts" />
-    <meta property="og:description" content="Daily water levels, storage capacity, inflows, and outflows of major reservoirs in South India. Features live alerts, graphs, and farmer guides." />
+    <meta property="og:site_name" content="DamToday" />
+    <meta property="og:title" content="DamToday — Daily Reservoir Water Levels & Live Alerts" />
+    <meta property="og:description" content="DamToday provides daily water levels, storage capacity, inflows, and outflows of major reservoirs in South India. Features live alerts, graphs, and farmer guides." />
     <meta property="og:image" content="https://damtoday.com/og-image.png" />
     <meta property="og:image:secure_url" content="https://damtoday.com/og-image.png" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Damtoday — Daily Reservoir Water Levels & Live Alerts" />
+    <meta property="og:image:alt" content="DamToday — Daily Reservoir Water Levels & Live Alerts" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://damtoday.com/" />
-    <meta property="twitter:title" content="Damtoday — Daily Reservoir Water Levels & Live Alerts" />
-    <meta property="twitter:description" content="Daily water levels, storage capacity, inflows, and outflows of major reservoirs in South India. Features live alerts, graphs, and farmer guides." />
+    <meta property="twitter:title" content="DamToday — Daily Reservoir Water Levels & Live Alerts" />
+    <meta property="twitter:description" content="DamToday provides daily water levels, storage capacity, inflows, and outflows of major reservoirs in South India. Features live alerts, graphs, and farmer guides." />
     <meta property="twitter:image" content="https://damtoday.com/og-image.png" />
+
+    <!-- Schema.org JSON-LD Structured Data for Brand Entity Recognition -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://damtoday.com/#website",
+          "url": "https://damtoday.com/",
+          "name": "DamToday",
+          "alternateName": ["Damtoday", "Dam Today", "Dam Today Water Levels"],
+          "description": "DamToday is the official daily reservoir water level tracker for India, providing real-time storage, inflows, and outflows.",
+          "publisher": {
+            "@id": "https://damtoday.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://damtoday.com/?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://damtoday.com/#organization",
+          "name": "DamToday",
+          "alternateName": ["Dam Today", "Damtoday"],
+          "url": "https://damtoday.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://damtoday.com/icon-512.png",
+            "width": 512,
+            "height": 512
+          },
+          "description": "DamToday provides daily reservoir storage levels, live water alerts, capacity data, inflow and outflow metrics for dams across India."
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

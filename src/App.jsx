@@ -3186,7 +3186,41 @@ export default function App() {
       document.title = title;
       setMetaDescription(desc);
       setOpenGraphTags(title, desc, currentUrl);
-      removeJsonLdSchema();
+      setJsonLdSchema({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://damtoday.com/#website",
+            "url": "https://damtoday.com/",
+            "name": "DamToday",
+            "alternateName": ["Damtoday", "Dam Today", "Dam Today Water Levels"],
+            "description": desc,
+            "publisher": {
+              "@id": "https://damtoday.com/#organization"
+            },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://damtoday.com/?search={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://damtoday.com/#organization",
+            "name": "DamToday",
+            "alternateName": ["Dam Today", "Damtoday"],
+            "url": "https://damtoday.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://damtoday.com/icon-512.png",
+              "width": 512,
+              "height": 512
+            },
+            "description": "DamToday provides daily reservoir storage levels, live water alerts, capacity data, inflow and outflow metrics for dams across India."
+          }
+        ]
+      });
     } else if (path === "/about") {
       setView("about");
       let title = "About Us - Open Reservoir Telemetry Integrity - Damtoday";
