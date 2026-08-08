@@ -4013,15 +4013,20 @@ export default function App() {
                 {(()=>{
                   // ── Karnataka dams first, then other top dams by level ──
                   const slideCount = Math.min(8, DAMS.length);
+                  // Remove Supa dam and place Krishna Raja Sagara (KRS / Cauvery) first
                   const karnatakaDams = [...DAMS]
                     .filter(d => (d.state||'').toLowerCase().includes('karnataka'))
+                    .filter(d => d.name !== 'Supa' && !d.name.toLowerCase().includes('supa'))
                     .sort((a,b)=>{
+                      if (a.name.includes('KRS') || a.name.toLowerCase().includes('krishna raja sagara')) return -1;
+                      if (b.name.includes('KRS') || b.name.toLowerCase().includes('krishna raja sagara')) return 1;
                       const la=typeof a.level==='number'?a.level:parseFloat(a.level)||0;
                       const lb=typeof b.level==='number'?b.level:parseFloat(b.level)||0;
                       return lb-la;
                     });
                   const otherDams = [...DAMS]
                     .filter(d => !(d.state||'').toLowerCase().includes('karnataka'))
+                    .filter(d => d.name !== 'Supa' && !d.name.toLowerCase().includes('supa'))
                     .sort((a,b)=>{
                       const la=typeof a.level==='number'?a.level:parseFloat(a.level)||0;
                       const lb=typeof b.level==='number'?b.level:parseFloat(b.level)||0;
@@ -4151,39 +4156,11 @@ export default function App() {
                             referrerPolicy="no-referrer"
                             style={{
                               width:'100%', height:'100%', objectFit:'cover', objectPosition:'center',
-                              filter:'brightness(0.55) contrast(1.1)',
-                              animation:'heroBgZoom 8s ease both'
+                              filter:'brightness(0.48) contrast(1.15)',
+                              transition:'opacity 0.8s ease'
                             }}
                           />
                         </div>
-
-                        {/* Large decorative dam cross-section — background visual */}
-                        <svg style={{
-                          position:'absolute', right:0, top:0, width:'62%', height:'100%',
-                          zIndex:1, opacity:0.18
-                        }} viewBox="0 0 500 400" preserveAspectRatio="xMidYMid slice">
-                          {/* Sky */}
-                          <rect width="500" height="400" fill="#020810"/>
-                          {/* Mountain silhouette */}
-                          <path d="M0,120 L40,60 L90,110 L130,30 L180,90 L220,20 L270,80 L310,100" fill="#071422" opacity="0.9"/>
-                          <path d="M0,130 L50,90 L100,120 L140,55 L190,105 L230,45 L280,95 L310,110 L310,270 L0,270" fill="#040e1c" opacity="0.95"/>
-                          {/* Ground */}
-                          <polygon points="0,270 200,270 200,300 500,300 500,400 0,400" fill="#060d18"/>
-                          {/* Dam body */}
-                          <polygon points="200,60 225,60 370,300 200,300" fill="#374151"/>
-                          <polygon points="225,60 240,60 385,300 370,300" fill="#1f2937"/>
-                          {/* Crest slab */}
-                          <rect x="200" y="50" width="40" height="10" fill="#4b5563"/>
-                          {/* Water */}
-                          <rect x="0" y={60+(1-level/100)*210} width="200" height={270-(60+(1-level/100)*210)} fill={pal.accent} opacity="0.18"/>
-                          {/* Wave on surface */}
-                          <path d={`M -60,${60+(1-level/100)*210} C -30,${60+(1-level/100)*210-6} 0,${60+(1-level/100)*210+6} 30,${60+(1-level/100)*210} C 60,${60+(1-level/100)*210-6} 90,${60+(1-level/100)*210+6} 120,${60+(1-level/100)*210} C 150,${60+(1-level/100)*210-6} 180,${60+(1-level/100)*210+6} 210,${60+(1-level/100)*210}`}
-                            fill="none" stroke={pal.accent} strokeWidth="2" opacity="0.4"/>
-                          {/* Outflow jet */}
-                          {outflow>0 && <path d="M 200,268 C 230,268 290,295 330,300" fill="none" stroke={pal.accent} strokeWidth="3" opacity="0.5"/>}
-                          {/* River */}
-                          <rect x="370" y="290" width="130" height="10" fill={pal.accent} opacity="0.12"/>
-                        </svg>
 
                         {/* Dark left-to-right gradient overlay — like travel agency */}
                         <div style={{
