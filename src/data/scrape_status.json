@@ -1,7 +1,7 @@
 {
-  "last_run_timestamp": "2026-08-10 11:25 AM",
+  "last_run_timestamp": "2026-08-11 10:18 AM",
   "success": true,
-  "duration_seconds": 8.65,
+  "duration_seconds": 7.34,
   "sources": {
     "tungabhadra": {
       "status": "Operational",
@@ -25,12 +25,45 @@
     }
   },
   "metrics": {
-    "dams_changed": 26,
-    "storage_delta_tmc": 7.339,
-    "inflow_delta_cusecs": -16557,
-    "outflow_delta_cusecs": 2330
+    "dams_changed": 5,
+    "storage_delta_tmc": 6.046,
+    "inflow_delta_cusecs": -2752,
+    "outflow_delta_cusecs": -910
   },
   "history": [
+    {
+      "timestamp": "2026-08-11 10:18 AM",
+      "success": true,
+      "duration_seconds": 7.34,
+      "sources": {
+        "tungabhadra": {
+          "status": "Operational",
+          "ok": true,
+          "count": 1
+        },
+        "tamil_nadu": {
+          "status": "Operational",
+          "ok": true,
+          "count": 19
+        },
+        "oneindia": {
+          "status": "Operational",
+          "ok": true,
+          "count": 15
+        },
+        "bbmb": {
+          "status": "Operational",
+          "ok": true,
+          "count": 2
+        }
+      },
+      "metrics": {
+        "dams_changed": 5,
+        "storage_delta_tmc": 6.046,
+        "inflow_delta_cusecs": -2752,
+        "outflow_delta_cusecs": -910
+      }
+    },
     {
       "timestamp": "2026-08-10 11:25 AM",
       "success": true,
@@ -458,39 +491,6 @@
         "storage_delta_tmc": 17.213,
         "inflow_delta_cusecs": 32218,
         "outflow_delta_cusecs": 918
-      }
-    },
-    {
-      "timestamp": "2026-08-03 07:57 AM",
-      "success": true,
-      "duration_seconds": 8.18,
-      "sources": {
-        "tungabhadra": {
-          "status": "Operational",
-          "ok": true,
-          "count": 1
-        },
-        "tamil_nadu": {
-          "status": "Operational",
-          "ok": true,
-          "count": 19
-        },
-        "oneindia": {
-          "status": "Operational",
-          "ok": true,
-          "count": 15
-        },
-        "bbmb": {
-          "status": "Operational",
-          "ok": true,
-          "count": 2
-        }
-      },
-      "metrics": {
-        "dams_changed": 20,
-        "storage_delta_tmc": 13.778,
-        "inflow_delta_cusecs": 70831,
-        "outflow_delta_cusecs": 23577
       }
     }
   ]
