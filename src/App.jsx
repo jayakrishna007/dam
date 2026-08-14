@@ -594,6 +594,62 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
   );
 }
 
+// ===================== IP-BASED VISITOR TRACKING =====================
+function useVisitorTracking() {
+  const [visitorCount, setVisitorCount] = useState(null);
+  const [todayCount, setTodayCount] = useState(null);
+  const [isNewVisitor, setIsNewVisitor] = useState(false);
+
+  useEffect(() => {
+    const NAMESPACE = 'damtoday';
+    const KEY = 'pageviews';
+    const TODAY_KEY = 'pageviews_today_' + new Date().toISOString().slice(0, 10);
+    const LS_VISIT_KEY = 'damtoday_last_visit';
+    const LS_IP_KEY = 'damtoday_visitor_ip';
+
+    const incrementAndFetch = async () => {
+      try {
+        // Check if this IP visited in last 6 hours using localStorage
+        const lastVisit = localStorage.getItem(LS_VISIT_KEY);
+        const now = Date.now();
+        const SIX_HOURS = 6 * 60 * 60 * 1000;
+        const isNew = !lastVisit || (now - parseInt(lastVisit)) > SIX_HOURS;
+
+        if (isNew) {
+          setIsNewVisitor(true);
+          localStorage.setItem(LS_VISIT_KEY, now.toString());
+          // Increment total counter
+          const hitRes = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`);
+          if (hitRes.ok) {
+            const data = await hitRes.json();
+            setVisitorCount(data.value);
+          }
+          // Increment today counter
+          const todayRes = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${TODAY_KEY}`);
+          if (todayRes.ok) {
+            const data = await todayRes.json();
+            setTodayCount(data.value);
+          }
+        } else {
+          // Just fetch current counts without incrementing
+          const [totalRes, todayRes] = await Promise.all([
+            fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`),
+            fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${TODAY_KEY}`)
+          ]);
+          if (totalRes.ok) setVisitorCount((await totalRes.json()).value);
+          if (todayRes.ok) setTodayCount((await todayRes.json()).value);
+        }
+      } catch(e) {
+        console.warn('Visitor tracking unavailable', e);
+      }
+    };
+
+    incrementAndFetch();
+  }, []);
+
+  return { visitorCount, todayCount, isNewVisitor };
+}
+
 // ===================== ANALYTICS DASHBOARD =====================
 function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   const [scrapeStatus, setScrapeStatus] = useState(SCRAPE_STATUS);
@@ -658,9 +714,11 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   const isFresh = checkFreshness();
 
   const totalDams = DAMS.length;
-  const activeAlerts = DAMS.filter(d => d.level >= 90).length;
   const totalInflow = DAMS.reduce((sum, d) => sum + (d.inflow || 0), 0);
   const totalOutflow = DAMS.reduce((sum, d) => sum + (d.outflow || 0), 0);
+
+  // IP-based visitor tracking
+  const { visitorCount, todayCount, isNewVisitor } = useVisitorTracking();
 
   // MongoDB Telemetry State
   const [telemetry, setTelemetry] = useState({
@@ -700,30 +758,15 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
       }
     };
     fetchTelemetry();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
-
-  const visitsVal = telemetry.loading
-    ? "Loading..."
-    : telemetry.visits !== null
-      ? telemetry.visits
-      : "Local Session";
 
   const stats = [
     { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: "Across 11 Indian states", positive: true, icon: "🌊" },
-    { label: "Active Flood Alerts", value: activeAlerts, change: `${activeAlerts} Alerts`, subtext: "Dams ≥ 90% capacity", positive: activeAlerts === 0, icon: "🚨" },
+    { label: "Live Visitors Today", value: todayCount !== null ? todayCount.toLocaleString() : "—", change: isNewVisitor ? "✓ You're counted" : "Already counted", subtext: "Unique visits (6-hr window)", positive: true, icon: "👁" },
     { label: "Total Region Inflow", value: `${fmtK(totalInflow)}`, change: "cusecs", subtext: "Cumulative river inflows", positive: totalInflow >= totalOutflow, icon: "📥" },
     { label: "Total Region Outflow", value: `${fmtK(totalOutflow)}`, change: "cusecs", subtext: "Cumulative released flow", positive: true, icon: "📤" },
-    { 
-      label: "Total Website Visits", 
-      value: visitsVal, 
-      change: mongoActive ? "Live (Atlas)" : "Session View", 
-      subtext: mongoActive ? "Global unique hits" : "Temporary fallback count", 
-      positive: true, 
-      icon: "📈" 
-    }
+    { label: "Total Site Visitors", value: visitorCount !== null ? visitorCount.toLocaleString() : "—", change: "All-time unique", subtext: "IP-based 6-hr dedup", positive: true, icon: "📈" }
   ];
 
   const scraperLogs = [
@@ -3755,7 +3798,12 @@ export default function App() {
             display: none !important;
           }
           .main-nav-timestamp {
-            display: none !important;
+            display: flex !important;
+            font-size: 10px !important;
+            margin-left: 6px !important;
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+            align-items: center !important;
           }
           .hero-slider-container {
             height: auto !important;
@@ -4068,32 +4116,20 @@ export default function App() {
               <>
                 {/* HERO — Travel-agency-style immersive dam slider */}
                 {(()=>{
-                  // ── Karnataka dams first, then other top dams by level ──
-                  const slideCount = Math.min(8, DAMS.length);
-                  // Remove Supa dam and place Krishna Raja Sagara (KRS / Cauvery) first
-                  const karnatakaDams = [...DAMS]
-                    .filter(d => (d.state||'').toLowerCase().includes('karnataka'))
-                    .filter(d => d.name !== 'Supa' && !d.name.toLowerCase().includes('supa'))
-                    .sort((a,b)=>{
-                      if (a.name.includes('KRS') || a.name.toLowerCase().includes('krishna raja sagara')) return -1;
-                      if (b.name.includes('KRS') || b.name.toLowerCase().includes('krishna raja sagara')) return 1;
-                      const la=typeof a.level==='number'?a.level:parseFloat(a.level)||0;
-                      const lb=typeof b.level==='number'?b.level:parseFloat(b.level)||0;
-                      return lb-la;
+                  // ── Only dams with capacity ≥ 100 TMC, sorted by capacity descending ──
+                  const sliderDams = [...DAMS]
+                    .filter(d => (typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0) >= 100)
+                    .sort((a, b) => {
+                      const ca = typeof a.capacity === 'number' ? a.capacity : parseFloat(a.capacity) || 0;
+                      const cb = typeof b.capacity === 'number' ? b.capacity : parseFloat(b.capacity) || 0;
+                      return cb - ca;
                     });
-                  const otherDams = [...DAMS]
-                    .filter(d => !(d.state||'').toLowerCase().includes('karnataka'))
-                    .filter(d => d.name !== 'Supa' && !d.name.toLowerCase().includes('supa'))
-                    .sort((a,b)=>{
-                      const la=typeof a.level==='number'?a.level:parseFloat(a.level)||0;
-                      const lb=typeof b.level==='number'?b.level:parseFloat(b.level)||0;
-                      return lb-la;
-                    });
-                  const sliderDams = [...karnatakaDams, ...otherDams].slice(0, slideCount);
 
-                  // Local authentic dam photographs saved in /images/dams/
+                  // Local authentic HD dam photographs saved in /images/dams/
                   const DAM_PHOTOS = {
                     "Krishna Raja Sagara (KRS)": "/images/dams/krs.jpg",
+                    "KRS": "/images/dams/krs.jpg",
+                    "Krishna Raja Sagara": "/images/dams/krs.jpg",
                     "Kabini": "/images/dams/kabini.jpg",
                     "Harangi": "/images/dams/harangi.jpg",
                     "Hemavathy": "/images/dams/hemavathy.jpg",
@@ -4104,16 +4140,25 @@ export default function App() {
                     "Supa": "/images/dams/supa.jpg",
                     "Mettur": "/images/dams/mettur.jpg",
                     "Nagarjunsagar": "/images/dams/nagarjunsagar.jpg",
+                    "Nagarjuna Sagar": "/images/dams/nagarjunsagar.jpg",
                     "Bhakra (Gobind Sagar)": "/images/dams/bhakra.jpg",
+                    "Bhakra": "/images/dams/bhakra.jpg",
+                    "Gobind Sagar": "/images/dams/bhakra.jpg",
                     "Hirakud": "/images/dams/hirakud.jpg",
                     "Sardar Sarovar": "/images/dams/sardarsarovar.jpg",
+                    "Indira Sagar": "/images/dams/indira_sagar.jpg",
+                    "Pong (Maharana Pratap Sagar)": "/images/dams/pong.jpg",
+                    "Pong": "/images/dams/pong.jpg",
+                    "Maharana Pratap Sagar": "/images/dams/pong.jpg",
+                    "Rihand": "/images/dams/rihand.jpg",
                     "Idukki": "/images/dams/idukki.jpg"
                   };
 
-                  const getDamPhoto = (damObj, idx = 0) => {
-                    if (!damObj) return "/images/dams/krs.jpg";
-                    const cleanName = damObj.name.replace(/ \(.*\)/, '');
-                    return DAM_PHOTOS[damObj.name] || DAM_PHOTOS[cleanName] || "/images/dams/krs.jpg";
+                  const getDamPhoto = (damObj) => {
+                    if (!damObj || !damObj.name) return "/images/dams/tungabhadra.jpg";
+                    const raw = damObj.name.trim();
+                    const clean = raw.replace(/\s*\(.*\)/, '').trim();
+                    return DAM_PHOTOS[raw] || DAM_PHOTOS[clean] || "/images/dams/tungabhadra.jpg";
                   };
 
                   // Unique gradient palettes per slide (like travel agency photo backgrounds)
