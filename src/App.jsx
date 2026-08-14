@@ -3686,6 +3686,35 @@ export default function App() {
         .hero-nav-arrow:hover{background:#06B6D4;border-color:#06B6D4}
         .hero-mini-card{border-radius:18px;overflow:hidden;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);flex-shrink:0;border:1px solid rgba(255,255,255,0.1);position:relative}
         .hero-mini-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(6,182,212,0.5);box-shadow:0 20px 50px rgba(0,0,0,0.55)}
+        @media (min-width: 769px) and (max-width: 1080px) {
+          .hero-left-content {
+            left: 36px !important;
+            max-width: 460px !important;
+          }
+          .hero-slide-title {
+            font-size: 3.2rem !important;
+            line-height: 1.0 !important;
+            margin-bottom: 10px !important;
+          }
+          .hero-slide-desc {
+            font-size: 0.92rem !important;
+            line-height: 1.5 !important;
+            margin-bottom: 18px !important;
+          }
+          .hero-slide-data {
+            padding: 14px 18px !important;
+            margin-bottom: 18px !important;
+          }
+          .hero-cards-panel {
+            right: 16px !important;
+            gap: 10px !important;
+            transform: translateY(-50%) scale(0.9) !important;
+            transform-origin: right center !important;
+          }
+          .hero-card-3 {
+            display: none !important;
+          }
+        }
         @media (max-height: 820px) and (min-width: 769px) {
           .hero-slider-container {
             min-height: calc(100vh - 30px) !important;
