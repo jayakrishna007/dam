@@ -3686,6 +3686,34 @@ export default function App() {
         .hero-nav-arrow:hover{background:#06B6D4;border-color:#06B6D4}
         .hero-mini-card{border-radius:18px;overflow:hidden;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);flex-shrink:0;border:1px solid rgba(255,255,255,0.1);position:relative}
         .hero-mini-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(6,182,212,0.5);box-shadow:0 20px 50px rgba(0,0,0,0.55)}
+        @media (max-height: 820px) and (min-width: 769px) {
+          .hero-slider-container {
+            min-height: calc(100vh - 30px) !important;
+            height: auto !important;
+            padding-bottom: 80px !important;
+          }
+          .hero-left-content {
+            padding-top: 45px !important;
+          }
+          .hero-cards-panel {
+            transform: translateY(-50%) scale(0.82) !important;
+            transform-origin: right center !important;
+          }
+          .hero-bottom-nav {
+            bottom: 24px !important;
+          }
+          .hero-slide-title {
+            font-size: 2.8rem !important;
+            margin-bottom: 8px !important;
+          }
+          .hero-slide-desc {
+            margin-bottom: 14px !important;
+          }
+          .hero-slide-data {
+            margin-bottom: 16px !important;
+            padding: 12px 16px !important;
+          }
+        }
         @media (max-width:768px){
           .nav-search-container{display:none!important}
           .hero-cards-panel{display:none!important}
