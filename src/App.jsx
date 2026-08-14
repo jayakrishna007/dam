@@ -3131,6 +3131,7 @@ export default function App() {
   const [searchQuery,setSearchQuery] = useState("");
   const [goStats,setGoStats] = useState(false);
   const statsRef = useRef(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // i18n support
   const [lang, setLang] = useState(() => localStorage.getItem("dam_lang") || "en");
@@ -3797,13 +3798,14 @@ export default function App() {
           .main-nav-links {
             display: none !important;
           }
+          .main-nav-lang-selector {
+            display: none !important;
+          }
           .main-nav-timestamp {
-            display: flex !important;
-            font-size: 10px !important;
-            margin-left: 6px !important;
-            white-space: nowrap !important;
-            flex-shrink: 0 !important;
-            align-items: center !important;
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: block !important;
           }
           .hero-slider-container {
             height: auto !important;
@@ -4000,7 +4002,7 @@ export default function App() {
               </div>
 
               {/* Premium Glassmorphic Language Selector */}
-              <div style={{ position: "relative", zIndex: 101 }}>
+              <div className="main-nav-lang-selector" style={{ position: "relative", zIndex: 101 }}>
                 <button
                   onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                   style={{
@@ -4099,8 +4101,141 @@ export default function App() {
               <div className="main-nav-timestamp" style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.35)", marginLeft: 10 }}>
                 &#128338; <span style={{ color: "#67E8F9", fontWeight: 600 }}>{formatLastUpdated(SCRAPE_STATUS?.last_run_timestamp, t)}</span>
               </div>
+
+              {/* Mobile Hamburger Menu Toggle Button */}
+              <button
+                className="mobile-menu-btn"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                style={{
+                  display: "none",
+                  background: "none",
+                  border: "none",
+                  color: "#fff",
+                  cursor: "pointer",
+                  padding: 8,
+                  zIndex: 200,
+                  outline: "none"
+                }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  {mobileMenuOpen ? (
+                    <>
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </>
+                  ) : (
+                    <>
+                      <line x1="4" y1="6" x2="20" y2="6" />
+                      <line x1="4" y1="12" x2="20" y2="12" />
+                      <line x1="4" y1="18" x2="20" y2="18" />
+                    </>
+                  )}
+                </svg>
+              </button>
             </div>
           </nav>
+
+          {/* Full-Screen Mobile Drawer */}
+          {mobileMenuOpen && (
+            <div style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(3, 10, 20, 0.98)",
+              backdropFilter: "blur(24px)",
+              zIndex: 150,
+              display: "flex",
+              flexDirection: "column",
+              padding: "90px 24px 40px",
+              overflowY: "auto"
+            }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 40 }}>
+                <span style={{ fontSize: 10, color: "rgba(6, 182, 212, 0.6)", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>Navigation</span>
+                {[
+                  { path: "/", label: t("home") || "Home" },
+                  { path: "/about", label: t("about") || "About Us" },
+                  { path: "/contact", label: t("contact") || "Contact Us" },
+                  { path: "/privacy", label: t("privacy") || "Privacy Policy" },
+                  { path: "/analytics", label: "Admin Console" }
+                ].map((link) => (
+                  <a
+                    key={link.path}
+                    href={link.path}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMobileMenuOpen(false);
+                      if (link.path === "/analytics") {
+                        setShowPinModal(true);
+                      } else {
+                        navigate(link.path);
+                      }
+                    }}
+                    style={{
+                      fontSize: 24,
+                      fontWeight: 800,
+                      color: view === link.path.replace("/", "") || (link.path === "/" && view === "main") ? "#67E8F9" : "#E0F2FE",
+                      textDecoration: "none",
+                      letterSpacing: "-0.5px",
+                      textTransform: "uppercase",
+                      fontFamily: "'Barlow Condensed', system-ui, sans-serif"
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 40 }}>
+                <span style={{ fontSize: 10, color: "rgba(6, 182, 212, 0.6)", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>Language / ಭಾಷೆ</span>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  {[
+                    { code: "en", label: "English" },
+                    { code: "hi", label: "हिन्दी" },
+                    { code: "kn", label: "ಕನ್ನಡ" },
+                    { code: "te", label: "తెలుగు" },
+                    { code: "ta", label: "தமிழ்" },
+                    { code: "ml", label: "മലയാളം" }
+                  ].map((option) => (
+                    <button
+                      key={option.code}
+                      onClick={() => {
+                        selectLanguage(option.code);
+                        setMobileMenuOpen(false);
+                      }}
+                      style={{
+                        background: lang === option.code ? "rgba(6, 182, 212, 0.15)" : "rgba(255,255,255,0.03)",
+                        border: `1px solid ${lang === option.code ? "rgba(6, 182, 212, 0.4)" : "rgba(255,255,255,0.08)"}`,
+                        borderRadius: 8,
+                        color: lang === option.code ? "#67E8F9" : "rgba(224, 242, 254, 0.7)",
+                        padding: "12px 14px",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        textAlign: "center"
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{
+                marginTop: "auto",
+                paddingTop: 24,
+                borderTop: "1px solid rgba(255,255,255,0.06)",
+                display: "flex",
+                flexDirection: "column",
+                gap: 6
+              }}>
+                <span style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5 }}>Data Freshness Status</span>
+                <div style={{ fontSize: 12, color: "#67E8F9", fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+                  <span>🕒</span>
+                  <span>{formatLastUpdated(SCRAPE_STATUS?.last_run_timestamp, t)}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Main content body */}
           <div style={{ flexGrow: 1 }}>
