@@ -3768,6 +3768,16 @@ export default function App() {
     };
   }, [isDropdownOpen]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mobileMenuOpen]);
+
   const handleSearch = (term) => {
     const q = (typeof term === "string" ? term : searchInput).trim();
     setSearchQuery(q);
@@ -4830,12 +4840,60 @@ export default function App() {
               inset: 0,
               background: "rgba(3, 10, 20, 0.98)",
               backdropFilter: "blur(24px)",
-              zIndex: 150,
+              zIndex: 250,
               display: "flex",
               flexDirection: "column",
-              padding: "90px 24px 40px",
+              padding: "20px 24px 40px",
               overflowY: "auto"
             }}>
+              {/* Drawer Top Bar — Back / Close Button */}
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 28,
+                paddingBottom: 16,
+                borderBottom: "1px solid rgba(255, 255, 255, 0.08)"
+              }}>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    background: "rgba(6, 182, 212, 0.12)",
+                    border: "1px solid rgba(6, 182, 212, 0.35)",
+                    borderRadius: 30,
+                    color: "#67E8F9",
+                    padding: "8px 20px",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>←</span> Back
+                </button>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.06)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "50%",
+                    width: 36,
+                    height: 36,
+                    color: "#E0F2FE",
+                    fontSize: 16,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer"
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
               <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 40 }}>
                 <span style={{ fontSize: 10, color: "rgba(6, 182, 212, 0.6)", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>Navigation</span>
                 {[
