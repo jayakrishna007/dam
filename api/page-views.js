@@ -24,6 +24,19 @@ export default async function handler(req, res) {
     } 
     
     if (req.method === 'GET') {
+      const { today } = req.query || {};
+
+      if (today === '1') {
+        // Count only docs inserted today in IST (UTC+5:30)
+        const offsetMs = 5.5 * 60 * 60 * 1000;
+        const nowIST = new Date(Date.now() + offsetMs);
+        const startOfDayIST = new Date(nowIST);
+        startOfDayIST.setUTCHours(0, 0, 0, 0);
+        const startUTC = new Date(startOfDayIST.getTime() - offsetMs);
+        const count = await collection.countDocuments({ timestamp: { $gte: startUTC } });
+        return res.status(200).json({ total: count });
+      }
+
       const count = await collection.countDocuments();
       return res.status(200).json({ total: count });
     }

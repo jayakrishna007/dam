@@ -127,7 +127,7 @@ function StatCard({ label, target, active, suffix = "", color, sub, decimals = 1
       <div style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
         {label}
       </div>
-      <div style={{ fontSize: 40, fontWeight: 900, color: color, fontFamily: "monospace" }}>
+      <div style={{ fontSize: "clamp(26px, 8vw, 40px)", fontWeight: 900, color: color, fontFamily: "monospace" }}>
         {displayValue}{suffix}
       </div>
       <div style={{ fontSize: 12, color: "rgba(224,242,254,0.3)", marginTop: 4 }}>
@@ -594,57 +594,54 @@ function PinModal({ pinInput, setPinInput, pinError, onSubmit, onClose }) {
   );
 }
 
-// ===================== IP-BASED VISITOR TRACKING =====================
+// ===================== VISITOR TRACKING (MongoDB-backed) =====================
 function useVisitorTracking() {
   const [visitorCount, setVisitorCount] = useState(null);
   const [todayCount, setTodayCount] = useState(null);
   const [isNewVisitor, setIsNewVisitor] = useState(false);
 
   useEffect(() => {
-    const NAMESPACE = 'damtoday';
-    const KEY = 'pageviews';
-    const TODAY_KEY = 'pageviews_today_' + new Date().toISOString().slice(0, 10);
     const LS_VISIT_KEY = 'damtoday_last_visit';
-    const LS_IP_KEY = 'damtoday_visitor_ip';
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
 
-    const incrementAndFetch = async () => {
+    const run = async () => {
       try {
-        // Check if this IP visited in last 6 hours using localStorage
         const lastVisit = localStorage.getItem(LS_VISIT_KEY);
         const now = Date.now();
-        const SIX_HOURS = 6 * 60 * 60 * 1000;
         const isNew = !lastVisit || (now - parseInt(lastVisit)) > SIX_HOURS;
 
         if (isNew) {
+          // Record this visit in MongoDB
           setIsNewVisitor(true);
           localStorage.setItem(LS_VISIT_KEY, now.toString());
-          // Increment total counter
-          const hitRes = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`);
-          if (hitRes.ok) {
-            const data = await hitRes.json();
-            setVisitorCount(data.value);
-          }
-          // Increment today counter
-          const todayRes = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${TODAY_KEY}`);
-          if (todayRes.ok) {
-            const data = await todayRes.json();
-            setTodayCount(data.value);
-          }
+          const sessionId = `${now}-${Math.random().toString(36).slice(2)}`;
+          await fetch('/api/page-views', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId })
+          });
         } else {
-          // Just fetch current counts without incrementing
-          const [totalRes, todayRes] = await Promise.all([
-            fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`),
-            fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${TODAY_KEY}`)
-          ]);
-          if (totalRes.ok) setVisitorCount((await totalRes.json()).value);
-          if (todayRes.ok) setTodayCount((await todayRes.json()).value);
+          setIsNewVisitor(false);
         }
-      } catch(e) {
-        console.warn('Visitor tracking unavailable', e);
+
+        // Always fetch the current total count
+        const res = await fetch('/api/page-views');
+        if (res.ok) {
+          const data = await res.json();
+          setVisitorCount(data.total ?? null);
+          // "today" count — fetch with date filter
+          const todayRes = await fetch('/api/page-views?today=1');
+          if (todayRes.ok) {
+            const tData = await todayRes.json();
+            setTodayCount(tData.total ?? null);
+          }
+        }
+      } catch (e) {
+        console.warn('Visitor tracking unavailable:', e);
       }
     };
 
-    incrementAndFetch();
+    run();
   }, []);
 
   return { visitorCount, todayCount, isNewVisitor };
@@ -759,6 +756,16 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
     };
     fetchTelemetry();
     return () => { active = false; };
+  }, []);
+
+  // MongoDB storage stats
+  const [dbStats, setDbStats] = useState(null);
+  const [dbStatsLoading, setDbStatsLoading] = useState(true);
+  useEffect(() => {
+    fetch('/api/db-stats')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { setDbStats(d); setDbStatsLoading(false); })
+      .catch(() => setDbStatsLoading(false));
   }, []);
 
   const stats = [
@@ -882,7 +889,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
       </div>
 
       {/* Summary Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, marginBottom: 32 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 20, marginBottom: 32 }}>
         {stats.map(s => (
           <div key={s.label} style={{
             background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
@@ -904,7 +911,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
       </div>
 
       {/* Grid Content */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)", gap: 24, alignItems: "start" }}>
+      <div className="analytics-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)", gap: 24, alignItems: "start" }}>
 
         {/* LEFT COLUMN */}
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -1318,6 +1325,72 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
                     </span>
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+
+          {/* ── MongoDB Storage Panel ── */}
+          <div style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(255,255,255,0.05)",
+            borderRadius: 16, padding: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", margin: 0 }}>MongoDB Storage</h3>
+                <p style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", marginTop: 2 }}>Atlas Free Tier — 512 MB limit</p>
+              </div>
+              <span style={{ fontSize: 18 }}>🗄️</span>
+            </div>
+            {dbStatsLoading ? (
+              <div style={{ fontSize: 12, color: "rgba(224,242,254,0.35)", padding: "12px 0" }}>Loading storage info...</div>
+            ) : dbStats ? (
+              <>
+                {/* Usage bar */}
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 6 }}>
+                    <span style={{ color: "rgba(224,242,254,0.5)" }}>Used</span>
+                    <span style={{ color: dbStats.percentUsed > 80 ? "#F87171" : dbStats.percentUsed > 50 ? "#FBBF24" : "#4ADE80", fontWeight: 700 }}>
+                      {dbStats.totalUsedMB} MB / {dbStats.freeTierLimitMB} MB ({dbStats.percentUsed}%)
+                    </span>
+                  </div>
+                  <div style={{ width: "100%", height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{
+                      width: `${Math.min(dbStats.percentUsed, 100)}%`, height: "100%", borderRadius: 4,
+                      background: dbStats.percentUsed > 80 ? "linear-gradient(to right, #EF4444, #F87171)" :
+                                  dbStats.percentUsed > 50 ? "linear-gradient(to right, #F59E0B, #FBBF24)" :
+                                  "linear-gradient(to right, #059669, #34D399)",
+                      transition: "width 0.8s ease"
+                    }} />
+                  </div>
+                  <div style={{ fontSize: 11, color: "rgba(224,242,254,0.35)", marginTop: 4 }}>
+                    {dbStats.freeLeftMB} MB free · {dbStats.objects.toLocaleString()} total documents
+                  </div>
+                </div>
+                {/* Per-collection breakdown */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {dbStats.collections.map(col => (
+                    <div key={col.name} style={{
+                      padding: "10px 12px", background: "rgba(255,255,255,0.02)",
+                      border: "1px solid rgba(255,255,255,0.04)", borderRadius: 10,
+                      display: "flex", justifyContent: "space-between", alignItems: "center"
+                    }}>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#E0F2FE" }}>{col.name}</div>
+                        <div style={{ fontSize: 10, color: "rgba(224,242,254,0.35)", marginTop: 1 }}>
+                          {col.count.toLocaleString()} docs · {col.sizeMB} MB data + {col.indexSizeMB} MB index
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 11, color: "#67E8F9", fontFamily: "monospace", fontWeight: 700 }}>
+                        {(col.sizeMB + col.indexSizeMB).toFixed(3)} MB
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: 12, color: "#F87171", padding: "8px 0" }}>
+                ⚠️ Could not fetch storage stats. Make sure the server is running.
               </div>
             )}
           </div>
@@ -2760,11 +2833,31 @@ function ContactUsPage({ navigate, setView, lang, t }) {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !email || !message) return;
-    setSubmitted(true);
+    setSending(true);
+    setSendError(null);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSubmitted(true);
+      } else {
+        setSendError(data.error || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setSendError("Network error — could not send message. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -2860,21 +2953,42 @@ function ContactUsPage({ navigate, setView, lang, t }) {
               />
             </div>
 
-            <button 
+            {sendError && (
+              <div style={{
+                padding: "10px 14px", borderRadius: 8,
+                background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
+                color: "#F87171", fontSize: 12, lineHeight: 1.5
+              }}>
+                ⚠️ {sendError}
+              </div>
+            )}
+            <button
               type="submit"
+              disabled={sending}
               style={{
-                background: "linear-gradient(135deg, #0369A1, #06B6D4)",
+                background: sending ? "rgba(6,182,212,0.3)" : "linear-gradient(135deg, #0369A1, #06B6D4)",
                 color: "#fff", border: "none", borderRadius: 8, padding: "12px 20px",
-                fontWeight: 700, fontSize: 14, cursor: "pointer", marginTop: 8,
-                transition: "transform 0.2s, box-shadow 0.2s"
+                fontWeight: 700, fontSize: 14, cursor: sending ? "not-allowed" : "pointer", marginTop: 8,
+                transition: "transform 0.2s, box-shadow 0.2s",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8
               }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 15px rgba(6,182,212,0.4)"; }}
+              onMouseEnter={e => { if (!sending) e.currentTarget.style.boxShadow = "0 0 15px rgba(6,182,212,0.4)"; }}
               onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; }}
             >
-              {t("sendMessage")}
+              {sending ? (
+                <>
+                  <span style={{
+                    width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)",
+                    borderTopColor: "#fff", borderRadius: "50%",
+                    animation: "spin 1s linear infinite", display: "inline-block"
+                  }} />
+                  Sending...
+                </>
+              ) : t("sendMessage")}
             </button>
           </form>
         )}
+
       </div>
     </div>
   );
@@ -3128,10 +3242,28 @@ export default function App() {
   const [selectedZone, setSelectedZone] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [stateSearchQuery, setStateSearchQuery] = useState("");
-  const [searchQuery,setSearchQuery] = useState("");
-  const [goStats,setGoStats] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [goStats, setGoStats] = useState(false);
   const statsRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleSearch = (term) => {
+    const q = (typeof term === "string" ? term : searchInput).trim();
+    setSearchQuery(q);
+    if (view !== "main") {
+      setView("main");
+      navigate("/");
+    }
+    setTimeout(() => {
+      document.getElementById('dams-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 60);
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setSearchQuery("");
+  };
 
   // i18n support
   const [lang, setLang] = useState(() => localStorage.getItem("dam_lang") || "en");
@@ -3730,6 +3862,7 @@ export default function App() {
         .hero-nav-arrow:hover{background:#06B6D4;border-color:#06B6D4}
         .hero-mini-card{border-radius:18px;overflow:hidden;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);flex-shrink:0;border:1px solid rgba(255,255,255,0.1);position:relative}
         .hero-mini-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(6,182,212,0.5);box-shadow:0 20px 50px rgba(0,0,0,0.55)}
+        .hero-mobile-search-wrap { display: none; }
         @media (min-width: 769px) and (max-width: 1080px) {
           .hero-left-content {
             left: 36px !important;
@@ -3805,6 +3938,9 @@ export default function App() {
             display: none !important;
           }
           .mobile-menu-btn {
+            display: block !important;
+          }
+          .hero-mobile-search-wrap {
             display: block !important;
           }
           .hero-slider-container {
@@ -3909,7 +4045,39 @@ export default function App() {
             padding: 18px 20px;
           }
         }
+
+        /* ===== GLOBAL MOBILE POLISH ===== */
+        @media (max-width: 640px) {
+          /* Analytics two-column layout → single column on phones */
+          .analytics-grid { grid-template-columns: 1fr !important; }
+          /* Stats section padding */
+          .stats-section-wrap { padding: 36px 14px !important; }
+          /* Dams section padding */
+          #dams-section { padding: 36px 14px !important; }
+          /* Filter row — stack vertically */
+          .filter-row {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 10px !important;
+          }
+          .filter-row > div { width: 100% !important; }
+          .filter-search-input { width: 100% !important; max-width: 100% !important; }
+          /* Zone/State filter bar — stack vertically */
+          .zone-filter-bar {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+            padding: 12px 14px !important;
+          }
+          /* Section heading */
+          .section-heading { font-size: clamp(18px, 5.5vw, 24px) !important; }
+        }
+        @media (max-width: 420px) {
+          /* Force single-column dam cards on very small phones (≤420px) */
+          .dam-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
+
 
       {view === "analytics" ? (
         <AnalyticsDashboard navigate={navigate} setView={setView} searchHistory={searchHistory} />
@@ -4340,14 +4508,14 @@ export default function App() {
                       if (distance < -minSwipeDistance) prev();
                     };
 
-                    // Auto-advance every 6s (only when hero section is in view)
+                    // Auto-advance every 9s (only when hero section is in view)
                     useEffect(() => {
                       const id = setInterval(() => {
                         if (typeof window !== 'undefined' && window.scrollY < window.innerHeight * 1.2) {
                           setSlide(s => (s+1) % sliderDams.length);
                           setAnimKey(k => k+1);
                         }
-                      }, 6000);
+                      }, 9000);
                       return () => clearInterval(id);
                     }, [sliderDams.length]);
 
@@ -4540,6 +4708,74 @@ export default function App() {
                             </div>
                           </div>
 
+                          {/* Mobile In-Hero Search Bar */}
+                          <div className="hero-mobile-search-wrap" style={{
+                            marginBottom: 16,
+                            position: "relative",
+                            width: "100%",
+                            maxWidth: 360
+                          }}>
+                            <form
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                handleSearch(searchInput);
+                              }}
+                              style={{ display: "flex", gap: 8, width: "100%" }}
+                            >
+                              <div style={{ position: "relative", flex: 1 }}>
+                                <input
+                                  type="text"
+                                  placeholder={t("searchPlaceholder") || "Search dam, river, district..."}
+                                  value={searchInput}
+                                  onChange={(e) => setSearchInput(e.target.value)}
+                                  style={{
+                                    width: "100%",
+                                    padding: "10px 30px 10px 34px",
+                                    borderRadius: 50,
+                                    border: `1px solid ${pal.accent}60`,
+                                    background: "rgba(3, 10, 20, 0.85)",
+                                    backdropFilter: "blur(12px)",
+                                    color: "#E0F2FE",
+                                    fontSize: 13,
+                                    outline: "none",
+                                    boxShadow: `0 4px 20px rgba(0,0,0,0.4), 0 0 12px ${pal.glow}`
+                                  }}
+                                />
+                                <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 13, opacity: 0.7, pointerEvents: "none" }}>🔍</span>
+                                {searchInput && (
+                                  <button
+                                    type="button"
+                                    onClick={handleClearSearch}
+                                    style={{
+                                      position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+                                      background: "none", border: "none", color: "rgba(224,242,254,0.6)", fontSize: 12, cursor: "pointer", padding: 2
+                                    }}
+                                  >✕</button>
+                                )}
+                              </div>
+                              <button
+                                type="submit"
+                                style={{
+                                  background: pal.accent,
+                                  color: "#fff",
+                                  border: "none",
+                                  borderRadius: 50,
+                                  padding: "0 18px",
+                                  fontSize: 13,
+                                  fontWeight: 700,
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                  boxShadow: `0 4px 15px ${pal.accent}40`,
+                                  whiteSpace: "nowrap"
+                                }}
+                              >
+                                Search
+                              </button>
+                            </form>
+                          </div>
+
                           {/* BUTTONS */}
                           <div className="hero-slide-btns" style={{ display:'flex', alignItems:'center', gap:14 }}>
                             <button
@@ -4681,11 +4917,11 @@ export default function App() {
 
 
           {/* STATS */}
-          <div ref={statsRef} style={{
+          <div ref={statsRef} className="stats-section-wrap" style={{
             padding:"60px 20px", background:"linear-gradient(to bottom, #030A14, #02070E)",
             borderBottom:"1px solid rgba(255,255,255,0.03)", position:"relative", zIndex:6
           }}>
-            <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:24 }}>
+            <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:24 }}>
               <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={t("monitoredDamsSub")} decimals={0} />
               <StatCard label={t("averageLevel")} target={currentAvgLevel} active={goStats} suffix="%" color="#22D3EE" sub={t("averageLevelSub")} decimals={1} />
               <StatCard label={t("totalCapacity")} target={currentTotalCapacity} active={goStats} color="#38BDF8" sub={t("totalCapacitySub")} decimals={1} />
@@ -4695,7 +4931,7 @@ export default function App() {
           <div id="dams-section" style={{ padding:"80px 20px", maxWidth:1200, margin:"0 auto", position:"relative", zIndex:6 }}>
 
             {/* Zone and State Selector */}
-            <div style={{
+            <div className="zone-filter-bar" style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -4725,7 +4961,7 @@ export default function App() {
                 </span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", padding: 4, borderRadius: 20 }}>
                   {["All", "North", "South", "East", "West", "Central"].map(zone => {
-                    const isActive = selectedZone === zone;
+                    const isActive = selectedZone === zone && selectedState === "all";
                     const href = zone === "All" ? "/" : `/zone/${getZoneSlug(zone)}`;
                     return (
                       <a
@@ -4735,6 +4971,8 @@ export default function App() {
                           e.preventDefault();
                           navigate(href);
                           setFilter("all");
+                          setSelectedZone(zone);
+                          setSelectedState("all");
                         }}
                         style={{
                           display: "inline-block",
@@ -4765,31 +5003,57 @@ export default function App() {
                 </span>
                 
                 {/* Dropdown Toggle Button */}
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    width: "100%",
-                    padding: "10px 16px",
-                    borderRadius: 14,
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
-                    background: "rgba(255, 255, 255, 0.02)",
-                    color: selectedState === "all" ? "rgba(224, 242, 254, 0.5)" : "#67E8F9",
-                    fontSize: 13,
-                    fontWeight: selectedState === "all" ? 500 : 700,
-                    cursor: "pointer",
-                    outline: "none",
-                    transition: "all 0.2s",
-                    backdropFilter: "blur(4px)"
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
-                  onMouseLeave={e => { if(!isDropdownOpen) { e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)"; e.currentTarget.style.background = "rgba(255, 255, 255, 0.02)"; } }}
-                >
-                  <span>{selectedState === "all" ? t("allStates") : getLocalizedState(selectedState, lang)}</span>
-                  <span style={{ transition: "transform 0.2s", transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
-                </button>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flex: 1,
+                      padding: "10px 16px",
+                      borderRadius: 14,
+                      border: `1px solid ${selectedState !== "all" ? "rgba(6, 182, 212, 0.4)" : "rgba(255, 255, 255, 0.08)"}`,
+                      background: selectedState !== "all" ? "rgba(6, 182, 212, 0.08)" : "rgba(255, 255, 255, 0.02)",
+                      color: selectedState === "all" ? "rgba(224, 242, 254, 0.6)" : "#67E8F9",
+                      fontSize: 13,
+                      fontWeight: selectedState === "all" ? 500 : 700,
+                      cursor: "pointer",
+                      outline: "none",
+                      transition: "all 0.2s",
+                      backdropFilter: "blur(4px)"
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
+                    onMouseLeave={e => { if(!isDropdownOpen) { e.currentTarget.style.borderColor = selectedState !== "all" ? "rgba(6, 182, 212, 0.4)" : "rgba(255, 255, 255, 0.08)"; e.currentTarget.style.background = selectedState !== "all" ? "rgba(6, 182, 212, 0.08)" : "rgba(255, 255, 255, 0.02)"; } }}
+                  >
+                    <span>{selectedState === "all" ? t("allStates") : `${getLocalizedState(selectedState, lang)}`}</span>
+                    <span style={{ transition: "transform 0.2s", transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", fontSize: 11, opacity: 0.7 }}>▼</span>
+                  </button>
+
+                  {selectedState !== "all" && (
+                    <button
+                      onClick={() => {
+                        navigate("/");
+                        setSelectedState("all");
+                        setSelectedZone("All");
+                      }}
+                      title="Clear State Filter"
+                      style={{
+                        background: "rgba(239, 68, 68, 0.15)",
+                        border: "1px solid rgba(239, 68, 68, 0.3)",
+                        borderRadius: 12,
+                        color: "#F87171",
+                        padding: "8px 12px",
+                        fontSize: 12,
+                        cursor: "pointer",
+                        fontWeight: 700,
+                        transition: "all 0.2s"
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
 
                 {/* Dropdown Menu */}
                 {isDropdownOpen && (
@@ -4829,7 +5093,7 @@ export default function App() {
                     </div>
 
                     {/* Scrollable list */}
-                    <div style={{ maxHeight: 450, overflowY: "auto", display: "block" }}>
+                    <div style={{ maxHeight: 380, overflowY: "auto", display: "block" }}>
                       {/* "All States" option */}
                       {(stateSearchQuery === "" || "all states".includes(stateSearchQuery.toLowerCase())) && (
                         <a
@@ -4837,6 +5101,8 @@ export default function App() {
                           onClick={(e) => {
                             e.preventDefault();
                             navigate("/");
+                            setSelectedState("all");
+                            setSelectedZone("All");
                             setIsDropdownOpen(false);
                             setStateSearchQuery("");
                           }}
@@ -4856,84 +5122,89 @@ export default function App() {
                           onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
                           onMouseLeave={e => { e.currentTarget.style.background = selectedState === "all" ? "rgba(6, 182, 212, 0.12)" : "transparent"; }}
                         >
-                          {t("allStates")}
+                          {t("allStates")} ({DAMS.length})
                         </a>
                       )}
 
-                      {/* Map through states under selected zone */}
-                      {["North", "South", "East", "West", "Central"]
-                        .filter(zone => selectedZone === "All" || selectedZone === zone)
-                        .map(zone => {
-                          const states = ZONE_MAP[zone] || [];
-                          const filteredStates = states.filter(state => 
-                            state.toLowerCase().includes(stateSearchQuery.toLowerCase())
-                          );
-                          if (filteredStates.length === 0) return null;
-                          
-                          return (
-                            <div key={zone} style={{ display: "block", marginBottom: 6 }}>
-                              {/* Zone header */}
-                              <div style={{
-                                fontSize: 9,
-                                fontWeight: 700,
-                                color: selectedZone === zone ? "#67E8F9" : "rgba(224, 242, 254, 0.3)",
-                                textTransform: "uppercase",
-                                letterSpacing: 1,
-                                padding: "6px 12px 4px",
-                                borderBottom: "1px solid rgba(255, 255, 255, 0.03)",
-                                marginTop: 4,
-                                marginBottom: 4
-                              }}>
-                                {getLocalizedZone(zone, lang)} {lang === "hi" ? "जोन" : lang === "kn" ? "ವಲಯ" : lang === "te" ? "జోన్" : lang === "ta" ? "மண்டலம்" : lang === "ml" ? "മേഖല" : "Zone"}
-                              </div>
-                              
-                              {/* States inside zone */}
-                              {filteredStates.map(state => {
-                                const isActive = selectedState === state;
-                                const href = `/state/${getStateSlug(state)}`;
-                                return (
-                                  <a
-                                    key={state}
-                                    href={href}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      navigate(href);
-                                      setIsDropdownOpen(false);
-                                      setStateSearchQuery("");
-                                    }}
-                                    style={{
-                                      display: "block",
-                                      padding: "8px 12px",
-                                      borderRadius: 8,
-                                      color: isActive ? "#67E8F9" : "rgba(224, 242, 254, 0.7)",
-                                      background: isActive ? "rgba(6, 182, 212, 0.12)" : "transparent",
-                                      fontSize: 12,
-                                      textDecoration: "none",
-                                      fontWeight: isActive ? 700 : 500,
-                                      cursor: "pointer",
-                                      transition: "all 0.15s",
-                                      paddingLeft: 20,
-                                      marginBottom: 2
-                                    }}
-                                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
-                                    onMouseLeave={e => { e.currentTarget.style.background = isActive ? "rgba(6, 182, 212, 0.12)" : "transparent"; }}
-                                  >
-                                    {getLocalizedState(state, lang)}
-                                  </a>
-                                );
-                              })}
+                      {/* Map through all zones & all states so no states are hidden */}
+                      {["South", "North", "West", "East", "Central"].map(zone => {
+                        const states = ZONE_MAP[zone] || [];
+                        const filteredStates = states.filter(state => 
+                          state.toLowerCase().includes(stateSearchQuery.toLowerCase()) ||
+                          getLocalizedState(state, lang).toLowerCase().includes(stateSearchQuery.toLowerCase())
+                        );
+                        if (filteredStates.length === 0) return null;
+                        
+                        return (
+                          <div key={zone} style={{ display: "block", marginBottom: 6 }}>
+                            {/* Zone header */}
+                            <div style={{
+                              fontSize: 9,
+                              fontWeight: 700,
+                              color: selectedZone === zone ? "#67E8F9" : "rgba(224, 242, 254, 0.35)",
+                              textTransform: "uppercase",
+                              letterSpacing: 1,
+                              padding: "6px 12px 4px",
+                              borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
+                              marginTop: 4,
+                              marginBottom: 4
+                            }}>
+                              {getLocalizedZone(zone, lang)} {lang === "hi" ? "जोन" : lang === "kn" ? "ವಲಯ" : lang === "te" ? "జోన్" : lang === "ta" ? "மண்டலம்" : lang === "ml" ? "മേഖല" : "Zone"}
                             </div>
-                          );
-                        })}
+                            
+                            {/* States inside zone */}
+                            {filteredStates.map(state => {
+                              const isActive = selectedState === state;
+                              const href = `/state/${getStateSlug(state)}`;
+                              const damCount = DAMS.filter(d => d.state === state).length;
+                              return (
+                                <a
+                                  key={state}
+                                  href={href}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    navigate(href);
+                                    setSelectedState(state);
+                                    setSelectedZone(STATE_TO_ZONE[state] || "All");
+                                    setIsDropdownOpen(false);
+                                    setStateSearchQuery("");
+                                  }}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    padding: "8px 12px",
+                                    borderRadius: 8,
+                                    color: isActive ? "#67E8F9" : "rgba(224, 242, 254, 0.7)",
+                                    background: isActive ? "rgba(6, 182, 212, 0.15)" : "transparent",
+                                    fontSize: 12,
+                                    textDecoration: "none",
+                                    fontWeight: isActive ? 700 : 500,
+                                    cursor: "pointer",
+                                    transition: "all 0.15s",
+                                    paddingLeft: 20,
+                                    marginBottom: 2
+                                  }}
+                                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = isActive ? "rgba(6, 182, 212, 0.15)" : "transparent"; }}
+                                >
+                                  <span>{getLocalizedState(state, lang)}</span>
+                                  <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.4)", fontFamily: "monospace" }}>({damCount})</span>
+                                </a>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
               </div>
             </div>
             {/* Header, search, sub-filters */}
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:32, gap:20, flexWrap:"wrap" }}>
+            <div className="filter-row" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:32, gap:20, flexWrap:"wrap" }}>
               <div>
-                <h2 style={{ fontSize:28, fontWeight:900, color:"#E0F2FE", letterSpacing:"-0.5px" }}>
+                <h2 className="section-heading" style={{ fontSize:"clamp(20px, 5vw, 28px)", fontWeight:900, color:"#E0F2FE", letterSpacing:"-0.5px" }}>
                   {lang === "hi" ? (
                     <span>{selectedState === "all" ? (selectedZone === "All" ? "अखिल भारतीय" : `${getLocalizedZone(selectedZone, lang)} भारत`) : getLocalizedState(selectedState, lang)} जलाशय</span>
                   ) : lang === "kn" ? (
@@ -4951,24 +5222,63 @@ export default function App() {
                 <p style={{ fontSize:14, color:"rgba(224,242,254,0.4)", marginTop:4 }}>{t("searchAndSelectFilters")}</p>
               </div>
 
-              <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap" }}>
-                <div style={{ position:"relative", width:300 }}>
-                  <input
-                    type="text"
-                    placeholder={"\uD83D\uDD0D " + t("searchPlaceholderMain")}
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
+              <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap", width:"100%" }}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSearch(searchInput);
+                  }}
+                  className="filter-search-input"
+                  style={{ position:"relative", width:"100%", maxWidth:360, display: "flex", gap: 8 }}
+                >
+                  <div style={{ position: "relative", flex: 1 }}>
+                    <input
+                      type="text"
+                      placeholder={t("searchPlaceholder") || "Search dam, river, district..."}
+                      value={searchInput}
+                      onChange={e => setSearchInput(e.target.value)}
+                      style={{
+                        width:"100%", padding:"9px 28px 9px 34px", borderRadius:16,
+                        border:"1px solid rgba(255,255,255,0.08)",
+                        background:"rgba(255,255,255,0.02)",
+                        color:"#E0F2FE", fontSize:13, outline:"none",
+                        transition:"all 0.2s", backdropFilter:"blur(4px)"
+                      }}
+                      onFocus={e => { e.target.style.borderColor="rgba(6,182,212,0.5)"; e.target.style.background="rgba(255,255,255,0.04)"; }}
+                      onBlur={e => { e.target.style.borderColor="rgba(255,255,255,0.08)"; e.target.style.background="rgba(255,255,255,0.02)"; }}
+                    />
+                    <span style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", fontSize: 12, opacity: 0.6, pointerEvents: "none" }}>🔍</span>
+                    {searchInput && (
+                      <button
+                        type="button"
+                        onClick={handleClearSearch}
+                        style={{
+                          position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
+                          background: "none", border: "none", color: "rgba(224,242,254,0.6)", fontSize: 11, cursor: "pointer", padding: 2
+                        }}
+                      >✕</button>
+                    )}
+                  </div>
+                  <button
+                    type="submit"
                     style={{
-                      width:"100%", padding:"8px 12px 8px 36px", borderRadius:16,
-                      border:"1px solid rgba(255,255,255,0.08)",
-                      background:"rgba(255,255,255,0.02)",
-                      color:"#E0F2FE", fontSize:13, outline:"none",
-                      transition:"all 0.2s", backdropFilter:"blur(4px)"
+                      background: "linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.45))",
+                      border: "1px solid rgba(6,182,212,0.4)",
+                      borderRadius: 16,
+                      color: "#67E8F9",
+                      padding: "0 18px",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      whiteSpace: "nowrap"
                     }}
-                    onFocus={e => { e.target.style.borderColor="rgba(6,182,212,0.5)"; e.target.style.background="rgba(255,255,255,0.04)"; }}
-                    onBlur={e => { e.target.style.borderColor="rgba(255,255,255,0.08)"; e.target.style.background="rgba(255,255,255,0.02)"; }}
-                  />
-                </div>
+                    onMouseEnter={e => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(2,132,199,0.55), rgba(6,182,212,0.65))"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.45))"; }}
+                  >
+                    Search
+                  </button>
+                </form>
 
                 <div style={{ display:"flex", gap:6, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)", padding:4, borderRadius:20 }}>
                   {["all","high","normal","low"].map(tab => {
@@ -4996,7 +5306,7 @@ export default function App() {
 
             {/* Dam grid */}
             {shown.length > 0 ? (
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:24 }}>
+              <div className="dam-grid" style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))", gap:24 }}>
                 {shown.map((dam, idx) => (
                   <DamCard
                     key={dam.id}
