@@ -11,6 +11,7 @@
     "scrape": "python scripts/scrape_dams.py"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "mongodb": "^6.8.0",
     "nodemailer": "^9.0.5",
     "react": "^19.2.6",
