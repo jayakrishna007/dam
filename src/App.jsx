@@ -3431,7 +3431,7 @@ function HeroDamSlider({
       </div>
 
       {/* LEFT SLIDE CONTENT */}
-      <div key={`content-${animKey}`} className="hero-left-content" style={{
+      <div className="hero-left-content" style={{
         position:'absolute', left:64, top:'50%', transform:'translateY(-50%)',
         zIndex:10, maxWidth:480, paddingTop:30
       }}>
@@ -3748,16 +3748,20 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let timer;
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsDropdownOpen(false);
       }
     };
     if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("touchstart", handleClickOutside);
+      timer = setTimeout(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("touchstart", handleClickOutside);
+      }, 100);
     }
     return () => {
+      clearTimeout(timer);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
