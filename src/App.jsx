@@ -4846,10 +4846,10 @@ export default function App() {
               padding: "20px 24px 40px",
               overflowY: "auto"
             }}>
-              {/* Drawer Top Bar — Back / Close Button */}
+              {/* Drawer Top Bar — X Close Button */}
               <div style={{
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "flex-end",
                 alignItems: "center",
                 marginBottom: 28,
                 paddingBottom: 16,
@@ -4858,32 +4858,13 @@ export default function App() {
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    background: "rgba(6, 182, 212, 0.12)",
-                    border: "1px solid rgba(6, 182, 212, 0.35)",
-                    borderRadius: 30,
-                    color: "#67E8F9",
-                    padding: "8px 20px",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  <span style={{ fontSize: 16 }}>←</span> Back
-                </button>
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  style={{
                     background: "rgba(255, 255, 255, 0.06)",
                     border: "1px solid rgba(255, 255, 255, 0.12)",
                     borderRadius: "50%",
-                    width: 36,
-                    height: 36,
+                    width: 38,
+                    height: 38,
                     color: "#E0F2FE",
-                    fontSize: 16,
+                    fontSize: 18,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
