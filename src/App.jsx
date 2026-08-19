@@ -3228,6 +3228,505 @@ function useRouter() {
   return { path, navigate };
 }
 
+const sliderDams = [...DAMS]
+  .filter(d => (typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0) >= 100)
+  .sort((a, b) => {
+    const ca = typeof a.capacity === 'number' ? a.capacity : parseFloat(a.capacity) || 0;
+    const cb = typeof b.capacity === 'number' ? b.capacity : parseFloat(b.capacity) || 0;
+    return cb - ca;
+  });
+
+const DAM_PHOTOS = {
+  "Krishna Raja Sagara (KRS)": "/images/dams/krs.jpg",
+  "KRS": "/images/dams/krs.jpg",
+  "Krishna Raja Sagara": "/images/dams/krs.jpg",
+  "Kabini": "/images/dams/kabini.jpg",
+  "Harangi": "/images/dams/harangi.jpg",
+  "Hemavathy": "/images/dams/hemavathy.jpg",
+  "Tungabhadra": "/images/dams/tungabhadra.jpg",
+  "Bhadra": "/images/dams/bhadra.jpg",
+  "Almatti": "/images/dams/almatti.jpg",
+  "Linganamakki": "/images/dams/linganamakki.jpg",
+  "Supa": "/images/dams/supa.jpg",
+  "Mettur": "/images/dams/mettur.jpg",
+  "Nagarjunsagar": "/images/dams/nagarjunsagar.jpg",
+  "Nagarjuna Sagar": "/images/dams/nagarjunsagar.jpg",
+  "Bhakra (Gobind Sagar)": "/images/dams/bhakra.jpg",
+  "Bhakra": "/images/dams/bhakra.jpg",
+  "Gobind Sagar": "/images/dams/bhakra.jpg",
+  "Hirakud": "/images/dams/hirakud.jpg",
+  "Sardar Sarovar": "/images/dams/sardarsarovar.jpg",
+  "Indira Sagar": "/images/dams/indira_sagar.jpg",
+  "Pong (Maharana Pratap Sagar)": "/images/dams/pong.jpg",
+  "Pong": "/images/dams/pong.jpg",
+  "Maharana Pratap Sagar": "/images/dams/pong.jpg",
+  "Rihand": "/images/dams/rihand.jpg",
+  "Idukki": "/images/dams/idukki.jpg"
+};
+
+const getDamPhoto = (damObj) => {
+  if (!damObj || !damObj.name) return "/images/dams/tungabhadra.jpg";
+  const raw = damObj.name.trim();
+  const clean = raw.replace(/\s*\(.*\)/, '').trim();
+  return DAM_PHOTOS[raw] || DAM_PHOTOS[clean] || "/images/dams/tungabhadra.jpg";
+};
+
+const PALETTES = [
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2a4a 0%, #030A14 60%)', accent:'#06B6D4', glow:'rgba(6,182,212,0.12)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0a1f3d 0%, #020810 60%)', accent:'#38BDF8', glow:'rgba(56,189,248,0.12)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #1a1040 0%, #04020e 60%)', accent:'#A78BFA', glow:'rgba(167,139,250,0.1)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0f2518 0%, #020d08 60%)', accent:'#34D399', glow:'rgba(52,211,153,0.1)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #2a1200 0%, #0e0600 60%)', accent:'#FB923C', glow:'rgba(251,146,60,0.1)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2233 0%, #030a14 60%)', accent:'#22D3EE', glow:'rgba(34,211,238,0.12)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #250a2a 0%, #0a020c 60%)', accent:'#E879F9', glow:'rgba(232,121,249,0.1)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0f1f0f 0%, #040804 60%)', accent:'#86EFAC', glow:'rgba(134,239,172,0.1)'},
+];
+
+function HeroDamSlider({
+  searchInput,
+  setSearchInput,
+  handleSearch,
+  handleClearSearch,
+  t,
+  navigate,
+  setSelectedDam,
+  setView,
+  lang,
+  tickerText
+}) {
+  const [slide, setSlide] = useState(0);
+  const [animKey, setAnimKey] = useState(0);
+
+  const goTo = (i) => {
+    setSlide(i);
+    setAnimKey(k=>k+1);
+  };
+  const prev = () => goTo((slide - 1 + sliderDams.length) % sliderDams.length);
+  const next = () => goTo((slide + 1) % sliderDams.length);
+
+  // Touch swipe support for mobile (80% traffic)
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 40;
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > minSwipeDistance) next();
+    if (distance < -minSwipeDistance) prev();
+  };
+
+  // Auto-advance every 9s (only when hero section is in view)
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (typeof window !== 'undefined' && window.scrollY < window.innerHeight * 1.2) {
+        setSlide(s => (s+1) % sliderDams.length);
+        setAnimKey(k => k+1);
+      }
+    }, 9000);
+    return () => clearInterval(id);
+  }, []);
+
+  const dam = sliderDams[slide];
+  const pal = PALETTES[slide % PALETTES.length];
+  const level = typeof dam.level==='number' ? dam.level : parseFloat(dam.level)||0;
+  const inflow = typeof dam.inflow==='number' ? dam.inflow : parseFloat(dam.inflow)||0;
+  const outflow = typeof dam.outflow==='number' ? dam.outflow : parseFloat(dam.outflow)||0;
+  const tmc = ((dam.capacity||0) * level / 100).toFixed(2);
+  const photoUrl = getDamPhoto(dam);
+
+  // Water level color
+  const lvlColor = level>=90?'#F87171':level>=70?pal.accent:level>=45?'#60A5FA':'#FB923C';
+
+  // Right panel: adjacent dams
+  const rightCards = [
+    sliderDams[(slide+1)%sliderDams.length],
+    sliderDams[(slide+2)%sliderDams.length],
+    sliderDams[(slide+3)%sliderDams.length],
+  ];
+
+  return (
+    <div
+      className="hero-slider-container"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        position:'relative', width:'100%', height:'100vh',
+        overflow:'hidden', background:pal.bg,
+        transition:'background 1s ease'
+      }}
+    >
+      {/* ── Real Dam Photo Background ── */}
+      <div key={`bg-photo-${slide}`} style={{
+        position:'absolute', inset:0, zIndex:0,
+        overflow:'hidden'
+      }}>
+        <img
+          src={photoUrl}
+          alt={dam.name}
+          referrerPolicy="no-referrer"
+          style={{
+            width:'100%', height:'100%', objectFit:'cover', objectPosition:'center',
+            filter:'brightness(0.48) contrast(1.15)',
+            transition:'opacity 0.8s ease'
+          }}
+        />
+      </div>
+
+      {/* Dark left-to-right gradient overlay — like travel agency */}
+      <div style={{
+        position:'absolute', inset:0, zIndex:2,
+        background:'linear-gradient(105deg, rgba(3,10,20,0.88) 0%, rgba(3,10,20,0.6) 45%, rgba(3,10,20,0.12) 100%)'
+      }}/>
+
+      {/* Rain streaks */}
+      {RAIN.map(r=>(
+        <div key={r.id} style={{
+          position:'absolute', top:0, left:r.left, width:'1px', height:r.h+4,
+          pointerEvents:'none', zIndex:3,
+          background:`linear-gradient(to bottom, transparent, ${pal.accent}40, transparent)`,
+          animation:`rain ${r.dur} linear ${r.delay} infinite`
+        }}/>
+      ))}
+
+      {/* LIVE TICKER at top */}
+      <div style={{
+        position:'absolute', top:0, left:0, right:0, height:30, zIndex:20,
+        overflow:'hidden', display:'flex', alignItems:'center',
+        background:'rgba(0,0,0,0.35)', borderBottom:`1px solid ${pal.accent}22`,
+        backdropFilter:'blur(6px)'
+      }}>
+        <div style={{ flexShrink:0, height:'100%', display:'flex', alignItems:'center',
+          padding:'0 14px', borderRight:`1px solid ${pal.accent}22`, gap:6 }}>
+          <div style={{ width:7, height:7, borderRadius:'50%', background:'#EF4444', animation:'blink 1.5s ease infinite' }}/>
+          <span style={{ fontSize:10, fontWeight:700, color:'rgba(224,242,254,0.5)', letterSpacing:1 }}>LIVE</span>
+        </div>
+        <div style={{ overflow:'hidden', flex:1 }}>
+          <div style={{
+            display:'inline-block', whiteSpace:'nowrap', fontFamily:'monospace',
+            fontSize:11, color:`${pal.accent}99`, letterSpacing:0.4, paddingLeft:14,
+            animation:'tickerScroll 90s linear infinite'
+          }}>{tickerText}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tickerText}</div>
+        </div>
+      </div>
+
+      {/* LEFT VERTICAL DOT NAV */}
+      <div className="hero-vert-nav" style={{
+        position:'absolute', left:26, top:'50%', transform:'translateY(-50%)',
+        zIndex:15, display:'flex', flexDirection:'column', alignItems:'center', gap:14
+      }}>
+        {sliderDams.map((_,i)=>(
+          <button key={i} className={`hero-vert-dot${i===slide?' active':''}`}
+            onClick={()=>goTo(i)} title={sliderDams[i].name}
+            style={{ outline:'none' }}/>
+        ))}
+      </div>
+
+      {/* LEFT SLIDE CONTENT */}
+      <div key={`content-${animKey}`} className="hero-left-content" style={{
+        position:'absolute', left:64, top:'50%', transform:'translateY(-50%)',
+        zIndex:10, maxWidth:480, paddingTop:30
+      }}>
+        {/* Tag */}
+        <div className="hero-slide-tag" style={{
+          display:'inline-block', fontSize:'0.72rem', fontWeight:700,
+          letterSpacing:2, textTransform:'uppercase',
+          color:pal.accent, marginBottom:10
+        }}>
+          🌊 {dam.river} · {dam.district}
+        </div>
+
+        {/* Short clean Barlow Condensed title */}
+        {(() => {
+          const rawName = dam.name || "";
+          let shortTitle = rawName;
+          if (rawName.includes("Krishna Raja Sagara")) {
+            shortTitle = "KRS DAM";
+          } else {
+            shortTitle = rawName.replace(/\s*\(.*\)/, '').trim();
+          }
+          return (
+            <h1 className="hero-slide-title" style={{
+              fontFamily: "'Barlow Condensed', system-ui, sans-serif",
+              fontSize: 'clamp(2.2rem, 4.2vw, 3.8rem)',
+              fontWeight: 900,
+              lineHeight: 1.02,
+              letterSpacing: '-0.5px',
+              textTransform: 'uppercase',
+              marginBottom: 12,
+              color: '#fff',
+              textShadow: `0 2px 25px ${pal.glow}`
+            }}>
+              {shortTitle}
+            </h1>
+          );
+        })()}
+
+        {/* Description */}
+        <p className="hero-slide-desc" style={{
+          fontSize:'0.82rem', color:'rgba(255,255,255,0.6)',
+          lineHeight:1.65, marginBottom:22, maxWidth:380
+        }}>
+          {`${dam.state || ''} reservoir — currently at `}
+          <strong style={{color:lvlColor}}>{level.toFixed(1)}% capacity</strong>
+          {`. Real-time monitoring of water levels, inflow and outflow from India's network of ${DAMS.length}+ reservoirs.`}
+        </p>
+
+        {/* LIVE DATA BLOCK — like travel agency pricing block */}
+        <div className="hero-slide-data" style={{
+          background:'rgba(255,255,255,0.06)',
+          border:`1px solid ${pal.accent}30`,
+          backdropFilter:'blur(14px)',
+          borderRadius:16, padding:'16px 20px',
+          marginBottom:24, maxWidth:360
+        }}>
+          {/* Fill level & TMC present */}
+          <div style={{ display:'flex', alignItems:'baseline', gap:8, marginBottom:6, flexWrap:'wrap' }}>
+            <span style={{
+              fontFamily:"'Barlow Condensed', system-ui, sans-serif",
+              fontSize:'2.4rem', fontWeight:900, color:lvlColor, letterSpacing:'-0.5px'
+            }}>{level.toFixed(1)}%</span>
+            <span style={{ fontSize:'0.88rem', color:pal.accent, fontWeight:700 }}>{tmc} TMC</span>
+            <span style={{
+              background: level>=90?'#F59E0B':level>=70?pal.accent:'#FB923C',
+              color:'#fff', fontSize:'0.62rem', fontWeight:700,
+              padding:'2px 8px', borderRadius:50, letterSpacing:0.5, marginLeft:'auto'
+            }}>{level>=90?'WATCH':level>=70?'HIGH LEVEL':level>=45?'NORMAL':'LOW'}</span>
+          </div>
+          {/* Capacity summary */}
+          <div style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.5)', fontWeight:500, marginBottom:10 }}>
+            Total Gross Capacity: <strong style={{ color:'#fff' }}>{dam.capacity} TMC</strong>
+          </div>
+          {/* Inflow / Outflow row */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+            <div>
+              <div style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:1, marginBottom:3 }}>↑ Inflow</div>
+              <div style={{ fontSize:'1rem', fontWeight:700, color:'#86EFAC', fontFamily:'monospace' }}>
+                {inflow>0?`${fmtK(inflow)} cusecs`:'—'}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:1, marginBottom:3 }}>↓ Outflow</div>
+              <div style={{ fontSize:'1rem', fontWeight:700, color:'#FCA5A5', fontFamily:'monospace' }}>
+                {outflow>0?`${fmtK(outflow)} cusecs`:'—'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile In-Hero Search Bar */}
+        <div className="hero-mobile-search-wrap" style={{
+          marginBottom: 16,
+          position: "relative",
+          width: "100%",
+          maxWidth: 360
+        }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearch(searchInput);
+            }}
+            style={{ display: "flex", gap: 8, width: "100%" }}
+          >
+            <div style={{ position: "relative", flex: 1 }}>
+              <input
+                type="text"
+                placeholder={t("searchPlaceholder") || "Search dam, river, district..."}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px 30px 10px 34px",
+                  borderRadius: 50,
+                  border: `1px solid ${pal.accent}60`,
+                  background: "rgba(3, 10, 20, 0.85)",
+                  backdropFilter: "blur(12px)",
+                  color: "#E0F2FE",
+                  fontSize: 13,
+                  outline: "none",
+                  boxShadow: `0 4px 20px rgba(0,0,0,0.4), 0 0 12px ${pal.glow}`
+                }}
+              />
+              <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 13, opacity: 0.7, pointerEvents: "none" }}>🔍</span>
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  style={{
+                    position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+                    background: "none", border: "none", color: "rgba(224,242,254,0.6)", fontSize: 12, cursor: "pointer", padding: 2
+                  }}
+                >✕</button>
+              )}
+            </div>
+            <button
+              type="submit"
+              style={{
+                background: pal.accent,
+                color: "#fff",
+                border: "none",
+                borderRadius: 50,
+                padding: "0 18px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                boxShadow: `0 4px 15px ${pal.accent}40`,
+                whiteSpace: "nowrap"
+              }}
+            >
+              Search
+            </button>
+          </form>
+        </div>
+
+        {/* BUTTONS */}
+        <div className="hero-slide-btns" style={{ display:'flex', alignItems:'center', gap:14 }}>
+          <button
+            onClick={()=>{ const d=DAMS.find(x=>x.name===dam.name); if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
+            style={{
+              background:pal.accent, color:'#fff', border:'none',
+              padding:'13px 32px', borderRadius:50, fontSize:'0.88rem',
+              fontWeight:700, letterSpacing:0.3, cursor:'pointer',
+              transition:'all 0.3s ease', display:'flex', alignItems:'center', gap:6
+            }}
+            onMouseEnter={e=>{e.currentTarget.style.transform='translateX(4px)';e.currentTarget.style.boxShadow=`0 8px 28px ${pal.accent}50`;}}
+            onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none';}}
+          >View Details &nbsp;→</button>
+          <button
+            onClick={()=>document.getElementById('dams-section')?.scrollIntoView({behavior:'smooth'})}
+            style={{
+              background:'rgba(255,255,255,0.1)',
+              color:'#fff', border:'1px solid rgba(255,255,255,0.22)',
+              padding:'13px 28px', borderRadius:50, fontSize:'0.88rem',
+              fontWeight:600, backdropFilter:'blur(8px)', cursor:'pointer',
+              transition:'all 0.3s ease'
+            }}
+            onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.18)';}}
+            onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.1)';}}
+          >All Reservoirs</button>
+        </div>
+
+        {/* Slide counter */}
+        <div className="hero-slide-counter" style={{
+          display:'flex', alignItems:'baseline', gap:2, marginTop:36
+        }}>
+          <span style={{
+            fontFamily:"'Barlow Condensed',system-ui,sans-serif",
+            fontSize:'2rem', fontWeight:800, color:'#fff'
+          }}>{String(slide+1).padStart(2,'0')}</span>
+          <span style={{ fontSize:'0.85rem', color:'rgba(255,255,255,0.3)', margin:'0 2px' }}>/</span>
+          <span style={{ fontSize:'0.85rem', color:'rgba(255,255,255,0.35)', fontWeight:500 }}>
+            {String(sliderDams.length).padStart(2,'0')}
+          </span>
+        </div>
+      </div>
+
+      {/* RIGHT FLOATING CARDS PANEL */}
+      <div className="hero-cards-panel" style={{
+        position:'absolute', right:0, top:'50%',
+        transform:'translateY(-50%)',
+        zIndex:10, display:'flex', alignItems:'center',
+        gap:14, paddingRight:36, paddingTop:50
+      }}>
+        {rightCards.map((cd, ci)=>{
+          const cdLevel = typeof cd.level==='number'?cd.level:parseFloat(cd.level)||0;
+          const cdW = ci===0?155:ci===1?140:120;
+          const cdH = ci===0?265:ci===1?245:215;
+          const cdColor = cdLevel>=90?'#F87171':cdLevel>=70?pal.accent:cdLevel>=45?'#60A5FA':'#FB923C';
+          const cdPhoto = getDamPhoto(cd);
+          return (
+            <div key={cd.name}
+              className={`hero-mini-card hero-card-${ci+1}`}
+              style={{
+                width:cdW, height:cdH,
+                backgroundImage:`url(${cdPhoto})`,
+                backgroundSize:'cover',
+                backgroundPosition:'center'
+              }}
+              onClick={()=>{ const d=DAMS.find(x=>x.name===cd.name); if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
+            >
+              {/* Card background overlay */}
+              <div style={{
+                position:'absolute', inset:0,
+                background:`linear-gradient(to top, rgba(2,8,20,0.95) 0%, rgba(2,8,20,0.4) 50%, rgba(2,8,20,0.2) 100%)`,
+              }}/>
+              {/* Water level indicator line */}
+              <div style={{
+                position:'absolute', bottom:0, left:0, right:0,
+                height:`${cdLevel}%`,
+                background:`linear-gradient(to top, ${pal.accent}44, transparent)`,
+                transition:'height 0.8s ease'
+              }}/>
+              {/* Bookmark */}
+              <div style={{
+                position:'absolute', top:10, right:10,
+                width:28, height:28, background:'rgba(255,255,255,0.15)',
+                backdropFilter:'blur(8px)', borderRadius:'50%',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:'0.75rem', border:'1px solid rgba(255,255,255,0.2)'
+              }}>🔖</div>
+              {/* Info at bottom */}
+              <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'12px 12px 10px' }}>
+                <div style={{ fontSize:'0.78rem', fontWeight:700, color:'#fff', marginBottom:4,
+                  whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'
+                }}>{cd.name}</div>
+                {/* Star-like level dots */}
+                <div style={{ display:'flex', gap:3, marginBottom:5 }}>
+                  {[0,1,2,3,4].map(s=>(
+                    <div key={s} style={{ width:6, height:6, borderRadius:'50%',
+                      background: s < Math.round(cdLevel/20) ? cdColor : 'rgba(255,255,255,0.2)' }}/>
+                  ))}
+                </div>
+                <div style={{ fontSize:'0.68rem', color:cdColor, fontWeight:700 }}>
+                  {cdLevel.toFixed(1)}% · {((cd.capacity||0)*cdLevel/100).toFixed(1)} TMC
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* BOTTOM CENTER — arrow nav + dot pagination */}
+      <div className="hero-bottom-nav" style={{
+        position:'absolute', bottom:80, left:'50%',
+        transform:'translateX(-50%)',
+        zIndex:15, display:'flex', alignItems:'center', gap:16
+      }}>
+        <button className="hero-nav-arrow" onClick={prev}>←</button>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          {sliderDams.map((_,i)=>(
+            <button key={i}
+              className={`hero-dot-pag${i===slide?' active':''}`}
+              onClick={()=>goTo(i)}
+              style={{ outline:'none' }}
+            />
+          ))}
+        </div>
+        <button className="hero-nav-arrow" onClick={next}>→</button>
+      </div>
+
+      {/* Bottom wave transition */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:70, overflow:'hidden', zIndex:6, pointerEvents:'none' }}>
+        <svg viewBox="0 0 480 28" preserveAspectRatio="none"
+          style={{ width:'200%', height:'100%', position:'absolute', bottom:-4, left:0, animation:'wv1 14s linear infinite' }}>
+          <path d={WAVE} fill="#030A14" stroke={`${pal.accent}18`} strokeWidth="1"/>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 // ===================== MAIN APP =====================
 export default function App() {
   const { path, navigate } = useRouter();
@@ -3244,9 +3743,25 @@ export default function App() {
   const [stateSearchQuery, setStateSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [goStats, setGoStats] = useState(false);
   const statsRef = useRef(null);
+  const dropdownRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleSearch = (term) => {
     const q = (typeof term === "string" ? term : searchInput).trim();
@@ -4417,503 +4932,18 @@ export default function App() {
               <PrivacyPolicyPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : (
               <>
-                {/* HERO — Travel-agency-style immersive dam slider */}
-                {(()=>{
-                  // ── Only dams with capacity ≥ 100 TMC, sorted by capacity descending ──
-                  const sliderDams = [...DAMS]
-                    .filter(d => (typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0) >= 100)
-                    .sort((a, b) => {
-                      const ca = typeof a.capacity === 'number' ? a.capacity : parseFloat(a.capacity) || 0;
-                      const cb = typeof b.capacity === 'number' ? b.capacity : parseFloat(b.capacity) || 0;
-                      return cb - ca;
-                    });
-
-                  // Local authentic HD dam photographs saved in /images/dams/
-                  const DAM_PHOTOS = {
-                    "Krishna Raja Sagara (KRS)": "/images/dams/krs.jpg",
-                    "KRS": "/images/dams/krs.jpg",
-                    "Krishna Raja Sagara": "/images/dams/krs.jpg",
-                    "Kabini": "/images/dams/kabini.jpg",
-                    "Harangi": "/images/dams/harangi.jpg",
-                    "Hemavathy": "/images/dams/hemavathy.jpg",
-                    "Tungabhadra": "/images/dams/tungabhadra.jpg",
-                    "Bhadra": "/images/dams/bhadra.jpg",
-                    "Almatti": "/images/dams/almatti.jpg",
-                    "Linganamakki": "/images/dams/linganamakki.jpg",
-                    "Supa": "/images/dams/supa.jpg",
-                    "Mettur": "/images/dams/mettur.jpg",
-                    "Nagarjunsagar": "/images/dams/nagarjunsagar.jpg",
-                    "Nagarjuna Sagar": "/images/dams/nagarjunsagar.jpg",
-                    "Bhakra (Gobind Sagar)": "/images/dams/bhakra.jpg",
-                    "Bhakra": "/images/dams/bhakra.jpg",
-                    "Gobind Sagar": "/images/dams/bhakra.jpg",
-                    "Hirakud": "/images/dams/hirakud.jpg",
-                    "Sardar Sarovar": "/images/dams/sardarsarovar.jpg",
-                    "Indira Sagar": "/images/dams/indira_sagar.jpg",
-                    "Pong (Maharana Pratap Sagar)": "/images/dams/pong.jpg",
-                    "Pong": "/images/dams/pong.jpg",
-                    "Maharana Pratap Sagar": "/images/dams/pong.jpg",
-                    "Rihand": "/images/dams/rihand.jpg",
-                    "Idukki": "/images/dams/idukki.jpg"
-                  };
-
-                  const getDamPhoto = (damObj) => {
-                    if (!damObj || !damObj.name) return "/images/dams/tungabhadra.jpg";
-                    const raw = damObj.name.trim();
-                    const clean = raw.replace(/\s*\(.*\)/, '').trim();
-                    return DAM_PHOTOS[raw] || DAM_PHOTOS[clean] || "/images/dams/tungabhadra.jpg";
-                  };
-
-                  // Unique gradient palettes per slide (like travel agency photo backgrounds)
-                  const PALETTES = [
-                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2a4a 0%, #030A14 60%)', accent:'#06B6D4', glow:'rgba(6,182,212,0.12)'},
-                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0a1f3d 0%, #020810 60%)', accent:'#38BDF8', glow:'rgba(56,189,248,0.12)'},
-                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #1a1040 0%, #04020e 60%)', accent:'#A78BFA', glow:'rgba(167,139,250,0.1)'},
-                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0f2518 0%, #020d08 60%)', accent:'#34D399', glow:'rgba(52,211,153,0.1)'},
-                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #2a1200 0%, #0e0600 60%)', accent:'#FB923C', glow:'rgba(251,146,60,0.1)'},
-                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2233 0%, #030a14 60%)', accent:'#22D3EE', glow:'rgba(34,211,238,0.12)'},
-                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #250a2a 0%, #0a020c 60%)', accent:'#E879F9', glow:'rgba(232,121,249,0.1)'},
-                    {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0f1f0f 0%, #040804 60%)', accent:'#86EFAC', glow:'rgba(134,239,172,0.1)'},
-                  ];
-
-                  // ── Slider state (rendered inline via IIFE + React hooks) ──
-                  // We use a wrapper component so we can use hooks
-                  function HeroDamSlider() {
-                    const [slide, setSlide] = useState(0);
-                    const [animKey, setAnimKey] = useState(0);
-
-                    const goTo = (i) => {
-                      setSlide(i);
-                      setAnimKey(k=>k+1);
-                    };
-                    const prev = () => goTo((slide - 1 + sliderDams.length) % sliderDams.length);
-                    const next = () => goTo((slide + 1) % sliderDams.length);
-
-                    // Touch swipe support for mobile (80% traffic)
-                    const [touchStart, setTouchStart] = useState(null);
-                    const [touchEnd, setTouchEnd] = useState(null);
-                    const minSwipeDistance = 40;
-
-                    const handleTouchStart = (e) => {
-                      setTouchEnd(null);
-                      setTouchStart(e.targetTouches[0].clientX);
-                    };
-                    const handleTouchMove = (e) => {
-                      setTouchEnd(e.targetTouches[0].clientX);
-                    };
-                    const handleTouchEnd = () => {
-                      if (!touchStart || !touchEnd) return;
-                      const distance = touchStart - touchEnd;
-                      if (distance > minSwipeDistance) next();
-                      if (distance < -minSwipeDistance) prev();
-                    };
-
-                    // Auto-advance every 9s (only when hero section is in view)
-                    useEffect(() => {
-                      const id = setInterval(() => {
-                        if (typeof window !== 'undefined' && window.scrollY < window.innerHeight * 1.2) {
-                          setSlide(s => (s+1) % sliderDams.length);
-                          setAnimKey(k => k+1);
-                        }
-                      }, 9000);
-                      return () => clearInterval(id);
-                    }, [sliderDams.length]);
-
-                    const dam = sliderDams[slide];
-                    const pal = PALETTES[slide % PALETTES.length];
-                    const level = typeof dam.level==='number' ? dam.level : parseFloat(dam.level)||0;
-                    const inflow = typeof dam.inflow==='number' ? dam.inflow : parseFloat(dam.inflow)||0;
-                    const outflow = typeof dam.outflow==='number' ? dam.outflow : parseFloat(dam.outflow)||0;
-                    const tmc = ((dam.capacity||0) * level / 100).toFixed(2);
-                    const photoUrl = getDamPhoto(dam, slide);
-
-                    // Water level color
-                    const lvlColor = level>=90?'#F87171':level>=70?pal.accent:level>=45?'#60A5FA':'#FB923C';
-
-                    // Right panel: adjacent dams
-                    const rightCards = [
-                      sliderDams[(slide+1)%sliderDams.length],
-                      sliderDams[(slide+2)%sliderDams.length],
-                      sliderDams[(slide+3)%sliderDams.length],
-                    ];
-
-                    return (
-                      <div
-                        className="hero-slider-container"
-                        onTouchStart={handleTouchStart}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                        style={{
-                          position:'relative', width:'100%', height:'100vh',
-                          overflow:'hidden', background:pal.bg,
-                          transition:'background 1s ease'
-                        }}
-                      >
-
-                        {/* ── Real Dam Photo Background ── */}
-                        <div key={`bg-photo-${slide}`} style={{
-                          position:'absolute', inset:0, zIndex:0,
-                          overflow:'hidden'
-                        }}>
-                          <img
-                            src={photoUrl}
-                            alt={dam.name}
-                            referrerPolicy="no-referrer"
-                            style={{
-                              width:'100%', height:'100%', objectFit:'cover', objectPosition:'center',
-                              filter:'brightness(0.48) contrast(1.15)',
-                              transition:'opacity 0.8s ease'
-                            }}
-                          />
-                        </div>
-
-                        {/* Dark left-to-right gradient overlay — like travel agency */}
-                        <div style={{
-                          position:'absolute', inset:0, zIndex:2,
-                          background:'linear-gradient(105deg, rgba(3,10,20,0.88) 0%, rgba(3,10,20,0.6) 45%, rgba(3,10,20,0.12) 100%)'
-                        }}/>
-
-                        {/* Rain streaks */}
-                        {RAIN.map(r=>(
-                          <div key={r.id} style={{
-                            position:'absolute', top:0, left:r.left, width:'1px', height:r.h+4,
-                            pointerEvents:'none', zIndex:3,
-                            background:`linear-gradient(to bottom, transparent, ${pal.accent}40, transparent)`,
-                            animation:`rain ${r.dur} linear ${r.delay} infinite`
-                          }}/>
-                        ))}
-
-                        {/* LIVE TICKER at top */}
-                        <div style={{
-                          position:'absolute', top:0, left:0, right:0, height:30, zIndex:20,
-                          overflow:'hidden', display:'flex', alignItems:'center',
-                          background:'rgba(0,0,0,0.35)', borderBottom:`1px solid ${pal.accent}22`,
-                          backdropFilter:'blur(6px)'
-                        }}>
-                          <div style={{ flexShrink:0, height:'100%', display:'flex', alignItems:'center',
-                            padding:'0 14px', borderRight:`1px solid ${pal.accent}22`, gap:6 }}>
-                            <div style={{ width:7, height:7, borderRadius:'50%', background:'#EF4444', animation:'blink 1.5s ease infinite' }}/>
-                            <span style={{ fontSize:10, fontWeight:700, color:'rgba(224,242,254,0.5)', letterSpacing:1 }}>LIVE</span>
-                          </div>
-                          <div style={{ overflow:'hidden', flex:1 }}>
-                            <div style={{
-                              display:'inline-block', whiteSpace:'nowrap', fontFamily:'monospace',
-                              fontSize:11, color:`${pal.accent}99`, letterSpacing:0.4, paddingLeft:14,
-                              animation:'tickerScroll 90s linear infinite'
-                            }}>{tickerText}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tickerText}</div>
-                          </div>
-                        </div>
-
-                        {/* LEFT VERTICAL DOT NAV */}
-                        <div className="hero-vert-nav" style={{
-                          position:'absolute', left:26, top:'50%', transform:'translateY(-50%)',
-                          zIndex:15, display:'flex', flexDirection:'column', alignItems:'center', gap:14
-                        }}>
-                          {sliderDams.map((_,i)=>(
-                            <button key={i} className={`hero-vert-dot${i===slide?' active':''}`}
-                              onClick={()=>goTo(i)} title={sliderDams[i].name}
-                              style={{ outline:'none' }}/>
-                          ))}
-                        </div>
-
-                        {/* LEFT SLIDE CONTENT */}
-                        <div key={`content-${animKey}`} className="hero-left-content" style={{
-                          position:'absolute', left:64, top:'50%', transform:'translateY(-50%)',
-                          zIndex:10, maxWidth:480, paddingTop:30
-                        }}>
-                          {/* Tag */}
-                          <div className="hero-slide-tag" style={{
-                            display:'inline-block', fontSize:'0.72rem', fontWeight:700,
-                            letterSpacing:2, textTransform:'uppercase',
-                            color:pal.accent, marginBottom:10
-                          }}>
-                            🌊 {dam.river} · {dam.district}
-                          </div>
-
-                          {/* Short clean Barlow Condensed title */}
-                          {(() => {
-                            const rawName = dam.name || "";
-                            let shortTitle = rawName;
-                            if (rawName.includes("Krishna Raja Sagara")) {
-                              shortTitle = "KRS DAM";
-                            } else {
-                              shortTitle = rawName.replace(/\s*\(.*\)/, '').trim();
-                            }
-                            return (
-                              <h1 className="hero-slide-title" style={{
-                                fontFamily: "'Barlow Condensed', system-ui, sans-serif",
-                                fontSize: 'clamp(2.2rem, 4.2vw, 3.8rem)',
-                                fontWeight: 900,
-                                lineHeight: 1.02,
-                                letterSpacing: '-0.5px',
-                                textTransform: 'uppercase',
-                                marginBottom: 12,
-                                color: '#fff',
-                                textShadow: `0 2px 25px ${pal.glow}`
-                              }}>
-                                {shortTitle}
-                              </h1>
-                            );
-                          })()}
-
-                          {/* Description */}
-                          <p className="hero-slide-desc" style={{
-                            fontSize:'0.82rem', color:'rgba(255,255,255,0.6)',
-                            lineHeight:1.65, marginBottom:22, maxWidth:380
-                          }}>
-                            {`${dam.state || ''} reservoir — currently at `}
-                            <strong style={{color:lvlColor}}>{level.toFixed(1)}% capacity</strong>
-                            {`. Real-time monitoring of water levels, inflow and outflow from India's network of ${DAMS.length}+ reservoirs.`}
-                          </p>
-
-                          {/* LIVE DATA BLOCK — like travel agency pricing block */}
-                          <div className="hero-slide-data" style={{
-                            background:'rgba(255,255,255,0.06)',
-                            border:`1px solid ${pal.accent}30`,
-                            backdropFilter:'blur(14px)',
-                            borderRadius:16, padding:'16px 20px',
-                            marginBottom:24, maxWidth:360
-                          }}>
-                            {/* Fill level & TMC present */}
-                            <div style={{ display:'flex', alignItems:'baseline', gap:8, marginBottom:6, flexWrap:'wrap' }}>
-                              <span style={{
-                                fontFamily:"'Barlow Condensed', system-ui, sans-serif",
-                                fontSize:'2.4rem', fontWeight:900, color:lvlColor, letterSpacing:'-0.5px'
-                              }}>{level.toFixed(1)}%</span>
-                              <span style={{ fontSize:'0.88rem', color:pal.accent, fontWeight:700 }}>{tmc} TMC</span>
-                              <span style={{
-                                background: level>=90?'#F59E0B':level>=70?pal.accent:'#FB923C',
-                                color:'#fff', fontSize:'0.62rem', fontWeight:700,
-                                padding:'2px 8px', borderRadius:50, letterSpacing:0.5, marginLeft:'auto'
-                              }}>{level>=90?'WATCH':level>=70?'HIGH LEVEL':level>=45?'NORMAL':'LOW'}</span>
-                            </div>
-                            {/* Capacity summary */}
-                            <div style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.5)', fontWeight:500, marginBottom:10 }}>
-                              Total Gross Capacity: <strong style={{ color:'#fff' }}>{dam.capacity} TMC</strong>
-                            </div>
-                            {/* Inflow / Outflow row */}
-                            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
-                              <div>
-                                <div style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:1, marginBottom:3 }}>↑ Inflow</div>
-                                <div style={{ fontSize:'1rem', fontWeight:700, color:'#86EFAC', fontFamily:'monospace' }}>
-                                  {inflow>0?`${fmtK(inflow)} cusecs`:'—'}
-                                </div>
-                              </div>
-                              <div>
-                                <div style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:1, marginBottom:3 }}>↓ Outflow</div>
-                                <div style={{ fontSize:'1rem', fontWeight:700, color:'#FCA5A5', fontFamily:'monospace' }}>
-                                  {outflow>0?`${fmtK(outflow)} cusecs`:'—'}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Mobile In-Hero Search Bar */}
-                          <div className="hero-mobile-search-wrap" style={{
-                            marginBottom: 16,
-                            position: "relative",
-                            width: "100%",
-                            maxWidth: 360
-                          }}>
-                            <form
-                              onSubmit={(e) => {
-                                e.preventDefault();
-                                handleSearch(searchInput);
-                              }}
-                              style={{ display: "flex", gap: 8, width: "100%" }}
-                            >
-                              <div style={{ position: "relative", flex: 1 }}>
-                                <input
-                                  type="text"
-                                  placeholder={t("searchPlaceholder") || "Search dam, river, district..."}
-                                  value={searchInput}
-                                  onChange={(e) => setSearchInput(e.target.value)}
-                                  style={{
-                                    width: "100%",
-                                    padding: "10px 30px 10px 34px",
-                                    borderRadius: 50,
-                                    border: `1px solid ${pal.accent}60`,
-                                    background: "rgba(3, 10, 20, 0.85)",
-                                    backdropFilter: "blur(12px)",
-                                    color: "#E0F2FE",
-                                    fontSize: 13,
-                                    outline: "none",
-                                    boxShadow: `0 4px 20px rgba(0,0,0,0.4), 0 0 12px ${pal.glow}`
-                                  }}
-                                />
-                                <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 13, opacity: 0.7, pointerEvents: "none" }}>🔍</span>
-                                {searchInput && (
-                                  <button
-                                    type="button"
-                                    onClick={handleClearSearch}
-                                    style={{
-                                      position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-                                      background: "none", border: "none", color: "rgba(224,242,254,0.6)", fontSize: 12, cursor: "pointer", padding: 2
-                                    }}
-                                  >✕</button>
-                                )}
-                              </div>
-                              <button
-                                type="submit"
-                                style={{
-                                  background: pal.accent,
-                                  color: "#fff",
-                                  border: "none",
-                                  borderRadius: 50,
-                                  padding: "0 18px",
-                                  fontSize: 13,
-                                  fontWeight: 700,
-                                  cursor: "pointer",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 4,
-                                  boxShadow: `0 4px 15px ${pal.accent}40`,
-                                  whiteSpace: "nowrap"
-                                }}
-                              >
-                                Search
-                              </button>
-                            </form>
-                          </div>
-
-                          {/* BUTTONS */}
-                          <div className="hero-slide-btns" style={{ display:'flex', alignItems:'center', gap:14 }}>
-                            <button
-                              onClick={()=>{ const d=DAMS.find(x=>x.name===dam.name); if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
-                              style={{
-                                background:pal.accent, color:'#fff', border:'none',
-                                padding:'13px 32px', borderRadius:50, fontSize:'0.88rem',
-                                fontWeight:700, letterSpacing:0.3, cursor:'pointer',
-                                transition:'all 0.3s ease', display:'flex', alignItems:'center', gap:6
-                              }}
-                              onMouseEnter={e=>{e.currentTarget.style.transform='translateX(4px)';e.currentTarget.style.boxShadow=`0 8px 28px ${pal.accent}50`;}}
-                              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none';}}
-                            >View Details &nbsp;→</button>
-                            <button
-                              onClick={()=>document.getElementById('dams-section')?.scrollIntoView({behavior:'smooth'})}
-                              style={{
-                                background:'rgba(255,255,255,0.1)',
-                                color:'#fff', border:'1px solid rgba(255,255,255,0.22)',
-                                padding:'13px 28px', borderRadius:50, fontSize:'0.88rem',
-                                fontWeight:600, backdropFilter:'blur(8px)', cursor:'pointer',
-                                transition:'all 0.3s ease'
-                              }}
-                              onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,0.18)';}}
-                              onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.1)';}}
-                            >All Reservoirs</button>
-                          </div>
-
-                          {/* Slide counter */}
-                          <div className="hero-slide-counter" style={{
-                            display:'flex', alignItems:'baseline', gap:2, marginTop:36
-                          }}>
-                            <span style={{
-                              fontFamily:"'Barlow Condensed',system-ui,sans-serif",
-                              fontSize:'2rem', fontWeight:800, color:'#fff'
-                            }}>{String(slide+1).padStart(2,'0')}</span>
-                            <span style={{ fontSize:'0.85rem', color:'rgba(255,255,255,0.3)', margin:'0 2px' }}>/</span>
-                            <span style={{ fontSize:'0.85rem', color:'rgba(255,255,255,0.35)', fontWeight:500 }}>
-                              {String(sliderDams.length).padStart(2,'0')}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* RIGHT FLOATING CARDS PANEL */}
-                        <div className="hero-cards-panel" style={{
-                          position:'absolute', right:0, top:'50%',
-                          transform:'translateY(-50%)',
-                          zIndex:10, display:'flex', alignItems:'center',
-                          gap:14, paddingRight:36, paddingTop:50
-                        }}>
-                          {rightCards.map((cd, ci)=>{
-                            const cdLevel = typeof cd.level==='number'?cd.level:parseFloat(cd.level)||0;
-                            const cdW = ci===0?155:ci===1?140:120;
-                            const cdH = ci===0?265:ci===1?245:215;
-                            const cdColor = cdLevel>=90?'#F87171':cdLevel>=70?pal.accent:cdLevel>=45?'#60A5FA':'#FB923C';
-                            const cdPhoto = getDamPhoto(cd, ci + 1);
-                            return (
-                              <div key={cd.name}
-                                className={`hero-mini-card hero-card-${ci+1}`}
-                                style={{
-                                  width:cdW, height:cdH,
-                                  backgroundImage:`url(${cdPhoto})`,
-                                  backgroundSize:'cover',
-                                  backgroundPosition:'center'
-                                }}
-                                onClick={()=>{ const d=DAMS.find(x=>x.name===cd.name); if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
-                              >
-                                {/* Card background overlay */}
-                                <div style={{
-                                  position:'absolute', inset:0,
-                                  background:`linear-gradient(to top, rgba(2,8,20,0.95) 0%, rgba(2,8,20,0.4) 50%, rgba(2,8,20,0.2) 100%)`,
-                                }}/>
-                                {/* Water level indicator line */}
-                                <div style={{
-                                  position:'absolute', bottom:0, left:0, right:0,
-                                  height:`${cdLevel}%`,
-                                  background:`linear-gradient(to top, ${pal.accent}44, transparent)`,
-                                  transition:'height 0.8s ease'
-                                }}/>
-                                {/* Bookmark */}
-                                <div style={{
-                                  position:'absolute', top:10, right:10,
-                                  width:28, height:28, background:'rgba(255,255,255,0.15)',
-                                  backdropFilter:'blur(8px)', borderRadius:'50%',
-                                  display:'flex', alignItems:'center', justifyContent:'center',
-                                  fontSize:'0.75rem', border:'1px solid rgba(255,255,255,0.2)'
-                                }}>🔖</div>
-                                {/* Info at bottom */}
-                                <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'12px 12px 10px' }}>
-                                  <div style={{ fontSize:'0.78rem', fontWeight:700, color:'#fff', marginBottom:4,
-                                    whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'
-                                  }}>{cd.name}</div>
-                                  {/* Star-like level dots */}
-                                  <div style={{ display:'flex', gap:3, marginBottom:5 }}>
-                                    {[0,1,2,3,4].map(s=>(
-                                      <div key={s} style={{ width:6, height:6, borderRadius:'50%',
-                                        background: s < Math.round(cdLevel/20) ? cdColor : 'rgba(255,255,255,0.2)' }}/>
-                                    ))}
-                                  </div>
-                                  <div style={{ fontSize:'0.68rem', color:cdColor, fontWeight:700 }}>
-                                    {cdLevel.toFixed(1)}% · {((cd.capacity||0)*cdLevel/100).toFixed(1)} TMC
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* BOTTOM CENTER — arrow nav + dot pagination */}
-                        <div className="hero-bottom-nav" style={{
-                          position:'absolute', bottom:80, left:'50%',
-                          transform:'translateX(-50%)',
-                          zIndex:15, display:'flex', alignItems:'center', gap:16
-                        }}>
-                          <button className="hero-nav-arrow" onClick={prev}>←</button>
-                          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                            {sliderDams.map((_,i)=>(
-                              <button key={i}
-                                className={`hero-dot-pag${i===slide?' active':''}`}
-                                onClick={()=>goTo(i)}
-                                style={{ outline:'none' }}
-                              />
-                            ))}
-                          </div>
-                          <button className="hero-nav-arrow" onClick={next}>→</button>
-                        </div>
-
-                        {/* Bottom wave transition */}
-                        <div style={{ position:'absolute', bottom:0, left:0, right:0, height:70, overflow:'hidden', zIndex:6, pointerEvents:'none' }}>
-                          <svg viewBox="0 0 480 28" preserveAspectRatio="none"
-                            style={{ width:'200%', height:'100%', position:'absolute', bottom:-4, left:0, animation:'wv1 14s linear infinite' }}>
-                            <path d={WAVE} fill="#030A14" stroke={`${pal.accent}18`} strokeWidth="1"/>
-                          </svg>
-                        </div>
-                      </div>
-                    );
-                  }
-                  return <HeroDamSlider />;
-                })()}
+                <HeroDamSlider
+                  searchInput={searchInput}
+                  setSearchInput={setSearchInput}
+                  handleSearch={handleSearch}
+                  handleClearSearch={handleClearSearch}
+                  t={t}
+                  navigate={navigate}
+                  setSelectedDam={setSelectedDam}
+                  setView={setView}
+                  lang={lang}
+                  tickerText={tickerText}
+                />
 
 
           {/* STATS */}
@@ -4946,14 +4976,6 @@ export default function App() {
               position: "relative",
               zIndex: 50
             }}>
-              {/* Dropdown Backdrop to close it on click outside */}
-              {isDropdownOpen && (
-                <div 
-                  onClick={() => setIsDropdownOpen(false)} 
-                  style={{ position: "fixed", inset: 0, zIndex: 99, background: "transparent" }}
-                />
-              )}
-
               {/* Zone Selector */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
@@ -4997,7 +5019,7 @@ export default function App() {
               </div>
 
               {/* State Dropdown Selector */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, position: "relative", width: "100%", maxWidth: 280, zIndex: 100 }}>
+              <div ref={dropdownRef} style={{ display: "flex", flexDirection: "column", gap: 8, position: "relative", width: "100%", maxWidth: 280, zIndex: 100 }}>
                 <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
                   {t("filterState")}
                 </span>
