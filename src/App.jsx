@@ -3476,7 +3476,7 @@ function HeroDamSlider({
           lineHeight:1.65, marginBottom:22, maxWidth:380
         }}>
           {`${dam.state || ''} reservoir — currently at `}
-          <strong style={{color:lvlColor}}>{level.toFixed(1)}% capacity</strong>
+          <strong style={{color:lvlColor}}>{level.toFixed(1)}% capacity ({tmc} TMC present)</strong>
           {`. Real-time monitoring of water levels, inflow and outflow from India's network of ${DAMS.length}+ reservoirs.`}
         </p>
 
