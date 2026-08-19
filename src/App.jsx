@@ -3743,6 +3743,7 @@ export default function App() {
   const [stateSearchQuery, setStateSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [goStats, setGoStats] = useState(false);
   const statsRef = useRef(null);
   const dropdownRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
