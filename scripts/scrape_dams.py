@@ -73,7 +73,44 @@ DAM_METADATA = {
 
     # Himachal Pradesh (BBMB)
     "bhakra": {"river": "Sutlej", "district": "Bilaspur", "state": "Himachal Pradesh"},
-    "pong": {"river": "Beas", "district": "Kangra", "state": "Himachal Pradesh"}
+    "pong": {"river": "Beas", "district": "Kangra", "state": "Himachal Pradesh"},
+
+    # Maharashtra
+    "koyna": {"river": "Koyna", "district": "Satara", "state": "Maharashtra"},
+    "jayakwadi": {"river": "Godavari", "district": "Chhatrapati Sambhajinagar", "state": "Maharashtra"},
+    "ujani": {"river": "Bhima", "district": "Solapur", "state": "Maharashtra"},
+    "khadakwasla": {"river": "Mutha", "district": "Pune", "state": "Maharashtra"},
+    "bhatsa": {"river": "Bhatsa", "district": "Thane", "state": "Maharashtra"},
+
+    # Andhra Pradesh & Telangana
+    "srisailam": {"river": "Krishna", "district": "Kurnool", "state": "Andhra Pradesh"},
+    "sriram sagar": {"river": "Godavari", "district": "Nizamabad", "state": "Telangana"},
+    "srsp": {"river": "Godavari", "district": "Nizamabad", "state": "Telangana"},
+    "somasila": {"river": "Penna", "district": "Nellore", "state": "Andhra Pradesh"},
+    "kandaleru": {"river": "Kandaleru", "district": "Nellore", "state": "Andhra Pradesh"},
+    "singur": {"river": "Manjira", "district": "Sangareddy", "state": "Telangana"},
+
+    # Gujarat
+    "ukai": {"river": "Tapti", "district": "Tapi", "state": "Gujarat"},
+    "kadana": {"river": "Mahi", "district": "Mahisagar", "state": "Gujarat"},
+    "dharoi": {"river": "Sabarmati", "district": "Mehsana", "state": "Gujarat"},
+
+    # Madhya Pradesh
+    "gandhi sagar": {"river": "Chambal", "district": "Mandsaur", "state": "Madhya Pradesh"},
+    "bansagar": {"river": "Sone", "district": "Shahdol", "state": "Madhya Pradesh"},
+    "tawa": {"river": "Tawa", "district": "Narmadapuram", "state": "Madhya Pradesh"},
+    "omkareshwar": {"river": "Narmada", "district": "Khandwa", "state": "Madhya Pradesh"},
+
+    # Rajasthan
+    "bisalpur": {"river": "Banas", "district": "Tonk", "state": "Rajasthan"},
+    "rana pratap sagar": {"river": "Chambal", "district": "Chittorgarh", "state": "Rajasthan"},
+    "mahi bajaj sagar": {"river": "Mahi", "district": "Banswara", "state": "Rajasthan"},
+
+    # Uttarakhand & Punjab
+    "tehri": {"river": "Bhagirathi", "district": "Tehri Garhwal", "state": "Uttarakhand"},
+    "tehri dam": {"river": "Bhagirathi", "district": "Tehri Garhwal", "state": "Uttarakhand"},
+    "ranjit sagar": {"river": "Ravi", "district": "Pathankot", "state": "Punjab"},
+    "mullaperiyar": {"river": "Periyar", "district": "Idukki", "state": "Kerala"}
 }
 
 def clean_number(s):
@@ -304,7 +341,30 @@ def main():
         {"id": 14, "name": "Indira Sagar", "river": "Narmada", "district": "Khandwa", "level": 55.4, "capacity": 342.9, "inflow": 2500, "outflow": 3200, "state": "Madhya Pradesh"},
         {"id": 15, "name": "Hirakud", "river": "Mahanadi", "district": "Sambalpur", "level": 38.6, "capacity": 205.1, "inflow": 4100, "outflow": 5000, "state": "Odisha"},
         {"id": 16, "name": "Rihand", "river": "Rihand", "district": "Sonbhadra", "level": 42.1, "capacity": 374.0, "inflow": 1500, "outflow": 2000, "state": "Uttar Pradesh"},
-        {"id": 17, "name": "Maithon", "river": "Barakar", "district": "Dhanbad", "level": 60.2, "capacity": 47.1, "inflow": 800, "outflow": 1200, "state": "Jharkhand"}
+        {"id": 17, "name": "Maithon", "river": "Barakar", "district": "Dhanbad", "level": 60.2, "capacity": 47.1, "inflow": 800, "outflow": 1200, "state": "Jharkhand"},
+        {"id": 50, "name": "Koyna", "river": "Koyna", "district": "Satara", "level": 74.5, "capacity": 105.27, "inflow": 14200, "outflow": 12500, "state": "Maharashtra"},
+        {"id": 51, "name": "Jayakwadi", "river": "Godavari", "district": "Chhatrapati Sambhajinagar", "level": 68.2, "capacity": 102.75, "inflow": 9800, "outflow": 6400, "state": "Maharashtra"},
+        {"id": 52, "name": "Ujani", "river": "Bhima", "district": "Solapur", "level": 82.4, "capacity": 117.24, "inflow": 18500, "outflow": 14200, "state": "Maharashtra"},
+        {"id": 53, "name": "Khadakwasla", "river": "Mutha", "district": "Pune", "level": 71.0, "capacity": 3.07, "inflow": 1200, "outflow": 900, "state": "Maharashtra"},
+        {"id": 54, "name": "Bhatsa", "river": "Bhatsa", "district": "Thane", "level": 85.6, "capacity": 33.2, "inflow": 4500, "outflow": 3800, "state": "Maharashtra"},
+        {"id": 55, "name": "Srisailam", "river": "Krishna", "district": "Kurnool", "level": 62.8, "capacity": 215.8, "inflow": 28400, "outflow": 22100, "state": "Andhra Pradesh"},
+        {"id": 56, "name": "Sriram Sagar (SRSP)", "river": "Godavari", "district": "Nizamabad", "level": 58.4, "capacity": 90.31, "inflow": 11200, "outflow": 8900, "state": "Telangana"},
+        {"id": 57, "name": "Somasila", "river": "Penna", "district": "Nellore", "level": 49.3, "capacity": 78.0, "inflow": 5400, "outflow": 4200, "state": "Andhra Pradesh"},
+        {"id": 58, "name": "Kandaleru", "river": "Kandaleru", "district": "Nellore", "level": 41.2, "capacity": 68.03, "inflow": 3200, "outflow": 2800, "state": "Andhra Pradesh"},
+        {"id": 59, "name": "Singur", "river": "Manjira", "district": "Sangareddy", "level": 51.5, "capacity": 29.91, "inflow": 2100, "outflow": 1600, "state": "Telangana"},
+        {"id": 60, "name": "Ukai", "river": "Tapti", "district": "Tapi", "level": 66.8, "capacity": 257.2, "inflow": 19500, "outflow": 16200, "state": "Gujarat"},
+        {"id": 61, "name": "Kadana", "river": "Mahi", "district": "Mahisagar", "level": 59.1, "capacity": 44.0, "inflow": 4200, "outflow": 3500, "state": "Gujarat"},
+        {"id": 62, "name": "Dharoi", "river": "Sabarmati", "district": "Mehsana", "level": 52.4, "capacity": 28.5, "inflow": 2800, "outflow": 2100, "state": "Gujarat"},
+        {"id": 63, "name": "Gandhi Sagar", "river": "Chambal", "district": "Mandsaur", "level": 70.3, "capacity": 273.6, "inflow": 18200, "outflow": 14500, "state": "Madhya Pradesh"},
+        {"id": 64, "name": "Bansagar", "river": "Sone", "district": "Shahdol", "level": 64.8, "capacity": 187.0, "inflow": 12400, "outflow": 9800, "state": "Madhya Pradesh"},
+        {"id": 65, "name": "Tawa", "river": "Tawa", "district": "Narmadapuram", "level": 78.2, "capacity": 81.6, "inflow": 8900, "outflow": 7200, "state": "Madhya Pradesh"},
+        {"id": 66, "name": "Omkareshwar", "river": "Narmada", "district": "Khandwa", "level": 61.5, "capacity": 35.2, "inflow": 4500, "outflow": 5100, "state": "Madhya Pradesh"},
+        {"id": 67, "name": "Bisalpur", "river": "Banas", "district": "Tonk", "level": 73.1, "capacity": 38.7, "inflow": 3800, "outflow": 2400, "state": "Rajasthan"},
+        {"id": 68, "name": "Rana Pratap Sagar", "river": "Chambal", "district": "Chittorgarh", "level": 67.4, "capacity": 102.4, "inflow": 9400, "outflow": 7800, "state": "Rajasthan"},
+        {"id": 69, "name": "Mahi Bajaj Sagar", "river": "Mahi", "district": "Banswara", "level": 81.0, "capacity": 73.5, "inflow": 8200, "outflow": 6900, "state": "Rajasthan"},
+        {"id": 70, "name": "Tehri Dam", "river": "Bhagirathi", "district": "Tehri Garhwal", "level": 72.6, "capacity": 124.3, "inflow": 14500, "outflow": 11800, "state": "Uttarakhand"},
+        {"id": 71, "name": "Ranjit Sagar", "river": "Ravi", "district": "Pathankot", "level": 58.9, "capacity": 82.6, "inflow": 7600, "outflow": 6200, "state": "Punjab"},
+        {"id": 72, "name": "Mullaperiyar", "river": "Periyar", "district": "Idukki", "level": 48.7, "capacity": 15.5, "inflow": 1800, "outflow": 1400, "state": "Kerala"}
     ]
     
     # We will iterate through all metadata items and map scraped data

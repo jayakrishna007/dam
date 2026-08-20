@@ -453,8 +453,8 @@ function DamCard({ dam, delay, onClick, t }) {
       e.preventDefault();
       onClick();
     }}
-    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 14px 44px rgba(0,0,0,0.55),0 0 0 1px ${mid}30`;}}
-    onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+    onMouseEnter={e=>{e.currentTarget.style.boxShadow=`0 10px 32px rgba(0,0,0,0.45),0 0 0 1px ${mid}28`;}}
+    onMouseLeave={e=>{e.currentTarget.style.boxShadow="none";}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,gap:8}}>
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontWeight:800,fontSize:15,color:"#DDEFFC",lineHeight:1.25,marginBottom:3}}>{t(dam.name)}</div>
@@ -1094,7 +1094,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
                 <div key={idx} style={{
                   padding: 12, background: "rgba(255,255,255,0.02)",
                   border: "1px solid rgba(255,255,255,0.04)", borderRadius: 10,
-                  display: "flex", justifyContent: "space-between", alignItems: "center"
+                  display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8
                 }}>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: "#E0F2FE" }}>{log.source}</div>
@@ -1837,7 +1837,7 @@ function HistoricalCharts({ dam, safeLevel }) {
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
         {/* Switch Tabs */}
-        <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10 }}>
+        <div style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", padding: 4, borderRadius: 10, flexWrap: "wrap" }}>
           <button
             onClick={() => setActiveTab("level")}
             style={{
@@ -2784,7 +2784,7 @@ function AboutUsPage({ navigate, setView, lang, t }) {
       <div style={{
         background: "linear-gradient(135deg, #091a2f 0%, #040c17 100%)",
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
-        padding: "32px 40px", marginBottom: 24
+        padding: "clamp(20px, 4vw, 40px) clamp(16px, 5vw, 40px)", marginBottom: 24
       }}>
         <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>{t("aboutDamToday")}</h1>
         <p style={{ fontSize: 15, color: "rgba(224,242,254,0.6)", lineHeight: 1.7, marginBottom: 20 }}>
@@ -2848,14 +2848,23 @@ function ContactUsPage({ navigate, setView, lang, t }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, message }),
       });
-      const data = await res.json();
+      let data = {};
+      try { data = await res.json(); } catch (_) {}
       if (res.ok && data.success) {
+        setSubmitted(true);
+      } else if (res.status === 500 && (data.error || "").toLowerCase().includes("not configured")) {
+        const subject = encodeURIComponent(`DamToday Feedback from ${name}`);
+        const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+        window.open(`mailto:damtoday4@gmail.com?subject=${subject}&body=${body}`, "_blank");
         setSubmitted(true);
       } else {
         setSendError(data.error || "Something went wrong. Please try again.");
       }
     } catch (err) {
-      setSendError("Network error — could not send message. Please try again.");
+      const subject = encodeURIComponent(`DamToday Feedback from ${name}`);
+      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+      window.open(`mailto:damtoday4@gmail.com?subject=${subject}&body=${body}`, "_blank");
+      setSubmitted(true);
     } finally {
       setSending(false);
     }
@@ -3017,7 +3026,7 @@ function PrivacyPolicyPage({ navigate, setView, lang, t }) {
       <div style={{
         background: "linear-gradient(135deg, #091a2f 0%, #040c17 100%)",
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
-        padding: "32px 40px", color: "rgba(224,242,254,0.6)", fontSize: 13, lineHeight: 1.7
+        padding: "clamp(20px, 4vw, 40px) clamp(16px, 5vw, 40px)", color: "rgba(224,242,254,0.6)", fontSize: 13, lineHeight: 1.7
       }}>
         <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 20 }}>{t("privacy")}</h1>
         
@@ -3220,22 +3229,30 @@ function useRouter() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
-  const navigate = (to) => {
+  const navigate = (to, { noScroll = false } = {}) => {
     window.history.pushState({}, "", to);
     setPath(to);
-    window.scrollTo(0, 0);
+    if (!noScroll) window.scrollTo(0, 0);
   };
 
   return { path, navigate };
 }
 
-const sliderDams = [...DAMS]
-  .filter(d => (typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0) >= 100)
-  .sort((a, b) => {
+const sliderDams = (() => {
+  const filtered = [...DAMS].filter(d => (typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0) >= 100);
+  const sorted = filtered.sort((a, b) => {
     const ca = typeof a.capacity === 'number' ? a.capacity : parseFloat(a.capacity) || 0;
     const cb = typeof b.capacity === 'number' ? b.capacity : parseFloat(b.capacity) || 0;
     return cb - ca;
   });
+  // Always put Tungabhadra first
+  const tbIdx = sorted.findIndex(d => d.name && d.name.toLowerCase().includes('tungabhadra'));
+  if (tbIdx > 0) {
+    const [tb] = sorted.splice(tbIdx, 1);
+    sorted.unshift(tb);
+  }
+  return sorted;
+})();
 
 const DAM_PHOTOS = {
   "Krishna Raja Sagara (KRS)": "/images/dams/krs.jpg",
@@ -3296,40 +3313,16 @@ function HeroDamSlider({
   tickerText
 }) {
   const [slide, setSlide] = useState(0);
-  const [animKey, setAnimKey] = useState(0);
 
-  const goTo = (i) => {
-    setSlide(i);
-    setAnimKey(k=>k+1);
-  };
+  const goTo = (i) => { setSlide(i); };
   const prev = () => goTo((slide - 1 + sliderDams.length) % sliderDams.length);
   const next = () => goTo((slide + 1) % sliderDams.length);
-
-  // Touch swipe support for mobile (80% traffic)
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const minSwipeDistance = 40;
-
-  const handleTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > minSwipeDistance) next();
-    if (distance < -minSwipeDistance) prev();
-  };
 
   // Auto-advance every 9s (only when hero section is in view)
   useEffect(() => {
     const id = setInterval(() => {
       if (typeof window !== 'undefined' && window.scrollY < window.innerHeight * 1.2) {
-        setSlide(s => (s+1) % sliderDams.length);
-        setAnimKey(k => k+1);
+        setSlide(s => (s + 1) % sliderDams.length);
       }
     }, 9000);
     return () => clearInterval(id);
@@ -3356,9 +3349,6 @@ function HeroDamSlider({
   return (
     <div
       className="hero-slider-container"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       style={{
         position:'relative', width:'100%', height:'100vh',
         overflow:'hidden', background:pal.bg,
@@ -3366,7 +3356,7 @@ function HeroDamSlider({
       }}
     >
       {/* ── Real Dam Photo Background ── */}
-      <div key={`bg-photo-${slide}`} style={{
+      <div style={{
         position:'absolute', inset:0, zIndex:0,
         overflow:'hidden'
       }}>
@@ -3377,7 +3367,7 @@ function HeroDamSlider({
           style={{
             width:'100%', height:'100%', objectFit:'cover', objectPosition:'center',
             filter:'brightness(0.48) contrast(1.15)',
-            transition:'opacity 0.8s ease'
+            transition:'opacity 0.6s ease'
           }}
         />
       </div>
@@ -3633,7 +3623,7 @@ function HeroDamSlider({
         </div>
       </div>
 
-      {/* RIGHT FLOATING CARDS PANEL */}
+      {/* RIGHT FLOATING CARDS PANEL — display only */}
       <div className="hero-cards-panel" style={{
         position:'absolute', right:0, top:'50%',
         transform:'translateY(-50%)',
@@ -3653,36 +3643,26 @@ function HeroDamSlider({
                 width:cdW, height:cdH,
                 backgroundImage:`url(${cdPhoto})`,
                 backgroundSize:'cover',
-                backgroundPosition:'center'
+                backgroundPosition:'center',
+                cursor:'default'
               }}
-              onClick={()=>{ const d=DAMS.find(x=>x.name===cd.name); if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
             >
-              {/* Card background overlay */}
               <div style={{
                 position:'absolute', inset:0,
                 background:`linear-gradient(to top, rgba(2,8,20,0.95) 0%, rgba(2,8,20,0.4) 50%, rgba(2,8,20,0.2) 100%)`,
+                pointerEvents:'none'
               }}/>
-              {/* Water level indicator line */}
               <div style={{
                 position:'absolute', bottom:0, left:0, right:0,
                 height:`${cdLevel}%`,
                 background:`linear-gradient(to top, ${pal.accent}44, transparent)`,
-                transition:'height 0.8s ease'
+                transition:'height 0.8s ease',
+                pointerEvents:'none'
               }}/>
-              {/* Bookmark */}
-              <div style={{
-                position:'absolute', top:10, right:10,
-                width:28, height:28, background:'rgba(255,255,255,0.15)',
-                backdropFilter:'blur(8px)', borderRadius:'50%',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:'0.75rem', border:'1px solid rgba(255,255,255,0.2)'
-              }}>🔖</div>
-              {/* Info at bottom */}
-              <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'12px 12px 10px' }}>
+              <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'12px 12px 10px', pointerEvents:'none' }}>
                 <div style={{ fontSize:'0.78rem', fontWeight:700, color:'#fff', marginBottom:4,
                   whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'
                 }}>{cd.name}</div>
-                {/* Star-like level dots */}
                 <div style={{ display:'flex', gap:3, marginBottom:5 }}>
                   {[0,1,2,3,4].map(s=>(
                     <div key={s} style={{ width:6, height:6, borderRadius:'50%',
@@ -4377,23 +4357,22 @@ export default function App() {
         @keyframes heroBgZoom{from{transform:scale(1.06)}to{transform:scale(1)}}
         @keyframes slideInLeft{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
         @keyframes slideInRight{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
-        .hero-slide-tag{animation:slideInLeft 0.5s ease 0.05s both;will-change:transform,opacity;backface-visibility:hidden}
-        .hero-slide-title{animation:slideInLeft 0.55s ease 0.15s both;font-family:'Barlow Condensed',system-ui,sans-serif!important;will-change:transform,opacity;backface-visibility:hidden}
-        .hero-slide-desc{animation:slideInLeft 0.55s ease 0.25s both;will-change:transform,opacity;backface-visibility:hidden}
-        .hero-slide-data{animation:slideInLeft 0.55s ease 0.35s both;will-change:transform,opacity;backface-visibility:hidden}
-        .hero-slide-btns{animation:slideInLeft 0.55s ease 0.45s both;will-change:transform,opacity;backface-visibility:hidden}
-        .hero-slide-counter{animation:slideInLeft 0.55s ease 0.5s both;will-change:transform,opacity;backface-visibility:hidden}
-        .hero-card-1{animation:slideInRight 0.55s ease 0.28s both;will-change:transform,opacity;backface-visibility:hidden}
-        .hero-card-2{animation:slideInRight 0.55s ease 0.4s both;will-change:transform,opacity;backface-visibility:hidden}
-        .hero-card-3{animation:slideInRight 0.55s ease 0.52s both;will-change:transform,opacity;backface-visibility:hidden}
+        .hero-slide-tag{transition:opacity 0.4s ease,transform 0.4s ease;will-change:transform,opacity}
+        .hero-slide-title{font-family:'Barlow Condensed',system-ui,sans-serif!important;transition:opacity 0.4s ease,transform 0.4s ease;will-change:transform,opacity}
+        .hero-slide-desc{transition:opacity 0.4s ease;will-change:opacity}
+        .hero-slide-data{transition:opacity 0.4s ease;will-change:opacity}
+        .hero-slide-btns{transition:opacity 0.4s ease;will-change:opacity}
+        .hero-slide-counter{transition:opacity 0.4s ease;will-change:opacity}
+        .hero-card-1{transition:opacity 0.5s ease 0.05s;will-change:opacity}
+        .hero-card-2{transition:opacity 0.5s ease 0.1s;will-change:opacity}
+        .hero-card-3{transition:opacity 0.5s ease 0.15s;will-change:opacity}
         .hero-vert-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.35s ease;border:none;padding:0}
         .hero-vert-dot.active{background:#06B6D4;width:8px;height:8px;box-shadow:0 0 8px rgba(6,182,212,0.6)}
         .hero-dot-pag{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;transition:all 0.35s ease;border:none;padding:0}
         .hero-dot-pag.active{width:22px;border-radius:4px;background:#06B6D4}
         .hero-nav-arrow{width:40px;height:40px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:50%;color:#fff;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.3s;backdrop-filter:blur(8px)}
         .hero-nav-arrow:hover{background:#06B6D4;border-color:#06B6D4}
-        .hero-mini-card{border-radius:18px;overflow:hidden;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);flex-shrink:0;border:1px solid rgba(255,255,255,0.1);position:relative}
-        .hero-mini-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(6,182,212,0.5);box-shadow:0 20px 50px rgba(0,0,0,0.55)}
+        .hero-mini-card{border-radius:18px;overflow:hidden;cursor:default;transition:opacity 0.4s ease;flex-shrink:0;border:1px solid rgba(255,255,255,0.1);position:relative}
         .hero-mobile-search-wrap { display: none; }
         @media (min-width: 769px) and (max-width: 1080px) {
           .hero-left-content {
@@ -4883,8 +4862,7 @@ export default function App() {
                   { path: "/", label: t("home") || "Home" },
                   { path: "/about", label: t("about") || "About Us" },
                   { path: "/contact", label: t("contact") || "Contact Us" },
-                  { path: "/privacy", label: t("privacy") || "Privacy Policy" },
-                  { path: "/analytics", label: "Admin Console" }
+                  { path: "/privacy", label: t("privacy") || "Privacy Policy" }
                 ].map((link) => (
                   <a
                     key={link.path}
@@ -4892,11 +4870,7 @@ export default function App() {
                     onClick={(e) => {
                       e.preventDefault();
                       setMobileMenuOpen(false);
-                      if (link.path === "/analytics") {
-                        setShowPinModal(true);
-                      } else {
-                        navigate(link.path);
-                      }
+                      navigate(link.path);
                     }}
                     style={{
                       fontSize: 24,
@@ -5014,13 +4988,12 @@ export default function App() {
               gap: 16,
               marginBottom: 32,
               flexWrap: "wrap",
-              background: "rgba(255, 255, 255, 0.01)",
-              border: "1px solid rgba(255, 255, 255, 0.04)",
+              background: "rgba(6, 20, 40, 0.6)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
               borderRadius: 16,
               padding: "16px 20px",
-              backdropFilter: "blur(8px)",
               position: "relative",
-              zIndex: 50
+              zIndex: 200
             }}>
               {/* Zone Selector */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -5037,7 +5010,7 @@ export default function App() {
                         href={href}
                         onClick={(e) => {
                           e.preventDefault();
-                          navigate(href);
+                          navigate(href, { noScroll: true });
                           setFilter("all");
                           setSelectedZone(zone);
                           setSelectedState("all");
@@ -5063,214 +5036,9 @@ export default function App() {
                   })}
                 </div>
               </div>
-
-              {/* State Dropdown Selector */}
-              <div ref={dropdownRef} style={{ display: "flex", flexDirection: "column", gap: 8, position: "relative", width: "100%", maxWidth: 280, zIndex: 100 }}>
-                <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
-                  {t("filterState")}
-                </span>
-                
-                {/* Dropdown Toggle Button */}
-                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      flex: 1,
-                      padding: "10px 16px",
-                      borderRadius: 14,
-                      border: `1px solid ${selectedState !== "all" ? "rgba(6, 182, 212, 0.4)" : "rgba(255, 255, 255, 0.08)"}`,
-                      background: selectedState !== "all" ? "rgba(6, 182, 212, 0.08)" : "rgba(255, 255, 255, 0.02)",
-                      color: selectedState === "all" ? "rgba(224, 242, 254, 0.6)" : "#67E8F9",
-                      fontSize: 13,
-                      fontWeight: selectedState === "all" ? 500 : 700,
-                      cursor: "pointer",
-                      outline: "none",
-                      transition: "all 0.2s",
-                      backdropFilter: "blur(4px)"
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
-                    onMouseLeave={e => { if(!isDropdownOpen) { e.currentTarget.style.borderColor = selectedState !== "all" ? "rgba(6, 182, 212, 0.4)" : "rgba(255, 255, 255, 0.08)"; e.currentTarget.style.background = selectedState !== "all" ? "rgba(6, 182, 212, 0.08)" : "rgba(255, 255, 255, 0.02)"; } }}
-                  >
-                    <span>{selectedState === "all" ? t("allStates") : `${getLocalizedState(selectedState, lang)}`}</span>
-                    <span style={{ transition: "transform 0.2s", transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0deg)", fontSize: 11, opacity: 0.7 }}>▼</span>
-                  </button>
-
-                  {selectedState !== "all" && (
-                    <button
-                      onClick={() => {
-                        navigate("/");
-                        setSelectedState("all");
-                        setSelectedZone("All");
-                      }}
-                      title="Clear State Filter"
-                      style={{
-                        background: "rgba(239, 68, 68, 0.15)",
-                        border: "1px solid rgba(239, 68, 68, 0.3)",
-                        borderRadius: 12,
-                        color: "#F87171",
-                        padding: "8px 12px",
-                        fontSize: 12,
-                        cursor: "pointer",
-                        fontWeight: 700,
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                {/* Dropdown Menu */}
-                {isDropdownOpen && (
-                  <div style={{
-                    position: "absolute",
-                    top: "calc(100% + 8px)",
-                    right: 0,
-                    left: 0,
-                    background: "linear-gradient(148deg, #091a2f 0%, #030b15 100%)",
-                    border: "1px solid rgba(6, 182, 212, 0.25)",
-                    borderRadius: 14,
-                    boxShadow: "0 12px 32px rgba(0,0,0,0.5), 0 0 16px rgba(6, 182, 212, 0.1)",
-                    overflow: "hidden",
-                    padding: 8,
-                    animation: "fadeSlideUp 0.2s ease both",
-                    zIndex: 110
-                  }}>
-                    {/* Search Field */}
-                    <div style={{ position: "relative", marginBottom: 6 }}>
-                      <input
-                        type="text"
-                        placeholder={t("searchState")}
-                        value={stateSearchQuery}
-                        onChange={e => setStateSearchQuery(e.target.value)}
-                        style={{
-                          width: "100%",
-                          padding: "8px 10px 8px 30px",
-                          borderRadius: 10,
-                          border: "1px solid rgba(255, 255, 255, 0.08)",
-                          background: "rgba(255, 255, 255, 0.03)",
-                          color: "#E0F2FE",
-                          fontSize: 12,
-                          outline: "none"
-                        }}
-                      />
-                      <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, opacity: 0.4 }}>🔍</span>
-                    </div>
-
-                    {/* Scrollable list */}
-                    <div style={{ maxHeight: 380, overflowY: "auto", display: "block" }}>
-                      {/* "All States" option */}
-                      {(stateSearchQuery === "" || "all states".includes(stateSearchQuery.toLowerCase())) && (
-                        <a
-                          href="/"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            navigate("/");
-                            setSelectedState("all");
-                            setSelectedZone("All");
-                            setIsDropdownOpen(false);
-                            setStateSearchQuery("");
-                          }}
-                          style={{
-                            display: "block",
-                            padding: "8px 12px",
-                            borderRadius: 8,
-                            color: selectedState === "all" ? "#67E8F9" : "rgba(224, 242, 254, 0.7)",
-                            background: selectedState === "all" ? "rgba(6, 182, 212, 0.12)" : "transparent",
-                            fontSize: 12,
-                            textDecoration: "none",
-                            fontWeight: selectedState === "all" ? 700 : 500,
-                            cursor: "pointer",
-                            transition: "all 0.15s",
-                            marginBottom: 2
-                          }}
-                          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = selectedState === "all" ? "rgba(6, 182, 212, 0.12)" : "transparent"; }}
-                        >
-                          {t("allStates")} ({DAMS.length})
-                        </a>
-                      )}
-
-                      {/* Map through all zones & all states so no states are hidden */}
-                      {["South", "North", "West", "East", "Central"].map(zone => {
-                        const states = ZONE_MAP[zone] || [];
-                        const filteredStates = states.filter(state => 
-                          state.toLowerCase().includes(stateSearchQuery.toLowerCase()) ||
-                          getLocalizedState(state, lang).toLowerCase().includes(stateSearchQuery.toLowerCase())
-                        );
-                        if (filteredStates.length === 0) return null;
-                        
-                        return (
-                          <div key={zone} style={{ display: "block", marginBottom: 6 }}>
-                            {/* Zone header */}
-                            <div style={{
-                              fontSize: 9,
-                              fontWeight: 700,
-                              color: selectedZone === zone ? "#67E8F9" : "rgba(224, 242, 254, 0.35)",
-                              textTransform: "uppercase",
-                              letterSpacing: 1,
-                              padding: "6px 12px 4px",
-                              borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
-                              marginTop: 4,
-                              marginBottom: 4
-                            }}>
-                              {getLocalizedZone(zone, lang)} {lang === "hi" ? "जोन" : lang === "kn" ? "ವಲಯ" : lang === "te" ? "జోన్" : lang === "ta" ? "மண்டலம்" : lang === "ml" ? "മേഖല" : "Zone"}
-                            </div>
-                            
-                            {/* States inside zone */}
-                            {filteredStates.map(state => {
-                              const isActive = selectedState === state;
-                              const href = `/state/${getStateSlug(state)}`;
-                              const damCount = DAMS.filter(d => d.state === state).length;
-                              return (
-                                <a
-                                  key={state}
-                                  href={href}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    navigate(href);
-                                    setSelectedState(state);
-                                    setSelectedZone(STATE_TO_ZONE[state] || "All");
-                                    setIsDropdownOpen(false);
-                                    setStateSearchQuery("");
-                                  }}
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    padding: "8px 12px",
-                                    borderRadius: 8,
-                                    color: isActive ? "#67E8F9" : "rgba(224, 242, 254, 0.7)",
-                                    background: isActive ? "rgba(6, 182, 212, 0.15)" : "transparent",
-                                    fontSize: 12,
-                                    textDecoration: "none",
-                                    fontWeight: isActive ? 700 : 500,
-                                    cursor: "pointer",
-                                    transition: "all 0.15s",
-                                    paddingLeft: 20,
-                                    marginBottom: 2
-                                  }}
-                                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
-                                  onMouseLeave={e => { e.currentTarget.style.background = isActive ? "rgba(6, 182, 212, 0.15)" : "transparent"; }}
-                                >
-                                  <span>{getLocalizedState(state, lang)}</span>
-                                  <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.4)", fontFamily: "monospace" }}>({damCount})</span>
-                                </a>
-                              );
-                            })}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
             {/* Header, search, sub-filters */}
-            <div className="filter-row" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:32, gap:20, flexWrap:"wrap" }}>
+            <div className="filter-row" style={{ display:"flex", flexDirection:"column", marginBottom:32, gap:16 }}>
               <div>
                 <h2 className="section-heading" style={{ fontSize:"clamp(20px, 5vw, 28px)", fontWeight:900, color:"#E0F2FE", letterSpacing:"-0.5px" }}>
                   {lang === "hi" ? (
@@ -5287,19 +5055,19 @@ export default function App() {
                     <span>{selectedState === "all" ? (selectedZone === "All" ? "All India" : `${selectedZone} India`) : selectedState} Reservoirs</span>
                   )}
                 </h2>
-                <p style={{ fontSize:14, color:"rgba(224,242,254,0.4)", marginTop:4 }}>{t("searchAndSelectFilters")}</p>
+                <p style={{ fontSize:13, color:"rgba(224,242,254,0.4)", marginTop:4 }}>{t("searchAndSelectFilters")}</p>
               </div>
 
-              <div style={{ display:"flex", gap:12, alignItems:"center", flexWrap:"wrap", width:"100%" }}>
+              <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
                     handleSearch(searchInput);
                   }}
                   className="filter-search-input"
-                  style={{ position:"relative", width:"100%", maxWidth:360, display: "flex", gap: 8 }}
+                  style={{ position:"relative", flex:"1 1 200px", minWidth:0, display:"flex", gap:8, maxWidth:400 }}
                 >
-                  <div style={{ position: "relative", flex: 1 }}>
+                  <div style={{ position:"relative", flex:1, minWidth:0 }}>
                     <input
                       type="text"
                       placeholder={t("searchPlaceholder") || "Search dam, river, district..."}
@@ -5315,14 +5083,14 @@ export default function App() {
                       onFocus={e => { e.target.style.borderColor="rgba(6,182,212,0.5)"; e.target.style.background="rgba(255,255,255,0.04)"; }}
                       onBlur={e => { e.target.style.borderColor="rgba(255,255,255,0.08)"; e.target.style.background="rgba(255,255,255,0.02)"; }}
                     />
-                    <span style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", fontSize: 12, opacity: 0.6, pointerEvents: "none" }}>🔍</span>
+                    <span style={{ position:"absolute", left:11, top:"50%", transform:"translateY(-50%)", fontSize:12, opacity:0.6, pointerEvents:"none" }}>🔍</span>
                     {searchInput && (
                       <button
                         type="button"
                         onClick={handleClearSearch}
                         style={{
-                          position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
-                          background: "none", border: "none", color: "rgba(224,242,254,0.6)", fontSize: 11, cursor: "pointer", padding: 2
+                          position:"absolute", right:8, top:"50%", transform:"translateY(-50%)",
+                          background:"none", border:"none", color:"rgba(224,242,254,0.6)", fontSize:11, cursor:"pointer", padding:2
                         }}
                       >✕</button>
                     )}
@@ -5330,38 +5098,35 @@ export default function App() {
                   <button
                     type="submit"
                     style={{
-                      background: "linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.45))",
-                      border: "1px solid rgba(6,182,212,0.4)",
-                      borderRadius: 16,
-                      color: "#67E8F9",
-                      padding: "0 18px",
-                      fontSize: 13,
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      whiteSpace: "nowrap"
+                      flexShrink:0,
+                      background:"linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.45))",
+                      border:"1px solid rgba(6,182,212,0.4)",
+                      borderRadius:16, color:"#67E8F9",
+                      padding:"0 14px", fontSize:13, fontWeight:700,
+                      cursor:"pointer", transition:"all 0.2s",
+                      whiteSpace:"nowrap", height:38
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(2,132,199,0.55), rgba(6,182,212,0.65))"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.45))"; }}
+                    onMouseEnter={e => { e.currentTarget.style.background="linear-gradient(135deg, rgba(2,132,199,0.55), rgba(6,182,212,0.65))"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background="linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.45))"; }}
                   >
-                    Search
+                    {t("search") || "Search"}
                   </button>
                 </form>
 
-                <div style={{ display:"flex", gap:6, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)", padding:4, borderRadius:20 }}>
+                <div style={{ display:"flex", gap:4, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)", padding:3, borderRadius:20, flexShrink:0, flexWrap:"wrap" }}>
                   {["all","high","normal","low"].map(tab => {
-                    const label = tab==="all"? t("allLevels") : tab==="high"? t("highLevel") || "70%+" : tab==="normal"? t("normalLevel") || "45-70%" : t("lowLevel") || "<45%";
+                    const label = tab==="all"? (t("allLevels") || "All") : tab==="high"? (t("highLevel") || "70%+") : tab==="normal"? (t("normalLevel") || "45–70%") : (t("lowLevel") || "<45%");
                     const isActive = filter === tab;
                     return (
                       <button
                         key={tab}
                         onClick={() => setFilter(tab)}
                         style={{
-                          padding:"6px 14px", borderRadius:16, border:"none",
-                          background:isActive?"rgba(6,182,212,0.15)":"transparent",
+                          padding:"6px 12px", borderRadius:16, border:"none",
+                          background:isActive?"rgba(6,182,212,0.18)":"transparent",
                           color:isActive?"#67E8F9":"rgba(224,242,254,0.5)",
                           fontSize:12, fontWeight:isActive?700:500, cursor:"pointer",
-                          transition:"all 0.2s"
+                          transition:"all 0.2s", whiteSpace:"nowrap"
                         }}
                       >
                         {label}
@@ -5462,17 +5227,6 @@ export default function App() {
           >
             {t("privacy")}
           </a>
-          <button
-            onClick={() => setShowPinModal(true)}
-            style={{
-              background:"none", border:"none", color:"rgba(224,242,254,0.15)", cursor:"pointer",
-              transition:"color 0.2s"
-            }}
-            onMouseEnter={e => e.target.style.color="rgba(6,182,212,0.6)"}
-            onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.15)"}
-          >
-            &#128274; {lang === "hi" ? "एडमिन पोर्टल" : lang === "kn" ? "ನಿರ್ವಾಹಕ ಪೋರ್ಟಲ್" : lang === "te" ? "అడ్మిన్ పోర్టల్" : lang === "ta" ? "நிர்வாகి போர்டல்" : lang === "ml" ? "അഡ്മിൻ പോർട്ടൽ" : "Admin Portal"}
-          </button>
         </div>
       </div>
     </footer>
