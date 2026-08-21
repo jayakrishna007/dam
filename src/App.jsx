@@ -3373,29 +3373,41 @@ function useRouter() {
 }
 
 const sliderDams = (() => {
-  const filtered = [...DAMS].filter(d => (typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0) >= 100);
-  const sorted = filtered.sort((a, b) => {
-    const ca = typeof a.capacity === 'number' ? a.capacity : parseFloat(a.capacity) || 0;
-    const cb = typeof b.capacity === 'number' ? b.capacity : parseFloat(b.capacity) || 0;
-    return cb - ca;
-  });
-  // Always put Tungabhadra first
-  const tbIdx = sorted.findIndex(d => d.name && d.name.toLowerCase().includes('tungabhadra'));
-  if (tbIdx > 0) {
-    const [tb] = sorted.splice(tbIdx, 1);
-    sorted.unshift(tb);
-  }
-  return sorted;
+  const featuredNames = [
+    "Tungabhadra",
+    "Tehri Dam",
+    "Sardar Sarovar",
+    "Nagarjunsagar",
+    "Bhakra (Gobind Sagar)",
+    "Idukki",
+    "Srisailam",
+    "Hirakud",
+    "Koyna",
+    "Indira Sagar",
+    "Mettur",
+    "Krishna Raja Sagara (KRS)",
+    "Ukai",
+    "Rihand",
+    "Almatti",
+    "Gandhi Sagar"
+  ];
+  const featured = featuredNames
+    .map(name => DAMS.find(d => d.name === name || d.name.startsWith(name)))
+    .filter(Boolean);
+  return featured.length > 0 ? featured : DAMS.slice(0, 12);
 })();
 
 const DAM_PHOTOS = {
   "Krishna Raja Sagara (KRS)": "/images/dams/krs.jpg",
   "KRS": "/images/dams/krs.jpg",
   "Krishna Raja Sagara": "/images/dams/krs.jpg",
+  "Krishnarajasagara Lower": "/images/dams/krs.jpg",
   "Kabini": "/images/dams/kabini.jpg",
   "Harangi": "/images/dams/harangi.jpg",
   "Hemavathy": "/images/dams/hemavathy.jpg",
   "Tungabhadra": "/images/dams/tungabhadra.jpg",
+  "Tungabhadra (Left Bank)": "/images/dams/tungabhadra.jpg",
+  "Tungabhadra HLC": "/images/dams/tungabhadra.jpg",
   "Bhadra": "/images/dams/bhadra.jpg",
   "Almatti": "/images/dams/almatti.jpg",
   "Linganamakki": "/images/dams/linganamakki.jpg",
@@ -3405,22 +3417,75 @@ const DAM_PHOTOS = {
   "Nagarjuna Sagar": "/images/dams/nagarjunsagar.jpg",
   "Bhakra (Gobind Sagar)": "/images/dams/bhakra.jpg",
   "Bhakra": "/images/dams/bhakra.jpg",
+  "Bhakra Left Bank Canal": "/images/dams/bhakra.jpg",
+  "Gobind Sagar (BBMB)": "/images/dams/bhakra.jpg",
   "Gobind Sagar": "/images/dams/bhakra.jpg",
   "Hirakud": "/images/dams/hirakud.jpg",
   "Sardar Sarovar": "/images/dams/sardarsarovar.jpg",
   "Indira Sagar": "/images/dams/indira_sagar.jpg",
   "Pong (Maharana Pratap Sagar)": "/images/dams/pong.jpg",
   "Pong": "/images/dams/pong.jpg",
+  "Pong Reservoir": "/images/dams/pong.jpg",
+  "Pong (HP)": "/images/dams/pong.jpg",
   "Maharana Pratap Sagar": "/images/dams/pong.jpg",
   "Rihand": "/images/dams/rihand.jpg",
-  "Idukki": "/images/dams/idukki.jpg"
+  "Gobind Ballabh Pant Sagar": "/images/dams/rihand.jpg",
+  "Obra Dam": "/images/dams/rihand.jpg",
+  "Idukki": "/images/dams/idukki.jpg",
+  "Koyna": "/images/dams/koyna.jpg",
+  "Srisailam": "/images/dams/srisailam.jpg",
+  "Tehri Dam": "/images/dams/tehri.jpg",
+  "Tehri": "/images/dams/tehri.jpg",
+  "Koteshwar": "/images/dams/tehri.jpg",
+  "Ukai": "/images/dams/ukai.jpg",
+  "Jayakwadi": "/images/dams/jayakwadi.jpg",
+  "Gandhi Sagar": "/images/dams/gandhisagar.jpg",
+  "Panchet": "/images/dams/panchet.jpg",
+  "Rana Pratap Sagar": "/images/dams/ranapratapsagar.jpg",
+  "Ramganga": "/images/dams/ramganga.jpg",
+  "Bansagar": "/images/dams/bansagar.jpg",
+  "Rengali": "/images/dams/rengali.jpg",
+  "Chandil": "/images/dams/chandil.jpg",
+  "Ujani": "/images/dams/ujani.jpg",
+  "Matatila": "/images/dams/matatila.jpg",
+  "Tilaiya": "/images/dams/tilaiya.jpg",
+  "Massanjore (Canada Dam)": "/images/dams/massanjore.jpg",
+  "Massanjore": "/images/dams/massanjore.jpg",
+  "Durgapur Barrage": "/images/dams/durgapur.jpg",
+  "Bargi": "/images/dams/bargi.jpg",
+  "Khadakwasla": "/images/dams/khadakwasla.jpg",
+  "Bhatsa": "/images/dams/bhatsa.jpg",
+  "Somasila": "/images/dams/somasila.jpg",
+  "Bisalpur": "/images/dams/bisalpur.jpg",
+  "Mahi Bajaj Sagar": "/images/dams/mahibajaj.jpg",
+  "Ranjit Sagar": "/images/dams/ranjitsagar.jpg",
+  "Thein (Ranjit Sagar)": "/images/dams/ranjitsagar.jpg",
+  "Ranjitsagar (Thein)": "/images/dams/ranjitsagar.jpg"
 };
 
+const FALLBACK_PHOTOS = [
+  "/images/dams/sardarsarovar.jpg",
+  "/images/dams/bhakra.jpg",
+  "/images/dams/hirakud.jpg",
+  "/images/dams/nagarjunsagar.jpg",
+  "/images/dams/tehri.jpg",
+  "/images/dams/srisailam.jpg",
+  "/images/dams/koyna.jpg",
+  "/images/dams/krs.jpg",
+  "/images/dams/mettur.jpg",
+  "/images/dams/idukki.jpg",
+  "/images/dams/ukai.jpg",
+  "/images/dams/bansagar.jpg"
+];
+
 const getDamPhoto = (damObj) => {
-  if (!damObj || !damObj.name) return "/images/dams/tungabhadra.jpg";
-  const raw = damObj.name.trim();
+  if (!damObj) return FALLBACK_PHOTOS[0];
+  const raw = (damObj.name || "").trim();
   const clean = raw.replace(/\s*\(.*\)/, '').trim();
-  return DAM_PHOTOS[raw] || DAM_PHOTOS[clean] || "/images/dams/tungabhadra.jpg";
+  if (DAM_PHOTOS[raw]) return DAM_PHOTOS[raw];
+  if (DAM_PHOTOS[clean]) return DAM_PHOTOS[clean];
+  const idNum = typeof damObj.id === 'number' ? damObj.id : (raw.length || 0);
+  return FALLBACK_PHOTOS[idNum % FALLBACK_PHOTOS.length];
 };
 
 const PALETTES = [
@@ -3432,6 +3497,14 @@ const PALETTES = [
   {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2233 0%, #030a14 60%)', accent:'#22D3EE', glow:'rgba(34,211,238,0.12)'},
   {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #250a2a 0%, #0a020c 60%)', accent:'#E879F9', glow:'rgba(232,121,249,0.1)'},
   {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0f1f0f 0%, #040804 60%)', accent:'#86EFAC', glow:'rgba(134,239,172,0.1)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0e1e38 0%, #030a14 60%)', accent:'#38BDF8', glow:'rgba(56,189,248,0.12)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #18281a 0%, #040d06 60%)', accent:'#4ADE80', glow:'rgba(74,222,128,0.1)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #2a1b0a 0%, #0d0802 60%)', accent:'#F59E0B', glow:'rgba(245,158,11,0.12)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #1d0f30 0%, #080312 60%)', accent:'#C084FC', glow:'rgba(192,132,252,0.1)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0a2530 0%, #020b0f 60%)', accent:'#2DD4BF', glow:'rgba(45,212,191,0.12)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #301018 0%, #0f0206 60%)', accent:'#F43F5E', glow:'rgba(244,63,94,0.1)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2a4a 0%, #030A14 60%)', accent:'#67E8F9', glow:'rgba(103,232,249,0.12)'},
+  {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #152238 0%, #040810 60%)', accent:'#60A5FA', glow:'rgba(96,165,250,0.12)'}
 ];
 
 function HeroDamSlider({
