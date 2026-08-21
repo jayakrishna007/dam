@@ -145,6 +145,56 @@ function StatCard({ label, target, active, suffix = "", color, sub, decimals = 1
   );
 }
 
+function StatCardLarge({ label, target, active, suffix = "", color, sub, decimals = 1 }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    if (!active || typeof target !== 'number') return;
+    let startTime = null;
+    let animFrameId = null;
+    const duration = 1200;
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
+      const current = target * easeOut;
+      setDisplayValue(decimals === 0 ? Math.round(current) : parseFloat(current.toFixed(decimals)));
+      if (progress < 1) {
+        animFrameId = requestAnimationFrame(animate);
+      } else {
+        setDisplayValue(target);
+      }
+    };
+
+    animFrameId = requestAnimationFrame(animate);
+    return () => { if (animFrameId) cancelAnimationFrame(animFrameId); };
+  }, [active, target, decimals]);
+
+  return (
+    <div style={{
+      background: "rgba(6,182,212,0.04)",
+      border: "1px solid rgba(6,182,212,0.15)",
+      borderRadius: 16,
+      padding: "24px 20px",
+      textAlign: "center",
+      willChange: "transform, opacity",
+      transform: "translateZ(0)",
+      boxShadow: "0 0 32px rgba(6,182,212,0.06)"
+    }}>
+      <div style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
+        {label}
+      </div>
+      <div style={{ fontSize: "clamp(36px, 10vw, 58px)", fontWeight: 900, color: color, fontFamily: "monospace", lineHeight: 1, letterSpacing: "-1px" }}>
+        {displayValue.toLocaleString('en-IN', { maximumFractionDigits: decimals })}{suffix}
+      </div>
+      <div style={{ fontSize: 12, color: "rgba(224,242,254,0.3)", marginTop: 6 }}>
+        {sub}
+      </div>
+    </div>
+  );
+}
+
 // ===================== WATER VIZ - REALISTIC DAM ANIMATION =====================
 function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
   const safeLevel = typeof level === 'number' ? level : parseFloat(level) || 0;
@@ -780,7 +830,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   }, []);
 
   const stats = [
-    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: "Across 11 Indian states", positive: true, icon: "🌊" },
+    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: "Across 21 Indian states", positive: true, icon: "🌊" },
     { label: "Live Visitors Today", value: todayCount !== null ? todayCount.toLocaleString() : "—", change: isNewVisitor ? "✓ You're counted" : "Already counted", subtext: "Unique visits (6-hr window)", positive: true, icon: "👁" },
     { label: "Total Region Inflow", value: `${fmtK(totalInflow)}`, change: "cusecs", subtext: "Cumulative river inflows", positive: totalInflow >= totalOutflow, icon: "📥" },
     { label: "Total Region Outflow", value: `${fmtK(totalOutflow)}`, change: "cusecs", subtext: "Cumulative released flow", positive: true, icon: "📤" },
@@ -3167,7 +3217,9 @@ const getZoneFromSlug = (slug) => {
 const getStateFromSlug = (slug) => {
   const states = [
     "Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana",
-    "Himachal Pradesh", "Gujarat", "Madhya Pradesh", "Odisha", "Uttar Pradesh", "Jharkhand"
+    "Himachal Pradesh", "Gujarat", "Madhya Pradesh", "Odisha", "Uttar Pradesh", "Jharkhand",
+    "Maharashtra", "Rajasthan", "Uttarakhand", "Punjab", "West Bengal", "Chhattisgarh",
+    "Bihar", "Assam", "Meghalaya", "Manipur"
   ];
   return states.find(s => s.toLowerCase().replace(/\s+/g, '-') === slug) || "all";
 };
@@ -3179,20 +3231,38 @@ const STATE_TO_ZONE = {
   "Andhra Pradesh": "South",
   "Telangana": "South",
   "Himachal Pradesh": "North",
+  "Uttarakhand": "North",
+  "Punjab": "North",
   "Gujarat": "West",
+  "Maharashtra": "West",
+  "Rajasthan": "West",
   "Madhya Pradesh": "Central",
-  "Odisha": "East",
   "Uttar Pradesh": "Central",
-  "Jharkhand": "East"
+  "Chhattisgarh": "Central",
+  "Odisha": "East",
+  "Jharkhand": "East",
+  "West Bengal": "East",
+  "Bihar": "East",
+  "Assam": "East",
+  "Meghalaya": "East",
+  "Manipur": "East"
 };
 
+const ALL_STATES = [
+  "Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana",
+  "Himachal Pradesh", "Uttarakhand", "Punjab",
+  "Gujarat", "Maharashtra", "Rajasthan",
+  "Madhya Pradesh", "Uttar Pradesh", "Chhattisgarh",
+  "Odisha", "Jharkhand", "West Bengal", "Bihar", "Assam", "Meghalaya", "Manipur"
+];
+
 const ZONE_MAP = {
-  "All": ["Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana", "Himachal Pradesh", "Gujarat", "Madhya Pradesh", "Odisha", "Uttar Pradesh", "Jharkhand"],
-  "North": ["Himachal Pradesh"],
+  "All": ALL_STATES,
+  "North": ["Himachal Pradesh", "Uttarakhand", "Punjab"],
   "South": ["Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana"],
-  "West": ["Gujarat"],
-  "East": ["Odisha", "Jharkhand"],
-  "Central": ["Madhya Pradesh", "Uttar Pradesh"]
+  "West": ["Gujarat", "Maharashtra", "Rajasthan"],
+  "East": ["Odisha", "Jharkhand", "West Bengal", "Bihar", "Assam", "Meghalaya", "Manipur"],
+  "Central": ["Madhya Pradesh", "Uttar Pradesh", "Chhattisgarh"]
 };
 
 
@@ -3792,22 +3862,19 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    let timer;
+    if (!isDropdownOpen) return;
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsDropdownOpen(false);
       }
     };
-    if (isDropdownOpen) {
-      timer = setTimeout(() => {
-        document.addEventListener("mousedown", handleClickOutside);
-        document.addEventListener("touchstart", handleClickOutside);
-      }, 100);
-    }
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 50);
+
     return () => {
       clearTimeout(timer);
       document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [isDropdownOpen]);
 
@@ -4378,6 +4445,28 @@ export default function App() {
   const currentTotalCapacity = stateFilteredDams.length > 0
     ? parseFloat((stateFilteredDams.reduce((s,d)=>s+d.capacity,0)).toFixed(1))
     : 0.0;
+
+  const stateDamCounts = useMemo(() => {
+    const counts = {};
+    DAMS.forEach(d => {
+      if (d.state) counts[d.state] = (counts[d.state] || 0) + 1;
+    });
+    return counts;
+  }, []);
+
+  const availableStates = useMemo(() => {
+    const statesInZone = selectedZone !== "All" ? (ZONE_MAP[selectedZone] || ALL_STATES) : ALL_STATES;
+    return statesInZone.filter(s => DAMS.some(d => d.state === s)).sort();
+  }, [selectedZone]);
+
+  const filteredStateList = useMemo(() => {
+    const q = stateSearchQuery.trim().toLowerCase();
+    if (!q) return availableStates;
+    return availableStates.filter(s => {
+      const localized = (getLocalizedState(s, lang) || "").toLowerCase();
+      return s.toLowerCase().includes(q) || localized.includes(q);
+    });
+  }, [availableStates, stateSearchQuery, lang]);
 
   useEffect(()=>{
     const obs=new IntersectionObserver(([e])=>{ if(e.isIntersecting) setGoStats(true); },{threshold:0.4});
@@ -5041,10 +5130,10 @@ export default function App() {
             padding:"60px 20px", background:"linear-gradient(to bottom, #030A14, #02070E)",
             borderBottom:"1px solid rgba(255,255,255,0.03)", position:"relative", zIndex:6
           }}>
-            <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:24 }}>
+            <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:24 }}>
               <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={t("monitoredDamsSub")} decimals={0} />
               <StatCard label={t("averageLevel")} target={currentAvgLevel} active={goStats} suffix="%" color="#22D3EE" sub={t("averageLevelSub")} decimals={1} />
-              <StatCard label={t("totalCapacity")} target={currentTotalCapacity} active={goStats} color="#38BDF8" sub={t("totalCapacitySub")} decimals={1} />
+              <StatCardLarge label={t("totalCapacity")} target={currentTotalCapacity} active={goStats} suffix=" TMC" color="#38BDF8" sub={t("totalCapacitySub")} decimals={1} />
             </div>
           </div>
           {/* DAMS SECTION */}
@@ -5066,7 +5155,7 @@ export default function App() {
               zIndex: 200
             }}>
               {/* Zone Selector */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: "1 1 auto", minWidth: 0 }}>
                 <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
                   {t("selectRegion")}
                 </span>
@@ -5104,6 +5193,219 @@ export default function App() {
                       </a>
                     );
                   })}
+                </div>
+              </div>
+
+              {/* Compact Searchable State Dropdown */}
+              <div ref={dropdownRef} style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0, position: "relative" }}>
+                <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.4)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
+                  State
+                </span>
+                <div style={{ position: "relative" }}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsDropdownOpen(!isDropdownOpen);
+                      if (!isDropdownOpen) setStateSearchQuery("");
+                    }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 8,
+                      background: selectedState !== "all"
+                        ? "linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.35))"
+                        : "rgba(6, 20, 40, 0.7)",
+                      border: "1px solid",
+                      borderColor: selectedState !== "all" ? "rgba(6,182,212,0.6)" : "rgba(255,255,255,0.12)",
+                      borderRadius: 14,
+                      color: selectedState !== "all" ? "#67E8F9" : "#E0F2FE",
+                      fontSize: 12,
+                      fontWeight: selectedState !== "all" ? 700 : 500,
+                      padding: "6px 12px",
+                      cursor: "pointer",
+                      outline: "none",
+                      minWidth: 110,
+                      maxWidth: 165,
+                      height: 32,
+                      transition: "all 0.2s",
+                      backdropFilter: "blur(8px)",
+                      boxShadow: selectedState !== "all" ? "0 0 12px rgba(6,182,212,0.2)" : "none"
+                    }}
+                  >
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 5 }}>
+                      <span>📍</span>
+                      <span>{selectedState === "all" ? "All States" : (getLocalizedState(selectedState, lang) || selectedState)}</span>
+                    </span>
+                    <span style={{ fontSize: 9, color: "#67E8F9", transform: isDropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▼</span>
+                  </button>
+
+                  {/* Dropdown Menu with Search */}
+                  {isDropdownOpen && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onTouchStart={(e) => e.stopPropagation()}
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        top: "calc(100% + 8px)",
+                        minWidth: 240,
+                        maxWidth: "min(290px, calc(100vw - 32px))",
+                        background: "#030e1d",
+                        border: "1px solid rgba(6, 182, 212, 0.45)",
+                        borderRadius: 14,
+                        boxShadow: "0 16px 40px rgba(0,0,0,0.95), 0 0 25px rgba(6,182,212,0.2)",
+                        backdropFilter: "blur(24px)",
+                        zIndex: 400,
+                        padding: 10,
+                        animation: "fadeSlideUp 0.18s ease"
+                      }}
+                    >
+                      {/* Search Input inside Dropdown */}
+                      <div style={{ position: "relative", marginBottom: 8 }}>
+                        <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, opacity: 0.6, pointerEvents: "none" }}>🔍</span>
+                        <input
+                          type="text"
+                          placeholder="Search state..."
+                          value={stateSearchQuery}
+                          onChange={(e) => setStateSearchQuery(e.target.value)}
+                          autoFocus
+                          style={{
+                            width: "100%",
+                            padding: "7px 28px 7px 30px",
+                            borderRadius: 8,
+                            border: "1px solid rgba(6,182,212,0.3)",
+                            background: "rgba(6,20,40,0.8)",
+                            color: "#FFFFFF",
+                            fontSize: 12,
+                            outline: "none",
+                            transition: "all 0.2s"
+                          }}
+                          onFocus={(e) => e.target.style.borderColor = "rgba(6,182,212,0.8)"}
+                          onBlur={(e) => e.target.style.borderColor = "rgba(6,182,212,0.3)"}
+                        />
+                        {stateSearchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setStateSearchQuery("")}
+                            style={{
+                              position: "absolute",
+                              right: 8,
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              background: "none",
+                              border: "none",
+                              color: "rgba(224,242,254,0.6)",
+                              fontSize: 11,
+                              cursor: "pointer",
+                              padding: 2
+                            }}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Scrollable list of states */}
+                      <div style={{ maxHeight: 200, overflowY: "auto", display: "flex", flexDirection: "column", gap: 3 }}>
+                        {/* Option: All States */}
+                        {("all states").includes(stateSearchQuery.toLowerCase()) && (
+                          <div
+                            onClick={() => {
+                              navigate("/", { noScroll: true });
+                              setFilter("all");
+                              setSelectedState("all");
+                              setSelectedZone("All");
+                              setIsDropdownOpen(false);
+                              setStateSearchQuery("");
+                            }}
+                            style={{
+                              padding: "7px 10px",
+                              borderRadius: 8,
+                              fontSize: 13,
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              background: selectedState === "all" ? "rgba(6,182,212,0.22)" : "transparent",
+                              color: selectedState === "all" ? "#67E8F9" : "#E0F2FE",
+                              fontWeight: selectedState === "all" ? 700 : 400,
+                              transition: "background 0.15s"
+                            }}
+                            onMouseEnter={(e) => { if (selectedState !== "all") e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                            onMouseLeave={(e) => { if (selectedState !== "all") e.currentTarget.style.background = "transparent"; }}
+                          >
+                            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span>🗺️</span>
+                              <span>All States</span>
+                              {selectedState === "all" && <span style={{ color: "#67E8F9", fontSize: 11 }}>✓</span>}
+                            </span>
+                            <span style={{ fontSize: 11, color: "#67E8F9", background: "rgba(6,182,212,0.12)", padding: "1px 7px", borderRadius: 10, fontWeight: 600 }}>
+                              {DAMS.length} dams
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Filtered State Items */}
+                        {filteredStateList.map((state) => {
+                          const isSelected = selectedState === state;
+                          const damCount = stateDamCounts[state] || 0;
+                          return (
+                            <div
+                              key={state}
+                              onClick={() => {
+                                const href = `/state/${getStateSlug(state)}`;
+                                navigate(href, { noScroll: true });
+                                setFilter("all");
+                                setSelectedState(state);
+                                setSelectedZone(STATE_TO_ZONE[state] || "All");
+                                setIsDropdownOpen(false);
+                                setStateSearchQuery("");
+                              }}
+                              style={{
+                                padding: "7px 10px",
+                                borderRadius: 8,
+                                fontSize: 13,
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                background: isSelected ? "rgba(6,182,212,0.22)" : "transparent",
+                                color: isSelected ? "#67E8F9" : "#E0F2FE",
+                                fontWeight: isSelected ? 700 : 400,
+                                transition: "background 0.15s"
+                              }}
+                              onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
+                            >
+                              <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span>{getLocalizedState(state, lang) || state}</span>
+                                {isSelected && <span style={{ color: "#67E8F9", fontSize: 11 }}>✓</span>}
+                              </span>
+                              <span style={{
+                                fontSize: 11,
+                                color: isSelected ? "#67E8F9" : "rgba(224,242,254,0.6)",
+                                background: isSelected ? "rgba(6,182,212,0.18)" : "rgba(255,255,255,0.05)",
+                                padding: "1px 7px",
+                                borderRadius: 10,
+                                fontWeight: 600
+                              }}>
+                                {damCount}
+                              </span>
+                            </div>
+                          );
+                        })}
+
+                        {filteredStateList.length === 0 && !("all states").includes(stateSearchQuery.toLowerCase()) && (
+                          <div style={{ padding: "14px 8px", textAlign: "center", fontSize: 12, color: "rgba(224,242,254,0.5)" }}>
+                            No states found
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
