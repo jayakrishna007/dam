@@ -3838,6 +3838,284 @@ function HeroDamSlider({
   );
 }
 
+function StateFilterDropdown({ selectedState, selectedZone, onSelectState, lang, dams }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        if (inputRef.current) inputRef.current.focus();
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  const stateDamCounts = useMemo(() => {
+    const counts = {};
+    dams.forEach(d => {
+      if (d.state) counts[d.state] = (counts[d.state] || 0) + 1;
+    });
+    return counts;
+  }, [dams]);
+
+  const availableStates = useMemo(() => {
+    const statesInZone = selectedZone !== "All" ? (ZONE_MAP[selectedZone] || ALL_STATES) : ALL_STATES;
+    return statesInZone.filter(s => dams.some(d => d.state === s)).sort();
+  }, [selectedZone, dams]);
+
+  const filteredStates = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return availableStates;
+    return availableStates.filter(s => {
+      const localized = (getLocalizedState(s, lang) || "").toLowerCase();
+      return s.toLowerCase().includes(q) || localized.includes(q);
+    });
+  }, [availableStates, searchQuery, lang]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0, position: "relative" }}>
+      <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.4)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
+        State
+      </span>
+      <div style={{ position: "relative" }}>
+        {/* Trigger Button */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpen(!isOpen);
+            setSearchQuery("");
+          }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 8,
+            background: selectedState !== "all"
+              ? "linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.35))"
+              : "rgba(6, 20, 40, 0.7)",
+            border: "1px solid",
+            borderColor: selectedState !== "all" ? "rgba(6,182,212,0.6)" : "rgba(255,255,255,0.12)",
+            borderRadius: 14,
+            color: selectedState !== "all" ? "#67E8F9" : "#E0F2FE",
+            fontSize: 12,
+            fontWeight: selectedState !== "all" ? 700 : 500,
+            padding: "6px 12px",
+            cursor: "pointer",
+            outline: "none",
+            minWidth: 110,
+            maxWidth: 165,
+            height: 32,
+            transition: "all 0.2s",
+            backdropFilter: "blur(8px)",
+            boxShadow: selectedState !== "all" ? "0 0 12px rgba(6,182,212,0.2)" : "none"
+          }}
+        >
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 5 }}>
+            <span>📍</span>
+            <span>{selectedState === "all" ? "All States" : (getLocalizedState(selectedState, lang) || selectedState)}</span>
+          </span>
+          <span style={{ fontSize: 9, color: "#67E8F9", transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▼</span>
+        </button>
+
+        {/* Dropdown Menu + Transparent Backdrop */}
+        {isOpen && (
+          <>
+            <div
+              onClick={() => setIsOpen(false)}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 390,
+                background: "transparent"
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: "calc(100% + 8px)",
+                width: 250,
+                maxWidth: "min(300px, calc(100vw - 32px))",
+                background: "#030e1d",
+                border: "1px solid rgba(6, 182, 212, 0.45)",
+                borderRadius: 14,
+                boxShadow: "0 16px 40px rgba(0,0,0,0.95), 0 0 25px rgba(6,182,212,0.2)",
+                backdropFilter: "blur(24px)",
+                zIndex: 400,
+                padding: 10,
+                animation: "fadeSlideUp 0.18s ease"
+              }}
+            >
+              {/* Header with Title & Close Button */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, padding: "0 2px" }}>
+                <span style={{ fontSize: 11, color: "rgba(224,242,254,0.6)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>
+                  Select State
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "none",
+                    borderRadius: 6,
+                    color: "rgba(224,242,254,0.7)",
+                    fontSize: 11,
+                    padding: "2px 6px",
+                    cursor: "pointer",
+                    lineHeight: 1
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Search Input inside Dropdown */}
+              <div style={{ position: "relative", marginBottom: 8 }}>
+                <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, opacity: 0.6, pointerEvents: "none" }}>🔍</span>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Search state..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "7px 28px 7px 30px",
+                    borderRadius: 8,
+                    border: "1px solid rgba(6,182,212,0.3)",
+                    background: "rgba(6,20,40,0.8)",
+                    color: "#FFFFFF",
+                    fontSize: 12,
+                    outline: "none",
+                    transition: "all 0.2s"
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = "rgba(6,182,212,0.8)"}
+                  onBlur={(e) => e.target.style.borderColor = "rgba(6,182,212,0.3)"}
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    style={{
+                      position: "absolute",
+                      right: 8,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      color: "rgba(224,242,254,0.6)",
+                      fontSize: 11,
+                      cursor: "pointer",
+                      padding: 2
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* Scrollable list of states */}
+              <div style={{ maxHeight: 200, overflowY: "auto", display: "flex", flexDirection: "column", gap: 3 }}>
+                {/* Option: All States */}
+                {("all states").includes(searchQuery.toLowerCase()) && (
+                  <div
+                    onClick={() => {
+                      onSelectState("all");
+                      setIsOpen(false);
+                      setSearchQuery("");
+                    }}
+                    style={{
+                      padding: "7px 10px",
+                      borderRadius: 8,
+                      fontSize: 13,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      background: selectedState === "all" ? "rgba(6,182,212,0.22)" : "transparent",
+                      color: selectedState === "all" ? "#67E8F9" : "#E0F2FE",
+                      fontWeight: selectedState === "all" ? 700 : 400,
+                      transition: "background 0.15s"
+                    }}
+                    onMouseEnter={(e) => { if (selectedState !== "all") e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                    onMouseLeave={(e) => { if (selectedState !== "all") e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>🗺️</span>
+                      <span>All States</span>
+                      {selectedState === "all" && <span style={{ color: "#67E8F9", fontSize: 11 }}>✓</span>}
+                    </span>
+                    <span style={{ fontSize: 11, color: "#67E8F9", background: "rgba(6,182,212,0.12)", padding: "1px 7px", borderRadius: 10, fontWeight: 600 }}>
+                      {dams.length} dams
+                    </span>
+                  </div>
+                )}
+
+                {/* Filtered State Items */}
+                {filteredStates.map((state) => {
+                  const isSelected = selectedState === state;
+                  const damCount = stateDamCounts[state] || 0;
+                  return (
+                    <div
+                      key={state}
+                      onClick={() => {
+                        onSelectState(state);
+                        setIsOpen(false);
+                        setSearchQuery("");
+                      }}
+                      style={{
+                        padding: "7px 10px",
+                        borderRadius: 8,
+                        fontSize: 13,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        background: isSelected ? "rgba(6,182,212,0.22)" : "transparent",
+                        color: isSelected ? "#67E8F9" : "#E0F2FE",
+                        fontWeight: isSelected ? 700 : 400,
+                        transition: "background 0.15s"
+                      }}
+                      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
+                      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
+                    >
+                      <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span>{getLocalizedState(state, lang) || state}</span>
+                        {isSelected && <span style={{ color: "#67E8F9", fontSize: 11 }}>✓</span>}
+                      </span>
+                      <span style={{
+                        fontSize: 11,
+                        color: isSelected ? "#67E8F9" : "rgba(224,242,254,0.6)",
+                        background: isSelected ? "rgba(6,182,212,0.18)" : "rgba(255,255,255,0.05)",
+                        padding: "1px 7px",
+                        borderRadius: 10,
+                        fontWeight: 600
+                      }}>
+                        {damCount}
+                      </span>
+                    </div>
+                  );
+                })}
+
+                {filteredStates.length === 0 && !("all states").includes(searchQuery.toLowerCase()) && (
+                  <div style={{ padding: "14px 8px", textAlign: "center", fontSize: 12, color: "rgba(224,242,254,0.5)" }}>
+                    No states found
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ===================== MAIN APP =====================
 export default function App() {
   const { path, navigate } = useRouter();
@@ -3852,31 +4130,11 @@ export default function App() {
   const [filter,setFilter] = useState("all");
   const [selectedState,setSelectedState] = useState("all");
   const [selectedZone, setSelectedZone] = useState("All");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [stateSearchQuery, setStateSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [goStats, setGoStats] = useState(false);
   const statsRef = useRef(null);
-  const dropdownRef = useRef(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isDropdownOpen) return;
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    const timer = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-    }, 50);
-
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isDropdownOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -4001,10 +4259,6 @@ export default function App() {
       const script = document.getElementById('jsonld-schema');
       if (script) script.remove();
     };
-
-    // Close dropdown and reset search query on navigation
-    setIsDropdownOpen(false);
-    setStateSearchQuery("");
 
     const damMatch = path.match(/^\/dam\/([^/?#]+)/);
     const zoneMatch = path.match(/^\/zone\/([^/?#]+)/);
@@ -4445,28 +4699,6 @@ export default function App() {
   const currentTotalCapacity = stateFilteredDams.length > 0
     ? parseFloat((stateFilteredDams.reduce((s,d)=>s+d.capacity,0)).toFixed(1))
     : 0.0;
-
-  const stateDamCounts = useMemo(() => {
-    const counts = {};
-    DAMS.forEach(d => {
-      if (d.state) counts[d.state] = (counts[d.state] || 0) + 1;
-    });
-    return counts;
-  }, []);
-
-  const availableStates = useMemo(() => {
-    const statesInZone = selectedZone !== "All" ? (ZONE_MAP[selectedZone] || ALL_STATES) : ALL_STATES;
-    return statesInZone.filter(s => DAMS.some(d => d.state === s)).sort();
-  }, [selectedZone]);
-
-  const filteredStateList = useMemo(() => {
-    const q = stateSearchQuery.trim().toLowerCase();
-    if (!q) return availableStates;
-    return availableStates.filter(s => {
-      const localized = (getLocalizedState(s, lang) || "").toLowerCase();
-      return s.toLowerCase().includes(q) || localized.includes(q);
-    });
-  }, [availableStates, stateSearchQuery, lang]);
 
   useEffect(()=>{
     const obs=new IntersectionObserver(([e])=>{ if(e.isIntersecting) setGoStats(true); },{threshold:0.4});
@@ -5197,217 +5429,23 @@ export default function App() {
               </div>
 
               {/* Compact Searchable State Dropdown */}
-              <div ref={dropdownRef} style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0, position: "relative" }}>
-                <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.4)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
-                  State
-                </span>
-                <div style={{ position: "relative" }}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsDropdownOpen(!isDropdownOpen);
-                      if (!isDropdownOpen) setStateSearchQuery("");
-                    }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 8,
-                      background: selectedState !== "all"
-                        ? "linear-gradient(135deg, rgba(2,132,199,0.35), rgba(6,182,212,0.35))"
-                        : "rgba(6, 20, 40, 0.7)",
-                      border: "1px solid",
-                      borderColor: selectedState !== "all" ? "rgba(6,182,212,0.6)" : "rgba(255,255,255,0.12)",
-                      borderRadius: 14,
-                      color: selectedState !== "all" ? "#67E8F9" : "#E0F2FE",
-                      fontSize: 12,
-                      fontWeight: selectedState !== "all" ? 700 : 500,
-                      padding: "6px 12px",
-                      cursor: "pointer",
-                      outline: "none",
-                      minWidth: 110,
-                      maxWidth: 165,
-                      height: 32,
-                      transition: "all 0.2s",
-                      backdropFilter: "blur(8px)",
-                      boxShadow: selectedState !== "all" ? "0 0 12px rgba(6,182,212,0.2)" : "none"
-                    }}
-                  >
-                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 5 }}>
-                      <span>📍</span>
-                      <span>{selectedState === "all" ? "All States" : (getLocalizedState(selectedState, lang) || selectedState)}</span>
-                    </span>
-                    <span style={{ fontSize: 9, color: "#67E8F9", transform: isDropdownOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▼</span>
-                  </button>
-
-                  {/* Dropdown Menu with Search */}
-                  {isDropdownOpen && (
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      onTouchStart={(e) => e.stopPropagation()}
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: "calc(100% + 8px)",
-                        minWidth: 240,
-                        maxWidth: "min(290px, calc(100vw - 32px))",
-                        background: "#030e1d",
-                        border: "1px solid rgba(6, 182, 212, 0.45)",
-                        borderRadius: 14,
-                        boxShadow: "0 16px 40px rgba(0,0,0,0.95), 0 0 25px rgba(6,182,212,0.2)",
-                        backdropFilter: "blur(24px)",
-                        zIndex: 400,
-                        padding: 10,
-                        animation: "fadeSlideUp 0.18s ease"
-                      }}
-                    >
-                      {/* Search Input inside Dropdown */}
-                      <div style={{ position: "relative", marginBottom: 8 }}>
-                        <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, opacity: 0.6, pointerEvents: "none" }}>🔍</span>
-                        <input
-                          type="text"
-                          placeholder="Search state..."
-                          value={stateSearchQuery}
-                          onChange={(e) => setStateSearchQuery(e.target.value)}
-                          autoFocus
-                          style={{
-                            width: "100%",
-                            padding: "7px 28px 7px 30px",
-                            borderRadius: 8,
-                            border: "1px solid rgba(6,182,212,0.3)",
-                            background: "rgba(6,20,40,0.8)",
-                            color: "#FFFFFF",
-                            fontSize: 12,
-                            outline: "none",
-                            transition: "all 0.2s"
-                          }}
-                          onFocus={(e) => e.target.style.borderColor = "rgba(6,182,212,0.8)"}
-                          onBlur={(e) => e.target.style.borderColor = "rgba(6,182,212,0.3)"}
-                        />
-                        {stateSearchQuery && (
-                          <button
-                            type="button"
-                            onClick={() => setStateSearchQuery("")}
-                            style={{
-                              position: "absolute",
-                              right: 8,
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                              background: "none",
-                              border: "none",
-                              color: "rgba(224,242,254,0.6)",
-                              fontSize: 11,
-                              cursor: "pointer",
-                              padding: 2
-                            }}
-                          >
-                            ✕
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Scrollable list of states */}
-                      <div style={{ maxHeight: 200, overflowY: "auto", display: "flex", flexDirection: "column", gap: 3 }}>
-                        {/* Option: All States */}
-                        {("all states").includes(stateSearchQuery.toLowerCase()) && (
-                          <div
-                            onClick={() => {
-                              navigate("/", { noScroll: true });
-                              setFilter("all");
-                              setSelectedState("all");
-                              setSelectedZone("All");
-                              setIsDropdownOpen(false);
-                              setStateSearchQuery("");
-                            }}
-                            style={{
-                              padding: "7px 10px",
-                              borderRadius: 8,
-                              fontSize: 13,
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              background: selectedState === "all" ? "rgba(6,182,212,0.22)" : "transparent",
-                              color: selectedState === "all" ? "#67E8F9" : "#E0F2FE",
-                              fontWeight: selectedState === "all" ? 700 : 400,
-                              transition: "background 0.15s"
-                            }}
-                            onMouseEnter={(e) => { if (selectedState !== "all") e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
-                            onMouseLeave={(e) => { if (selectedState !== "all") e.currentTarget.style.background = "transparent"; }}
-                          >
-                            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                              <span>🗺️</span>
-                              <span>All States</span>
-                              {selectedState === "all" && <span style={{ color: "#67E8F9", fontSize: 11 }}>✓</span>}
-                            </span>
-                            <span style={{ fontSize: 11, color: "#67E8F9", background: "rgba(6,182,212,0.12)", padding: "1px 7px", borderRadius: 10, fontWeight: 600 }}>
-                              {DAMS.length} dams
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Filtered State Items */}
-                        {filteredStateList.map((state) => {
-                          const isSelected = selectedState === state;
-                          const damCount = stateDamCounts[state] || 0;
-                          return (
-                            <div
-                              key={state}
-                              onClick={() => {
-                                const href = `/state/${getStateSlug(state)}`;
-                                navigate(href, { noScroll: true });
-                                setFilter("all");
-                                setSelectedState(state);
-                                setSelectedZone(STATE_TO_ZONE[state] || "All");
-                                setIsDropdownOpen(false);
-                                setStateSearchQuery("");
-                              }}
-                              style={{
-                                padding: "7px 10px",
-                                borderRadius: 8,
-                                fontSize: 13,
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                background: isSelected ? "rgba(6,182,212,0.22)" : "transparent",
-                                color: isSelected ? "#67E8F9" : "#E0F2FE",
-                                fontWeight: isSelected ? 700 : 400,
-                                transition: "background 0.15s"
-                              }}
-                              onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = "rgba(255,255,255,0.06)"; }}
-                              onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
-                            >
-                              <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span>{getLocalizedState(state, lang) || state}</span>
-                                {isSelected && <span style={{ color: "#67E8F9", fontSize: 11 }}>✓</span>}
-                              </span>
-                              <span style={{
-                                fontSize: 11,
-                                color: isSelected ? "#67E8F9" : "rgba(224,242,254,0.6)",
-                                background: isSelected ? "rgba(6,182,212,0.18)" : "rgba(255,255,255,0.05)",
-                                padding: "1px 7px",
-                                borderRadius: 10,
-                                fontWeight: 600
-                              }}>
-                                {damCount}
-                              </span>
-                            </div>
-                          );
-                        })}
-
-                        {filteredStateList.length === 0 && !("all states").includes(stateSearchQuery.toLowerCase()) && (
-                          <div style={{ padding: "14px 8px", textAlign: "center", fontSize: 12, color: "rgba(224,242,254,0.5)" }}>
-                            No states found
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <StateFilterDropdown
+                selectedState={selectedState}
+                selectedZone={selectedZone}
+                onSelectState={(state) => {
+                  const href = state === "all" ? "/" : `/state/${getStateSlug(state)}`;
+                  navigate(href, { noScroll: true });
+                  setFilter("all");
+                  setSelectedState(state);
+                  if (state !== "all") {
+                    setSelectedZone(STATE_TO_ZONE[state] || "All");
+                  } else {
+                    setSelectedZone("All");
+                  }
+                }}
+                lang={lang}
+                dams={DAMS}
+              />
             </div>
             {/* Header, search, sub-filters */}
             <div className="filter-row" style={{ display:"flex", flexDirection:"column", marginBottom:32, gap:16 }}>
