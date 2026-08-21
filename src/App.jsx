@@ -36,6 +36,13 @@ const callMongo = async (action, collection, payload = {}) => {
         const data = await res.json();
         return { documents: data.documents };
       }
+    } else if (collection === "feedback") {
+      if (action === "find") {
+        const res = await fetch("/api/contact");
+        if (!res.ok) return null;
+        const data = await res.json();
+        return { documents: data.feedback || [] };
+      }
     }
     return null;
   } catch (error) {
@@ -475,19 +482,20 @@ function DamCard({ dam, delay, onClick, t }) {
           </div>
         ))}
       </div>
-      <div style={{marginTop:8,padding:"7px 12px",background:"rgba(255,255,255,0.02)",borderRadius:9,
-        border:"1px solid rgba(255,255,255,0.04)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <span style={{fontSize:10,color:"rgba(220,240,255,0.3)",textTransform:"uppercase",letterSpacing:1}}>Storage</span>
-        <span style={{fontSize:12,fontWeight:600,color:"#BAE6FD",fontFamily:"monospace"}}>
-          {(dam.capacity*safeLevel/100).toFixed(2)}<span style={{opacity:0.38,margin:"0 4px"}}>/</span>{dam.capacity}<span style={{fontSize:9,opacity:0.45,marginLeft:3}}>TMC</span>
-        </span>
-      </div>
-      <div style={{marginTop:6,padding:"7px 12px",background:"rgba(255,255,255,0.02)",borderRadius:9,
-        border:"1px solid rgba(255,255,255,0.04)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <span style={{fontSize:10,color:"rgba(220,240,255,0.3)",textTransform:"uppercase",letterSpacing:1}}>Filled Percentage</span>
-        <span style={{fontSize:12,fontWeight:600,color:"#38BDF8",fontFamily:"monospace"}}>
-          {safeLevel.toFixed(1)}%
-        </span>
+      <div style={{marginTop:10,padding:"10px 14px",background:"rgba(6,182,212,0.06)",borderRadius:10,
+        border:"1px solid rgba(6,182,212,0.18)",display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+        <div>
+          <div style={{fontSize:9,color:"rgba(220,240,255,0.45)",textTransform:"uppercase",letterSpacing:1.2,marginBottom:2}}>Live Storage</div>
+          <div style={{fontSize:18,fontWeight:800,color:"#38BDF8",fontFamily:"monospace"}}>
+            {(dam.capacity*safeLevel/100).toFixed(2)} <span style={{fontSize:11,fontWeight:600,color:"#7DD3FC"}}>TMC</span>
+          </div>
+        </div>
+        <div style={{textAlign:"right"}}>
+          <div style={{fontSize:9,color:"rgba(220,240,255,0.35)",textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>Cap: {dam.capacity} TMC</div>
+          <div style={{fontSize:11,fontWeight:600,color:"rgba(224,242,254,0.5)",fontFamily:"monospace"}}>
+            {safeLevel.toFixed(1)}%
+          </div>
+        </div>
       </div>
     </a>
   );
@@ -499,8 +507,7 @@ const RAIN = Array.from({length:22},(_,i)=>({
 }));
 
 const FILTER_FN = {
-  all:()=>true, high:d=>d.level>=70, normal:d=>d.level>=45&&d.level<70,
-  low:d=>d.level<45
+  all: () => true
 };
 
 // ===================== PIN MODAL =====================
@@ -722,6 +729,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   const [telemetry, setTelemetry] = useState({
     visits: null,
     searches: [],
+    feedback: [],
     loading: true
   });
 
@@ -731,26 +739,28 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
     let active = true;
     const fetchTelemetry = async () => {
       try {
-        const [visitsRes, searchesRes] = await Promise.all([
+        const [visitsRes, searchesRes, feedbackRes] = await Promise.all([
           callMongo("aggregate", "page_views"),
-          callMongo("find", "search_queries")
+          callMongo("find", "search_queries"),
+          callMongo("find", "feedback")
         ]);
         if (!active) return;
-        if (visitsRes !== null || searchesRes !== null) {
+        if (visitsRes !== null || searchesRes !== null || feedbackRes !== null) {
           setTelemetry({
             visits: visitsRes?.documents?.[0]?.total ?? 0,
             searches: searchesRes?.documents ?? [],
+            feedback: feedbackRes?.documents ?? [],
             loading: false
           });
           setMongoActive(true);
         } else {
-          setTelemetry({ visits: null, searches: [], loading: false });
+          setTelemetry({ visits: null, searches: [], feedback: [], loading: false });
           setMongoActive(false);
         }
       } catch (err) {
         console.error("Failed to load telemetry:", err);
         if (active) {
-          setTelemetry({ visits: null, searches: [], loading: false });
+          setTelemetry({ visits: null, searches: [], feedback: [], loading: false });
           setMongoActive(false);
         }
       }
@@ -797,10 +807,34 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
       ok: scrapeStatus.sources.oneindia?.ok || false 
     },
     { 
-      source: "BBMB (Bhakra/Pong)", 
+      source: "BBMB (Bhakra/Pong/Pandoh)", 
       status: scrapeStatus.sources.bbmb?.status || "Unknown", 
       detail: `Scraped ${scrapeStatus.sources.bbmb?.count || 0} reservoir records (Himachal Pradesh) successfully.`, 
       ok: scrapeStatus.sources.bbmb?.ok || false 
+    },
+    { 
+      source: "SSNNL – Sardar Sarovar (Gujarat)", 
+      status: scrapeStatus.sources.ssnnl?.status || "Pending", 
+      detail: scrapeStatus.sources.ssnnl?.count
+        ? `Scraped ${scrapeStatus.sources.ssnnl.count} reservoirs (Gujarat, Narmada basin).`
+        : "Source planned — Sardar Sarovar Narmada Nigam Ltd portal.", 
+      ok: scrapeStatus.sources.ssnnl?.ok || false 
+    },
+    { 
+      source: "Maharashtra WRD", 
+      status: scrapeStatus.sources.maharashtra?.status || "Pending", 
+      detail: scrapeStatus.sources.maharashtra?.count
+        ? `Scraped ${scrapeStatus.sources.maharashtra.count} reservoirs (Maharashtra).`
+        : "Source planned — Maharashtra Water Resources Dept portal (Jayakwadi, Koyna, Ujani).", 
+      ok: scrapeStatus.sources.maharashtra?.ok || false 
+    },
+    { 
+      source: "CWC – Central Water Commission", 
+      status: scrapeStatus.sources.cwc?.status || "Pending", 
+      detail: scrapeStatus.sources.cwc?.count
+        ? `Scraped ${scrapeStatus.sources.cwc.count} major reservoirs (Pan-India CWC bulletin).`
+        : "Source planned — CWC daily reservoir bulletin (150 major reservoirs).", 
+      ok: scrapeStatus.sources.cwc?.ok || false 
     },
     { 
       source: "Daily Scheduled Scraper", 
@@ -1326,6 +1360,44 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
                     </span>
                   </div>
                 )}
+              </div>
+            )}
+          </div>
+
+          {/* ── Received User Feedback Panel ── */}
+          <div style={{
+            background: "linear-gradient(148deg, #071727 0%, #030a14 100%)",
+            border: "1px solid rgba(6,182,212,0.15)",
+            borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#E0F2FE", margin: 0 }}>📩 Received User Feedback</h3>
+                <p style={{ fontSize: 12, color: "rgba(224,242,254,0.4)", marginTop: 2 }}>Stored in MongoDB `feedback` collection</p>
+              </div>
+              <span style={{ fontSize: 18 }}>💬</span>
+            </div>
+            {telemetry.feedback && telemetry.feedback.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12, maxHeight: 240, overflowY: "auto" }}>
+                {telemetry.feedback.map((f, idx) => (
+                  <div key={idx} style={{
+                    padding: 12, background: "rgba(255,255,255,0.02)",
+                    border: "1px solid rgba(255,255,255,0.05)", borderRadius: 10
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#67E8F9" }}>{f.name}</span>
+                      <span style={{ fontSize: 11, color: "#38BDF8" }}>{f.email}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "rgba(224,242,254,0.8)", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{f.message}</div>
+                    <div style={{ fontSize: 9, color: "rgba(224,242,254,0.3)", marginTop: 6 }}>
+                      {f.createdAt ? new Date(f.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : ""}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ fontSize: 12, color: "rgba(224,242,254,0.35)", textAlign: "center", padding: "16px 0", border: "1px dashed rgba(255,255,255,0.08)", borderRadius: 8 }}>
+                No feedback submissions in database yet.
               </div>
             )}
           </div>
@@ -2711,9 +2783,9 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
                   ) : lang === "kn" ? (
                     <span>ಜಲಾಶಯದಲ್ಲಿ ನೀರಿನ ಸಂಗ್ರಹ ಹೆಚ್ಚುತ್ತಿದೆ. ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ <strong>{netFlowCusecs.toLocaleString()} ಕ್ಯೂಸೆಕ್</strong> ಹೆಚ್ಚಾಗಿದ್ದು, ಪ್ರತಿ 24 ಗಂಟೆಗೆ <strong>{netFlowTmcPerDay.toFixed(3)} ಟಿಎಂಸಿ</strong> ವೇಗದಲ್ಲಿ ಸಂಗ್ರಹ ಹೆಚ್ಚುತ್ತಿದೆ.</span>
                   ) : lang === "te" ? (
-                    <span>రిజర్వాయర్‌లో నికర సానుకూల ప్రവാహం ఉంది. ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే <strong>{netFlowCusecs.toLocaleString()} క్యూసెక్కులు</strong> ఎక్కువగా ఉంది, ఇది ప్రతి 24 గంటలకు <strong>{netFlowTmcPerDay.toFixed(3)} టీఎంసీ</strong> చొప్పున నిల్వను పెంచుతుంది.</span>
+                    <span>రిజర్వాయర్‌లో నికర సానుకూల ప్రవాహం ఉంది. ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే <strong>{netFlowCusecs.toLocaleString()} క్యూసెక్కులు</strong> ఎక్కువగా ఉంది, ఇది ప్రతి 24 గంటలకు <strong>{netFlowTmcPerDay.toFixed(3)} టీఎంసీ</strong> చొప్పున నిల్వను పెంచుతుంది.</span>
                   ) : lang === "ta" ? (
-                    <span>நீர்த்தೇக்கத்தில் நீர் இருப்பு அதிகரித்து வருகிறது. நீர்வரத்து வெளியேற்றத்தை விட <strong>{netFlowCusecs.toLocaleString()} கனஅடி</strong> அதிகமாக உள்ளது, இதனால் 24 மணி நேரத்திற்கு <strong>{netFlowTmcPerDay.toFixed(3)} டிஎம்சி</strong> என்ற விகிതத்தில் சேമിப்பு அதிகரிக்கிறது.</span>
+                    <span>நீர்த்தேக்கத்தில் நீர் இருப்பு அதிகரித்து வருகிறது. நீர்வரத்து வெளியேற்றத்தை விட <strong>{netFlowCusecs.toLocaleString()} கனஅடி</strong> அதிகமாக உள்ளது, இதனால் 24 மணி நேரத்திற்கு <strong>{netFlowTmcPerDay.toFixed(3)} டிஎம்சி</strong> என்ற விகிതத்தில் சேமிப்பு அதிகரிக்கிறது.</span>
                   ) : lang === "ml" ? (
                     <span>ഡാമിൽ ജലസംഭരണം വർദ്ധിക്കുന്നു. നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ <strong>{netFlowCusecs.toLocaleString()} ക്യൂസെക്സ്</strong> കൂടുതലാണ്, 24 മണിക്കൂറിൽ ആകെ സംഭരണം <strong>{netFlowTmcPerDay.toFixed(3)} ടിഎംസി</strong> വർദ്ധിക്കുന്നു.</span>
                   ) : (
@@ -2729,7 +2801,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
                   ) : lang === "te" ? (
                     <span>రిజర్వాయర్‌లో నిల్వలు తగ్గుతున్నాయి. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే <strong>{Math.abs(netFlowCusecs).toLocaleString()} క్యూసెక్కులు</strong> ఎక్కువగా ఉంది, దీనివల్ల రోజువారీ <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} టీఎంసీ</strong> నిల్వ తగ్గుతుంది.</span>
                   ) : lang === "ta" ? (
-                    <span>நீர்த்தೇக்க நீர் மட்டம் குறைந்து வருகிறது. வெளியேற்றம் நீர்வரத்தை விட <strong>{Math.abs(netFlowCusecs).toLocaleString()} கனஅடி</strong> அதிகமாக உள்ளது, இதனால் ஒரு நாளைக்கு <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} டிஎம்சி</strong> நீர் சேമിப்பு குறைகிறது.</span>
+                    <span>நீர்த்தேக்க நீர் மட்டம் குறைந்து வருகிறது. வெளியேற்றம் நீர்வரத்தை விட <strong>{Math.abs(netFlowCusecs).toLocaleString()} கனஅடி</strong> அதிகமாக உள்ளது, இதனால் ஒரு நாளைக்கு <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} டிஎம்சி</strong> நீர் சேமிப்பு குறைகிறது.</span>
                   ) : lang === "ml" ? (
                     <span>ഡാമിൽ ജലസംഭരണം കുറയുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ <strong>{Math.abs(netFlowCusecs).toLocaleString()} ക്യൂസെക്സ്</strong> കൂടുതലാണ്, ഇത് പ്രതിദിനം <strong>{Math.abs(netFlowTmcPerDay).toFixed(3)} ടിഎംസി</strong> കുറയുന്നതിന് കാരണമാകുന്നു.</span>
                   ) : (
@@ -2852,19 +2924,11 @@ function ContactUsPage({ navigate, setView, lang, t }) {
       try { data = await res.json(); } catch (_) {}
       if (res.ok && data.success) {
         setSubmitted(true);
-      } else if (res.status === 500 && (data.error || "").toLowerCase().includes("not configured")) {
-        const subject = encodeURIComponent(`DamToday Feedback from ${name}`);
-        const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-        window.open(`mailto:damtoday4@gmail.com?subject=${subject}&body=${body}`, "_blank");
-        setSubmitted(true);
       } else {
-        setSendError(data.error || "Something went wrong. Please try again.");
+        setSendError(data.error || "Unable to send message right now. Please try again.");
       }
     } catch (err) {
-      const subject = encodeURIComponent(`DamToday Feedback from ${name}`);
-      const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
-      window.open(`mailto:damtoday4@gmail.com?subject=${subject}&body=${body}`, "_blank");
-      setSubmitted(true);
+      setSendError("Network error. Please check your connection and try again.");
     } finally {
       setSending(false);
     }
@@ -3486,11 +3550,7 @@ function HeroDamSlider({
               fontSize:'2.4rem', fontWeight:900, color:lvlColor, letterSpacing:'-0.5px'
             }}>{level.toFixed(1)}%</span>
             <span style={{ fontSize:'0.88rem', color:pal.accent, fontWeight:700 }}>{tmc} TMC</span>
-            <span style={{
-              background: level>=90?'#F59E0B':level>=70?pal.accent:'#FB923C',
-              color:'#fff', fontSize:'0.62rem', fontWeight:700,
-              padding:'2px 8px', borderRadius:50, letterSpacing:0.5, marginLeft:'auto'
-            }}>{level>=90?'WATCH':level>=70?'HIGH LEVEL':level>=45?'NORMAL':'LOW'}</span>
+
           </div>
           {/* Capacity summary */}
           <div style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.5)', fontWeight:500, marginBottom:10 }}>
@@ -3713,6 +3773,8 @@ export default function App() {
   const { path, navigate } = useRouter();
   const [view, setView] = useState("main");
   const [selectedDam, setSelectedDam] = useState(null);
+  const [isAdminVerified, setIsAdminVerified] = useState(false);
+  const isAdminVerifiedRef = useRef(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
@@ -4019,11 +4081,17 @@ export default function App() {
       setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
     } else if (path === "/analytics") {
-      setView("analytics");
-      const title = "Analytics Dashboard - Damtoday Administrator Console";
-      document.title = title;
-      setCanonicalUrl(currentUrl);
-      removeJsonLdSchema();
+      if (isAdminVerifiedRef.current) {
+        setView("analytics");
+        const title = "Analytics Dashboard - Damtoday Administrator Console";
+        document.title = title;
+        setCanonicalUrl(currentUrl);
+        removeJsonLdSchema();
+      } else {
+        // Not verified — redirect to home and show PIN modal
+        navigate("/");
+        setShowPinModal(true);
+      }
     } else if (damMatch) {
       const slug = damMatch[1];
       const found = DAMS.find(d => getDamSlug(d.name) === slug);
@@ -4287,10 +4355,12 @@ export default function App() {
   const handlePinSubmit = (e) => {
     e.preventDefault();
     if (pinInput === "9197") {
-      navigate("/analytics");
+      isAdminVerifiedRef.current = true;
+      setIsAdminVerified(true);
       setShowPinModal(false);
       setPinInput("");
       setPinError(false);
+      navigate("/analytics");
     } else {
       setPinError(true);
     }
@@ -4316,7 +4386,7 @@ export default function App() {
   },[]);
 
   const shown = stateFilteredDams.filter(dam => {
-    const matchesFilter = FILTER_FN[filter](dam);
+    const matchesFilter = (FILTER_FN[filter] || FILTER_FN.all)(dam);
     const query = searchQuery.trim().toLowerCase();
     const matchesSearch = query === "" ||
       dam.name.toLowerCase().includes(query) ||
@@ -5113,27 +5183,7 @@ export default function App() {
                   </button>
                 </form>
 
-                <div style={{ display:"flex", gap:4, background:"rgba(255,255,255,0.02)", border:"1px solid rgba(255,255,255,0.05)", padding:3, borderRadius:20, flexShrink:0, flexWrap:"wrap" }}>
-                  {["all","high","normal","low"].map(tab => {
-                    const label = tab==="all"? (t("allLevels") || "All") : tab==="high"? (t("highLevel") || "70%+") : tab==="normal"? (t("normalLevel") || "45–70%") : (t("lowLevel") || "<45%");
-                    const isActive = filter === tab;
-                    return (
-                      <button
-                        key={tab}
-                        onClick={() => setFilter(tab)}
-                        style={{
-                          padding:"6px 12px", borderRadius:16, border:"none",
-                          background:isActive?"rgba(6,182,212,0.18)":"transparent",
-                          color:isActive?"#67E8F9":"rgba(224,242,254,0.5)",
-                          fontSize:12, fontWeight:isActive?700:500, cursor:"pointer",
-                          transition:"all 0.2s", whiteSpace:"nowrap"
-                        }}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
+
               </div>
             </div>
 
@@ -5227,6 +5277,17 @@ export default function App() {
           >
             {t("privacy")}
           </a>
+          <button
+            onClick={() => setShowPinModal(true)}
+            style={{
+              background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
+              fontSize: 11, padding: 0, transition:"color 0.2s"
+            }}
+            onMouseEnter={e => e.target.style.color="#38bdf8"}
+            onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
+          >
+            Admin
+          </button>
         </div>
       </div>
     </footer>
