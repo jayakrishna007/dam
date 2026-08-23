@@ -3406,7 +3406,6 @@ const DAM_PHOTOS = {
   "Harangi": "/images/dams/harangi.jpg",
   "Hemavathy": "/images/dams/hemavathy.jpg",
   "Tungabhadra": "/images/dams/tungabhadra.jpg",
-  "Tungabhadra (Left Bank)": "/images/dams/tungabhadra.jpg",
   "Tungabhadra HLC": "/images/dams/tungabhadra.jpg",
   "Bhadra": "/images/dams/bhadra.jpg",
   "Almatti": "/images/dams/almatti.jpg",
