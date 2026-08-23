@@ -3363,6 +3363,14 @@ function useRouter() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      window.gtag("config", "G-R5F4YYK0RT", {
+        page_path: path
+      });
+    }
+  }, [path]);
+
   const navigate = (to, { noScroll = false } = {}) => {
     window.history.pushState({}, "", to);
     setPath(to);
