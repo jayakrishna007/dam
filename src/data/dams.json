@@ -518,7 +518,7 @@
   },
   {
     "id": 48,
-    "name": "Rihand",
+    "name": "Rihand (Gobind Ballabh Pant Sagar)",
     "river": "Rihand",
     "district": "Sonbhadra",
     "level": 42.1,
@@ -771,7 +771,7 @@
   },
   {
     "id": 71,
-    "name": "Ranjit Sagar",
+    "name": "Ranjit Sagar (Thein Dam)",
     "river": "Ravi",
     "district": "Pathankot",
     "level": 58.9,
@@ -1002,17 +1002,6 @@
   },
   {
     "id": 92,
-    "name": "Gobind Ballabh Pant Sagar",
-    "river": "Rihand",
-    "district": "Sonbhadra",
-    "level": 48.3,
-    "capacity": 374.0,
-    "inflow": 3400,
-    "outflow": 2800,
-    "state": "Uttar Pradesh"
-  },
-  {
-    "id": 93,
     "name": "Obra Dam",
     "river": "Rihand",
     "district": "Sonbhadra",
@@ -1023,7 +1012,7 @@
     "state": "Uttar Pradesh"
   },
   {
-    "id": 94,
+    "id": 93,
     "name": "Matatila",
     "river": "Betwa",
     "district": "Lalitpur",
@@ -1034,7 +1023,7 @@
     "state": "Uttar Pradesh"
   },
   {
-    "id": 95,
+    "id": 94,
     "name": "Ramganga",
     "river": "Ramganga",
     "district": "Pauri Garhwal",
@@ -1045,7 +1034,7 @@
     "state": "Uttarakhand"
   },
   {
-    "id": 96,
+    "id": 95,
     "name": "Koteshwar",
     "river": "Bhagirathi",
     "district": "Tehri Garhwal",
@@ -1056,7 +1045,7 @@
     "state": "Uttarakhand"
   },
   {
-    "id": 97,
+    "id": 96,
     "name": "Dhauliganga",
     "river": "Dhauliganga",
     "district": "Pithoragarh",
@@ -1067,29 +1056,7 @@
     "state": "Uttarakhand"
   },
   {
-    "id": 98,
-    "name": "Pong Reservoir",
-    "river": "Beas",
-    "district": "Hoshiarpur",
-    "level": 61.6,
-    "capacity": 257.0,
-    "inflow": 4200,
-    "outflow": 3600,
-    "state": "Punjab"
-  },
-  {
-    "id": 99,
-    "name": "Thein (Ranjit Sagar)",
-    "river": "Ravi",
-    "district": "Gurdaspur",
-    "level": 58.9,
-    "capacity": 82.6,
-    "inflow": 3100,
-    "outflow": 2700,
-    "state": "Punjab"
-  },
-  {
-    "id": 100,
+    "id": 97,
     "name": "Bhakra Left Bank Canal",
     "river": "Sutlej",
     "district": "Rupnagar",
@@ -1100,18 +1067,7 @@
     "state": "Punjab"
   },
   {
-    "id": 101,
-    "name": "Gobind Sagar (BBMB)",
-    "river": "Sutlej",
-    "district": "Una",
-    "level": 58.9,
-    "capacity": 197.7,
-    "inflow": 8400,
-    "outflow": 6800,
-    "state": "Himachal Pradesh"
-  },
-  {
-    "id": 102,
+    "id": 98,
     "name": "Pandoh",
     "river": "Beas",
     "district": "Mandi",
@@ -1122,7 +1078,7 @@
     "state": "Himachal Pradesh"
   },
   {
-    "id": 103,
+    "id": 99,
     "name": "Chamera",
     "river": "Ravi",
     "district": "Chamba",
@@ -1133,7 +1089,7 @@
     "state": "Himachal Pradesh"
   },
   {
-    "id": 104,
+    "id": 100,
     "name": "Krishnarajasagara Lower",
     "river": "Cauvery",
     "district": "Mandya",
@@ -1144,7 +1100,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 105,
+    "id": 101,
     "name": "Renuka Ji",
     "river": "Giri",
     "district": "Sirmaur",
@@ -1155,7 +1111,7 @@
     "state": "Himachal Pradesh"
   },
   {
-    "id": 106,
+    "id": 102,
     "name": "Kol Dam",
     "river": "Sutlej",
     "district": "Mandi",
@@ -1166,7 +1122,7 @@
     "state": "Himachal Pradesh"
   },
   {
-    "id": 107,
+    "id": 103,
     "name": "Kal Nadi",
     "river": "Kal",
     "district": "Nashik",
@@ -1177,7 +1133,7 @@
     "state": "Maharashtra"
   },
   {
-    "id": 108,
+    "id": 104,
     "name": "Girna",
     "river": "Girna",
     "district": "Nashik",
@@ -1188,7 +1144,7 @@
     "state": "Maharashtra"
   },
   {
-    "id": 109,
+    "id": 105,
     "name": "Daman Ganga",
     "river": "Daman Ganga",
     "district": "Valsad",
@@ -1199,7 +1155,7 @@
     "state": "Gujarat"
   },
   {
-    "id": 110,
+    "id": 106,
     "name": "Panam",
     "river": "Panam",
     "district": "Panchmahal",
@@ -1210,7 +1166,7 @@
     "state": "Gujarat"
   },
   {
-    "id": 111,
+    "id": 107,
     "name": "Sipu",
     "river": "Sipu",
     "district": "Chirang",
@@ -1221,7 +1177,7 @@
     "state": "Assam"
   },
   {
-    "id": 112,
+    "id": 108,
     "name": "Umiam (Barapani)",
     "river": "Umiam",
     "district": "East Khasi Hills",
@@ -1232,7 +1188,7 @@
     "state": "Meghalaya"
   },
   {
-    "id": 113,
+    "id": 109,
     "name": "Loktak Lift Irrigation",
     "river": "Manipur",
     "district": "Bishnupur",
@@ -1243,7 +1199,7 @@
     "state": "Manipur"
   },
   {
-    "id": 114,
+    "id": 110,
     "name": "Ranganadi",
     "river": "Ranganadi",
     "district": "Lakhimpur",
@@ -1254,7 +1210,7 @@
     "state": "Assam"
   },
   {
-    "id": 115,
+    "id": 111,
     "name": "Kopili",
     "river": "Kopili",
     "district": "Karbi Anglong",
@@ -1265,7 +1221,7 @@
     "state": "Assam"
   },
   {
-    "id": 116,
+    "id": 112,
     "name": "Subarnarekha Barrage",
     "river": "Subarnarekha",
     "district": "Purbi Singhbhum",
@@ -1276,7 +1232,7 @@
     "state": "Jharkhand"
   },
   {
-    "id": 117,
+    "id": 113,
     "name": "Chandil",
     "river": "Subarnarekha",
     "district": "Seraikela Kharsawan",
@@ -1287,7 +1243,7 @@
     "state": "Jharkhand"
   },
   {
-    "id": 118,
+    "id": 114,
     "name": "Getalsud",
     "river": "Subarnarekha",
     "district": "Ranchi",
@@ -1298,7 +1254,7 @@
     "state": "Jharkhand"
   },
   {
-    "id": 119,
+    "id": 115,
     "name": "Tenughat",
     "river": "Damodar",
     "district": "Bokaro",
@@ -1309,7 +1265,7 @@
     "state": "Jharkhand"
   },
   {
-    "id": 120,
+    "id": 116,
     "name": "Badua",
     "river": "Badua",
     "district": "Jamui",
@@ -1320,7 +1276,7 @@
     "state": "Bihar"
   },
   {
-    "id": 121,
+    "id": 117,
     "name": "Bagmati Barrage",
     "river": "Bagmati",
     "district": "Sitamarhi",
@@ -1331,7 +1287,7 @@
     "state": "Bihar"
   },
   {
-    "id": 122,
+    "id": 118,
     "name": "Mukundara",
     "river": "Chambal",
     "district": "Kota",
@@ -1342,7 +1298,7 @@
     "state": "Rajasthan"
   },
   {
-    "id": 123,
+    "id": 119,
     "name": "Jawahar Sagar",
     "river": "Chambal",
     "district": "Kota",
@@ -1353,29 +1309,7 @@
     "state": "Rajasthan"
   },
   {
-    "id": 124,
-    "name": "Pong (HP)",
-    "river": "Beas",
-    "district": "Kangra",
-    "level": 62.86,
-    "capacity": 257.0,
-    "inflow": 34416,
-    "outflow": 16014,
-    "state": "Himachal Pradesh"
-  },
-  {
-    "id": 125,
-    "name": "Ranjitsagar (Thein)",
-    "river": "Ravi",
-    "district": "Pathankot",
-    "level": 59.4,
-    "capacity": 82.6,
-    "inflow": 3400,
-    "outflow": 2900,
-    "state": "Punjab"
-  },
-  {
-    "id": 126,
+    "id": 120,
     "name": "Kallanai (Grand Anicut)",
     "river": "Cauvery",
     "district": "Tiruchirappalli",
@@ -1386,7 +1320,7 @@
     "state": "Tamil Nadu"
   },
   {
-    "id": 127,
+    "id": 121,
     "name": "Poondi",
     "river": "Kosasthalaiyar",
     "district": "Tiruvallur",
@@ -1397,7 +1331,7 @@
     "state": "Tamil Nadu"
   },
   {
-    "id": 128,
+    "id": 122,
     "name": "Red Hills",
     "river": "Kosasthalaiyar",
     "district": "Chennai",
@@ -1408,7 +1342,7 @@
     "state": "Tamil Nadu"
   },
   {
-    "id": 129,
+    "id": 123,
     "name": "Chembarambakkam",
     "river": "Adyar",
     "district": "Kanchipuram",
@@ -1419,7 +1353,7 @@
     "state": "Tamil Nadu"
   },
   {
-    "id": 130,
+    "id": 124,
     "name": "Walayar",
     "river": "Walayar",
     "district": "Palakkad",
@@ -1430,7 +1364,7 @@
     "state": "Kerala"
   },
   {
-    "id": 131,
+    "id": 125,
     "name": "Kallada",
     "river": "Kallada",
     "district": "Kollam",
@@ -1441,7 +1375,7 @@
     "state": "Kerala"
   },
   {
-    "id": 132,
+    "id": 126,
     "name": "Malampuzha",
     "river": "Bharathapuzha",
     "district": "Palakkad",
@@ -1452,7 +1386,7 @@
     "state": "Kerala"
   },
   {
-    "id": 133,
+    "id": 127,
     "name": "Siruvani",
     "river": "Siruvani",
     "district": "Palakkad",
@@ -1463,7 +1397,7 @@
     "state": "Kerala"
   },
   {
-    "id": 134,
+    "id": 128,
     "name": "Nugu",
     "river": "Nugu",
     "district": "Mysuru",
@@ -1474,7 +1408,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 135,
+    "id": 129,
     "name": "Bheema",
     "river": "Bheema",
     "district": "Yadgir",
@@ -1485,7 +1419,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 136,
+    "id": 130,
     "name": "Hipparagi",
     "river": "Krishna",
     "district": "Bagalkot",
@@ -1496,7 +1430,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 137,
+    "id": 131,
     "name": "Narayanpur",
     "river": "Krishna",
     "district": "Yadgir",
@@ -1507,7 +1441,7 @@
     "state": "Karnataka"
   },
   {
-    "id": 138,
+    "id": 132,
     "name": "Tungabhadra HLC",
     "river": "Tungabhadra",
     "district": "Koppal",
@@ -1518,8 +1452,8 @@
     "state": "Karnataka"
   },
   {
-    "id": 139,
-    "name": "Hasdeo Bango",
+    "id": 133,
+    "name": "Hasdeo Bango (Minimata)",
     "river": "Hasdeo",
     "district": "Korba",
     "level": 57.4,
@@ -1529,7 +1463,7 @@
     "state": "Chhattisgarh"
   },
   {
-    "id": 140,
+    "id": 134,
     "name": "Dudhawa",
     "river": "Seonath",
     "district": "Durg",
@@ -1540,7 +1474,7 @@
     "state": "Chhattisgarh"
   },
   {
-    "id": 141,
+    "id": 135,
     "name": "Mahanadi Reservoir",
     "river": "Mahanadi",
     "district": "Raipur",
@@ -1551,18 +1485,7 @@
     "state": "Chhattisgarh"
   },
   {
-    "id": 142,
-    "name": "Minimata Bango",
-    "river": "Hasdeo",
-    "district": "Bilaspur",
-    "level": 54.8,
-    "capacity": 134.5,
-    "inflow": 4100,
-    "outflow": 3400,
-    "state": "Chhattisgarh"
-  },
-  {
-    "id": 143,
+    "id": 136,
     "name": "Murumsilli",
     "river": "Sheonath",
     "district": "Rajnandgaon",
@@ -1573,7 +1496,7 @@
     "state": "Chhattisgarh"
   },
   {
-    "id": 144,
+    "id": 137,
     "name": "Rengali",
     "river": "Brahmani",
     "district": "Angul",
@@ -1584,7 +1507,7 @@
     "state": "Odisha"
   },
   {
-    "id": 145,
+    "id": 138,
     "name": "Indravati",
     "river": "Indravati",
     "district": "Nabarangapur",
@@ -1595,7 +1518,7 @@
     "state": "Odisha"
   },
   {
-    "id": 146,
+    "id": 139,
     "name": "Balimela",
     "river": "Sileru",
     "district": "Malkangiri",
@@ -1606,7 +1529,7 @@
     "state": "Odisha"
   },
   {
-    "id": 147,
+    "id": 140,
     "name": "Upper Kolab",
     "river": "Kolab",
     "district": "Koraput",

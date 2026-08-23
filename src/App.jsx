@@ -3428,6 +3428,7 @@ const DAM_PHOTOS = {
   "Pong (HP)": "/images/dams/pong.jpg",
   "Maharana Pratap Sagar": "/images/dams/pong.jpg",
   "Rihand": "/images/dams/rihand.jpg",
+  "Rihand (Gobind Ballabh Pant Sagar)": "/images/dams/rihand.jpg",
   "Gobind Ballabh Pant Sagar": "/images/dams/rihand.jpg",
   "Obra Dam": "/images/dams/rihand.jpg",
   "Idukki": "/images/dams/idukki.jpg",
@@ -3443,6 +3444,8 @@ const DAM_PHOTOS = {
   "Rana Pratap Sagar": "/images/dams/ranapratapsagar.jpg",
   "Ramganga": "/images/dams/ramganga.jpg",
   "Bansagar": "/images/dams/bansagar.jpg",
+  "Hasdeo Bango": "/images/dams/bansagar.jpg",
+  "Hasdeo Bango (Minimata)": "/images/dams/bansagar.jpg",
   "Rengali": "/images/dams/rengali.jpg",
   "Chandil": "/images/dams/chandil.jpg",
   "Ujani": "/images/dams/ujani.jpg",
@@ -3458,6 +3461,7 @@ const DAM_PHOTOS = {
   "Bisalpur": "/images/dams/bisalpur.jpg",
   "Mahi Bajaj Sagar": "/images/dams/mahibajaj.jpg",
   "Ranjit Sagar": "/images/dams/ranjitsagar.jpg",
+  "Ranjit Sagar (Thein Dam)": "/images/dams/ranjitsagar.jpg",
   "Thein (Ranjit Sagar)": "/images/dams/ranjitsagar.jpg",
   "Ranjitsagar (Thein)": "/images/dams/ranjitsagar.jpg"
 };
