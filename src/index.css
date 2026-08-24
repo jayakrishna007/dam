@@ -11,6 +11,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Standard Firefox Scrollbar */
+  scrollbar-width: auto;
+  scrollbar-color: #0284c7 #030a14;
 }
 
 body {
@@ -23,3 +27,28 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* Universal WebKit Scrollbar - High Visibility */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: #030a14;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(3, 10, 20, 0.95);
+  border-left: 1px solid rgba(6, 182, 212, 0.15);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 100%);
+  border-radius: 8px;
+  border: 2px solid #030a14;
+  transition: all 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+}
+

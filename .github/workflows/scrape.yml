@@ -2,8 +2,12 @@ name: Daily Dam Scraper
 
 on:
   schedule:
-    # 10:00 AM IST is 4:30 AM UTC (10:00 - 5:30 = 4:30)
-    - cron: '30 4 * * *'
+    # 1. Morning Sync: 11:30 AM IST (06:00 UTC) - Captures TB Board, BBMB & TN Ag morning bulletins
+    - cron: '0 6 * * *'
+    # 2. Afternoon Sync: 03:30 PM IST (10:00 UTC) - Captures Central Water Commission & State WRD updates
+    - cron: '0 10 * * *'
+    # 3. Evening Sync: 07:30 PM IST (14:00 UTC) - Captures evening floodgate & outflow changes
+    - cron: '0 14 * * *'
   workflow_dispatch: # Allows manual trigger from the Actions tab on GitHub
 
 jobs:

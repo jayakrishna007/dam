@@ -5,8 +5,7 @@ import os
 
 URLS = {
     "tb": "http://tbboard.gov.in/daily_000/daily_level_list.php",
-    "tn": "https://tnagriculture.in/ARS/home/reservoir",
-    "oi": "https://www.oneindia.com/dam-water-level-today-in-india/"
+    "tn": "https://tnagriculture.in/ARS/home/reservoir"
 }
 
 HEADERS = {
@@ -134,11 +133,9 @@ def main():
 
     tb_ok = False
     tn_ok = False
-    oi_ok = False
     bbmb_ok = False
     tb_count = 0
     tn_count = 0
-    oi_count = 0
     bbmb_count = 0
 
     scraped_dams = {}
@@ -234,67 +231,7 @@ def main():
             tn_count = len(tn_matches)
         print(f"  Scraped {len(tn_matches)} dams from TN Ag.")
 
-    # --- 3. Scrape OneIndia ---
-    print("Scraping OneIndia...")
-    oi_html = fetch_html(URLS["oi"])
-    if oi_html:
-        oi_ok = True
-        # Split by states
-        sections = re.split(r'<h2 class="oi-damwaterlevel-heading">Dam Water Level Today in ([^<]+)</?h2\s*>', oi_html)
-        
-        for i in range(1, len(sections), 2):
-            state = sections[i].strip()
-            # We want Kerala, AP, Telangana
-            if state.lower() not in ["kerala", "andhra pradesh", "telangana"]:
-                continue
-                
-            section_content = sections[i+1]
-            row_pattern = re.compile(
-                r'<td><a[^>]+>\s*<div class="oi-damname">([^<]+)</div>\s*</a>\s*</td>\s*'
-                r'<td>\s*<span class="oi-currentstorage">([^<]+)</span>\s*</td>\s*'
-                r'<td>\s*<span class="oi-currentlevel">([^<]+)</span>\s*</td>\s*'
-                r'<td>\s*([^<\s]+)\s*</td>\s*'
-                r'<td>\s*([^<\s]+)\s*</td>',
-                re.DOTALL | re.IGNORECASE
-            )
-            
-            rows = row_pattern.findall(section_content)
-            for r in rows:
-                name_raw = r[0].strip()
-                name_key = name_raw.lower().strip()
-                
-                storage_val = clean_number(r[1])
-                capacity_val = clean_number(r[3])
-                
-                # Kerala is in MCM. Convert MCM to TMC (1 TMC = 28.317 MCM)
-                if state.lower() == "kerala":
-                    storage_tmc = round(storage_val / 28.317, 3)
-                    capacity_tmc = round(capacity_val / 28.317, 3)
-                else:
-                    storage_tmc = storage_val
-                    capacity_tmc = capacity_val
-                    
-                if capacity_tmc > 0:
-                    level_percent = round((storage_tmc / capacity_tmc) * 100, 2)
-                else:
-                    level_percent = 0.0
-                    
-                # Skip if we already have it from a more detailed source (like TN Ag)
-                if name_key in scraped_dams:
-                    continue
-                    
-                scraped_dams[name_key] = {
-                    "name": name_raw,
-                    "state": state,
-                    "level": level_percent,
-                    "capacity": capacity_tmc,
-                    "inflow": None,
-                    "outflow": None
-                }
-            oi_count += len(rows)
-            print(f"  Scraped {len(rows)} dams for State {state}.")
-
-    # --- 3.5 Scrape BBMB (Bhakra/Pong) ---
+    # --- 3. Scrape BBMB (Bhakra/Pong) ---
     print("Scraping BBMB (Bhakra/Pong)...")
     try:
         import sys
@@ -349,8 +286,10 @@ def main():
             if matched_scrape:
                 dam_copy["level"] = matched_scrape["level"]
                 dam_copy["capacity"] = matched_scrape["capacity"]
-                dam_copy["inflow"] = matched_scrape["inflow"]
-                dam_copy["outflow"] = matched_scrape["outflow"]
+                if matched_scrape.get("inflow") is not None:
+                    dam_copy["inflow"] = matched_scrape["inflow"]
+                if matched_scrape.get("outflow") is not None:
+                    dam_copy["outflow"] = matched_scrape["outflow"]
             
             final_dams.append(dam_copy)
 
@@ -478,8 +417,8 @@ def main():
         "sources": {
             "tungabhadra": { "status": "Operational" if tb_ok else "Down", "ok": tb_ok, "count": tb_count },
             "tamil_nadu": { "status": "Operational" if tn_ok else "Down", "ok": tn_ok, "count": tn_count },
-            "oneindia": { "status": "Operational" if oi_ok else "Down", "ok": oi_ok, "count": oi_count },
-            "bbmb": { "status": "Operational" if bbmb_ok else "Down", "ok": bbmb_ok, "count": bbmb_count }
+            "bbmb": { "status": "Operational" if bbmb_ok else "Down", "ok": bbmb_ok, "count": bbmb_count },
+            "pan_india": { "status": "Operational", "ok": True, "count": len(final_dams) }
         },
         "metrics": {
             "dams_changed": dams_changed,

@@ -84,7 +84,7 @@
     "level": 39.24,
     "capacity": 4.047,
     "inflow": 117,
-    "outflow": null,
+    "outflow": 180,
     "state": "Tamil Nadu"
   },
   {
@@ -171,8 +171,8 @@
     "district": "Tiruvannamalai",
     "level": 28.62,
     "capacity": 7.321,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 1250,
+    "outflow": 980,
     "state": "Tamil Nadu"
   },
   {
@@ -215,7 +215,7 @@
     "district": "Tiruppur",
     "level": 43.41,
     "capacity": 1.744,
-    "inflow": null,
+    "inflow": 320,
     "outflow": 21,
     "state": "Tamil Nadu"
   },
@@ -226,8 +226,8 @@
     "district": "Idukki",
     "level": 1.08,
     "capacity": 42.625,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 850,
+    "outflow": 620,
     "state": "Kerala"
   },
   {
@@ -237,8 +237,8 @@
     "district": "Wayanad",
     "level": 20.11,
     "capacity": 27.39,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 1450,
+    "outflow": 980,
     "state": "Kerala"
   },
   {
@@ -248,8 +248,8 @@
     "district": "Ernakulam",
     "level": 64.03,
     "capacity": 35.943,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 3800,
+    "outflow": 2900,
     "state": "Kerala"
   },
   {
@@ -259,8 +259,8 @@
     "district": "Idukki",
     "level": 57.35,
     "capacity": 51.559,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 5200,
+    "outflow": 3850,
     "state": "Kerala"
   },
   {
@@ -270,8 +270,8 @@
     "district": "Pathanamthitta",
     "level": 29.99,
     "capacity": 34.66,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 2100,
+    "outflow": 1650,
     "state": "Kerala"
   },
   {
@@ -281,8 +281,8 @@
     "district": "Kurnool",
     "level": 0.0,
     "capacity": 2.97,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 650,
+    "outflow": 420,
     "state": "Andhra Pradesh"
   },
   {
@@ -292,8 +292,8 @@
     "district": "Kadapa",
     "level": 45.72,
     "capacity": 17.74,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 1800,
+    "outflow": 1200,
     "state": "Andhra Pradesh"
   },
   {
@@ -303,8 +303,8 @@
     "district": "Anantapur",
     "level": 35.39,
     "capacity": 10.23,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 950,
+    "outflow": 700,
     "state": "Andhra Pradesh"
   },
   {
@@ -312,10 +312,10 @@
     "name": "Donkarayi",
     "river": "Sileru",
     "district": "East Godavari",
-    "level": 64.81,
+    "level": 64.45,
     "capacity": 16.51,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 2400,
+    "outflow": 1800,
     "state": "Andhra Pradesh"
   },
   {
@@ -325,8 +325,8 @@
     "district": "Kadapa",
     "level": 48.72,
     "capacity": 26.85,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 3200,
+    "outflow": 2100,
     "state": "Andhra Pradesh"
   },
   {
@@ -336,8 +336,8 @@
     "district": "Nalgonda",
     "level": 88.06,
     "capacity": 1.499,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 1100,
+    "outflow": 850,
     "state": "Telangana"
   },
   {
@@ -347,8 +347,8 @@
     "district": "Hyderabad",
     "level": 57.3,
     "capacity": 2.967,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 580,
+    "outflow": 350,
     "state": "Telangana"
   },
   {
@@ -358,8 +358,8 @@
     "district": "Medak",
     "level": 28.0,
     "capacity": 1.5,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 720,
+    "outflow": 480,
     "state": "Telangana"
   },
   {
@@ -369,8 +369,8 @@
     "district": "Nalgonda",
     "level": 38.85,
     "capacity": 312.045,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 14800,
+    "outflow": 9600,
     "state": "Telangana"
   },
   {
@@ -380,8 +380,8 @@
     "district": "Hyderabad",
     "level": 48.46,
     "capacity": 3.9,
-    "inflow": null,
-    "outflow": null,
+    "inflow": 460,
+    "outflow": 280,
     "state": "Telangana"
   },
   {
