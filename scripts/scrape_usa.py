@@ -5,7 +5,7 @@ scrape_usa.py – Scrape US reservoir water levels from:
 
 Returns a dict of {key: dam_dict} for merging into dams_usa.json.
 Storage units: acre-feet (AF). Level reported as % of capacity.
-1 AF = 0.001233482 TMC
+1 AF = 0.00004356 TMC (1 AF = 43,560 cu ft, 1 TMC = 10^9 cu ft)
 """
 
 import urllib.request
@@ -21,7 +21,7 @@ HEADERS = {
 }
 
 # 1 acre-foot in TMC
-AF_TO_TMC = 0.001233482
+AF_TO_TMC = 0.00004356
 
 # ────────────────────────────────────────────────────────────
 # SECTION 1 — CDEC California Reservoirs

@@ -2645,7 +2645,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
 
   const flowUnit = dam.unit || "cusecs";
   const netFlowRaw = (dam.inflow || 0) - (dam.outflow || 0);
-  const netFlowCusecs = dam.unit === "m3s" ? netFlowRaw * 35.314666 : netFlowRaw;
+  const netFlowCusecs = (dam.unit === "m3s" || dam.unit === "m3/s") ? netFlowRaw * 35.3146667 : netFlowRaw;
   const netFlowTmcPerDay = netFlowCusecs * 0.0000864;
 
   const localizedTitle = () => {
@@ -5866,7 +5866,7 @@ export default function App() {
                 color="#38BDF8"
                 sub={
                   selectedCountry === "USA" 
-                    ? `Total: ${Math.round(currentTotalCapacity / 0.00123348).toLocaleString()}k AF (${currentTotalCapacity} TMC)`
+                    ? `Total: ${Math.round(currentTotalCapacity / 0.04356).toLocaleString()}k AF (${currentTotalCapacity} TMC)`
                     : selectedCountry === "Brazil"
                       ? `Total: ${Math.round(currentTotalCapacity / 0.035315).toLocaleString()} hm³ (${currentTotalCapacity} TMC)`
                       : t("totalCapacitySub")
