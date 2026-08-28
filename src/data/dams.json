@@ -4,44 +4,48 @@
     "name": "Krishna Raja Sagara (KRS)",
     "river": "Cauvery",
     "district": "Mysuru",
-    "level": 60.56,
+    "level": 61.4,
     "capacity": 49.452,
-    "inflow": 4004,
-    "outflow": 4543,
-    "state": "Karnataka"
+    "inflow": 9438,
+    "outflow": 4478,
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 2,
     "name": "Kabini",
     "river": "Kabini",
     "district": "Mysuru",
-    "level": 66.37,
+    "level": 67.08,
     "capacity": 19.516,
-    "inflow": 9106,
-    "outflow": 7923,
-    "state": "Karnataka"
+    "inflow": 9487,
+    "outflow": 7760,
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 3,
     "name": "Harangi",
     "river": "Harangi",
     "district": "Kodagu",
-    "level": 97.81,
+    "level": 97.33,
     "capacity": 8.5,
-    "inflow": 3638,
-    "outflow": 4975,
-    "state": "Karnataka"
+    "inflow": 5947,
+    "outflow": 6383,
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 4,
     "name": "Hemavathy",
     "river": "Hemavathy",
     "district": "Hassan",
-    "level": 82.34,
+    "level": 81.88,
     "capacity": 37.103,
     "inflow": 3588,
     "outflow": 5500,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 5,
@@ -52,172 +56,188 @@
     "capacity": 105.788,
     "inflow": 16317,
     "outflow": 8914,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 6,
     "name": "Mettur",
     "river": "Cauvery",
     "district": "Salem",
-    "level": 55.4,
+    "level": 55.85,
     "capacity": 93.47,
-    "inflow": 7454,
-    "outflow": 2003,
-    "state": "Tamil Nadu"
+    "inflow": 7094,
+    "outflow": 2002,
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 7,
     "name": "Bhavanisagar",
     "river": "Bhavani",
     "district": "Erode",
-    "level": 14.86,
+    "level": 14.49,
     "capacity": 32.8,
-    "inflow": 2095,
+    "inflow": 1052,
     "outflow": 2400,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 8,
     "name": "Amaravathi",
     "river": "Amaravathy",
     "district": "Tiruppur",
-    "level": 42.4,
+    "level": 43.39,
     "capacity": 4.047,
-    "inflow": 450,
+    "inflow": 471,
     "outflow": 180,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 9,
     "name": "Periyar",
     "river": "Periyar",
     "district": "Theni",
-    "level": 29.45,
+    "level": 29.74,
     "capacity": 10.57,
-    "inflow": 1606,
+    "inflow": 1151,
     "outflow": 800,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 10,
     "name": "Vaigai",
     "river": "Vaigai",
     "district": "Theni",
-    "level": 12.2,
+    "level": 12.49,
     "capacity": 6.091,
-    "inflow": 430,
-    "outflow": 86,
-    "state": "Tamil Nadu"
+    "inflow": 315,
+    "outflow": 126,
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 11,
     "name": "Papanasam",
     "river": "Thamirabarani",
     "district": "Tirunelveli",
-    "level": 32.22,
+    "level": 32.05,
     "capacity": 5.5,
-    "inflow": 1332,
+    "inflow": 942,
     "outflow": 1105,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 12,
     "name": "Manimuthar",
     "river": "Manimuthar",
     "district": "Tirunelveli",
-    "level": 20.5,
+    "level": 20.4,
     "capacity": 5.511,
-    "inflow": 71,
+    "inflow": 107,
     "outflow": 155,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 13,
     "name": "Pechiparai",
     "river": "Kodayar",
     "district": "Kanyakumari",
-    "level": 43.26,
+    "level": 43.08,
     "capacity": 4.35,
-    "inflow": 557,
+    "inflow": 486,
     "outflow": 561,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 14,
     "name": "Perunchani",
     "river": "Paralayar",
     "district": "Kanyakumari",
-    "level": 45.47,
+    "level": 44.91,
     "capacity": 2.89,
-    "inflow": 255,
+    "inflow": 181,
     "outflow": 350,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 15,
     "name": "Krishnagiri",
     "river": "Thenpennai",
     "district": "Krishnagiri",
-    "level": 64.71,
+    "level": 66.39,
     "capacity": 1.666,
-    "inflow": 370,
+    "inflow": 493,
     "outflow": 162,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 16,
     "name": "Sathanur",
     "river": "Thenpennai",
     "district": "Tiruvannamalai",
-    "level": 28.43,
+    "level": 28.36,
     "capacity": 7.321,
     "inflow": 1250,
     "outflow": 980,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 17,
     "name": "Sholayar",
     "river": "Sholayar",
     "district": "Coimbatore",
-    "level": 47.3,
+    "level": 47.78,
     "capacity": 5.046,
-    "inflow": 2500,
-    "outflow": 1551,
-    "state": "Tamil Nadu"
+    "inflow": 1901,
+    "outflow": 1623,
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 18,
     "name": "Parambikulam",
     "river": "Parambikulam",
     "district": "Palakkad",
-    "level": 55.39,
+    "level": 56.24,
     "capacity": 13.454,
-    "inflow": 1463,
-    "outflow": 40,
-    "state": "Tamil Nadu"
+    "inflow": 1376,
+    "outflow": 35,
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 19,
     "name": "Aliyar",
     "river": "Aliyar",
     "district": "Coimbatore",
-    "level": 18.63,
+    "level": 19.75,
     "capacity": 3.864,
-    "inflow": 432,
+    "inflow": 647,
     "outflow": 150,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 20,
     "name": "Thirumurthy",
     "river": "Thirumurthy",
     "district": "Tiruppur",
-    "level": 42.89,
+    "level": 42.78,
     "capacity": 1.744,
     "inflow": 320,
     "outflow": 21,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 21,
@@ -228,7 +248,8 @@
     "capacity": 42.625,
     "inflow": 850,
     "outflow": 620,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 22,
@@ -239,7 +260,8 @@
     "capacity": 27.39,
     "inflow": 1450,
     "outflow": 980,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 23,
@@ -250,7 +272,8 @@
     "capacity": 35.943,
     "inflow": 3800,
     "outflow": 2900,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 24,
@@ -261,7 +284,8 @@
     "capacity": 51.559,
     "inflow": 5200,
     "outflow": 3850,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 25,
@@ -272,7 +296,8 @@
     "capacity": 34.66,
     "inflow": 2100,
     "outflow": 1650,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 26,
@@ -283,7 +308,8 @@
     "capacity": 2.97,
     "inflow": 650,
     "outflow": 420,
-    "state": "Andhra Pradesh"
+    "state": "Andhra Pradesh",
+    "country": "India"
   },
   {
     "id": 27,
@@ -294,7 +320,8 @@
     "capacity": 17.74,
     "inflow": 1800,
     "outflow": 1200,
-    "state": "Andhra Pradesh"
+    "state": "Andhra Pradesh",
+    "country": "India"
   },
   {
     "id": 28,
@@ -305,7 +332,8 @@
     "capacity": 10.23,
     "inflow": 950,
     "outflow": 700,
-    "state": "Andhra Pradesh"
+    "state": "Andhra Pradesh",
+    "country": "India"
   },
   {
     "id": 29,
@@ -316,7 +344,8 @@
     "capacity": 16.51,
     "inflow": 2400,
     "outflow": 1800,
-    "state": "Andhra Pradesh"
+    "state": "Andhra Pradesh",
+    "country": "India"
   },
   {
     "id": 30,
@@ -327,7 +356,8 @@
     "capacity": 26.85,
     "inflow": 3200,
     "outflow": 2100,
-    "state": "Andhra Pradesh"
+    "state": "Andhra Pradesh",
+    "country": "India"
   },
   {
     "id": 31,
@@ -338,7 +368,8 @@
     "capacity": 1.499,
     "inflow": 1100,
     "outflow": 850,
-    "state": "Telangana"
+    "state": "Telangana",
+    "country": "India"
   },
   {
     "id": 32,
@@ -349,7 +380,8 @@
     "capacity": 2.967,
     "inflow": 580,
     "outflow": 350,
-    "state": "Telangana"
+    "state": "Telangana",
+    "country": "India"
   },
   {
     "id": 33,
@@ -360,7 +392,8 @@
     "capacity": 1.5,
     "inflow": 720,
     "outflow": 480,
-    "state": "Telangana"
+    "state": "Telangana",
+    "country": "India"
   },
   {
     "id": 34,
@@ -371,7 +404,8 @@
     "capacity": 312.045,
     "inflow": 14800,
     "outflow": 9600,
-    "state": "Telangana"
+    "state": "Telangana",
+    "country": "India"
   },
   {
     "id": 35,
@@ -382,7 +416,8 @@
     "capacity": 3.9,
     "inflow": 460,
     "outflow": 280,
-    "state": "Telangana"
+    "state": "Telangana",
+    "country": "India"
   },
   {
     "id": 36,
@@ -393,7 +428,8 @@
     "capacity": 197.7,
     "inflow": 34335,
     "outflow": 25738,
-    "state": "Himachal Pradesh"
+    "state": "Himachal Pradesh",
+    "country": "India"
   },
   {
     "id": 37,
@@ -404,7 +440,8 @@
     "capacity": 257.0,
     "inflow": 23071,
     "outflow": 14518,
-    "state": "Himachal Pradesh"
+    "state": "Himachal Pradesh",
+    "country": "India"
   },
   {
     "id": 38,
@@ -415,7 +452,8 @@
     "capacity": 71.5,
     "inflow": 15200,
     "outflow": 10400,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 39,
@@ -426,7 +464,8 @@
     "capacity": 129.56,
     "inflow": 22000,
     "outflow": 9800,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 40,
@@ -437,7 +476,8 @@
     "capacity": 151.75,
     "inflow": 6800,
     "outflow": 3200,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 41,
@@ -448,7 +488,8 @@
     "capacity": 155.0,
     "inflow": 11800,
     "outflow": 14200,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 42,
@@ -459,7 +500,8 @@
     "capacity": 37.65,
     "inflow": 3100,
     "outflow": 800,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 43,
@@ -470,7 +512,8 @@
     "capacity": 42.07,
     "inflow": 4800,
     "outflow": 1200,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 44,
@@ -481,7 +524,8 @@
     "capacity": 21.66,
     "inflow": 3900,
     "outflow": 2100,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 45,
@@ -492,7 +536,8 @@
     "capacity": 334.8,
     "inflow": 1200,
     "outflow": 1800,
-    "state": "Gujarat"
+    "state": "Gujarat",
+    "country": "India"
   },
   {
     "id": 46,
@@ -503,7 +548,8 @@
     "capacity": 342.9,
     "inflow": 2500,
     "outflow": 3200,
-    "state": "Madhya Pradesh"
+    "state": "Madhya Pradesh",
+    "country": "India"
   },
   {
     "id": 47,
@@ -514,7 +560,8 @@
     "capacity": 205.1,
     "inflow": 4100,
     "outflow": 5000,
-    "state": "Odisha"
+    "state": "Odisha",
+    "country": "India"
   },
   {
     "id": 48,
@@ -525,7 +572,8 @@
     "capacity": 374.0,
     "inflow": 1500,
     "outflow": 2000,
-    "state": "Uttar Pradesh"
+    "state": "Uttar Pradesh",
+    "country": "India"
   },
   {
     "id": 49,
@@ -536,7 +584,8 @@
     "capacity": 47.1,
     "inflow": 800,
     "outflow": 1200,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "country": "India"
   },
   {
     "id": 50,
@@ -547,7 +596,8 @@
     "capacity": 105.27,
     "inflow": 14200,
     "outflow": 12500,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 51,
@@ -558,7 +608,8 @@
     "capacity": 102.75,
     "inflow": 9800,
     "outflow": 6400,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 52,
@@ -569,7 +620,8 @@
     "capacity": 117.24,
     "inflow": 18500,
     "outflow": 14200,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 53,
@@ -580,7 +632,8 @@
     "capacity": 3.07,
     "inflow": 1200,
     "outflow": 900,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 54,
@@ -591,7 +644,8 @@
     "capacity": 33.2,
     "inflow": 4500,
     "outflow": 3800,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 55,
@@ -602,7 +656,8 @@
     "capacity": 215.8,
     "inflow": 28400,
     "outflow": 22100,
-    "state": "Andhra Pradesh"
+    "state": "Andhra Pradesh",
+    "country": "India"
   },
   {
     "id": 56,
@@ -613,7 +668,8 @@
     "capacity": 90.31,
     "inflow": 11200,
     "outflow": 8900,
-    "state": "Telangana"
+    "state": "Telangana",
+    "country": "India"
   },
   {
     "id": 57,
@@ -624,7 +680,8 @@
     "capacity": 78.0,
     "inflow": 5400,
     "outflow": 4200,
-    "state": "Andhra Pradesh"
+    "state": "Andhra Pradesh",
+    "country": "India"
   },
   {
     "id": 58,
@@ -635,7 +692,8 @@
     "capacity": 68.03,
     "inflow": 3200,
     "outflow": 2800,
-    "state": "Andhra Pradesh"
+    "state": "Andhra Pradesh",
+    "country": "India"
   },
   {
     "id": 59,
@@ -646,7 +704,8 @@
     "capacity": 29.91,
     "inflow": 2100,
     "outflow": 1600,
-    "state": "Telangana"
+    "state": "Telangana",
+    "country": "India"
   },
   {
     "id": 60,
@@ -657,7 +716,8 @@
     "capacity": 257.2,
     "inflow": 19500,
     "outflow": 16200,
-    "state": "Gujarat"
+    "state": "Gujarat",
+    "country": "India"
   },
   {
     "id": 61,
@@ -668,7 +728,8 @@
     "capacity": 44.0,
     "inflow": 4200,
     "outflow": 3500,
-    "state": "Gujarat"
+    "state": "Gujarat",
+    "country": "India"
   },
   {
     "id": 62,
@@ -679,7 +740,8 @@
     "capacity": 28.5,
     "inflow": 2800,
     "outflow": 2100,
-    "state": "Gujarat"
+    "state": "Gujarat",
+    "country": "India"
   },
   {
     "id": 63,
@@ -690,7 +752,8 @@
     "capacity": 273.6,
     "inflow": 18200,
     "outflow": 14500,
-    "state": "Madhya Pradesh"
+    "state": "Madhya Pradesh",
+    "country": "India"
   },
   {
     "id": 64,
@@ -701,7 +764,8 @@
     "capacity": 187.0,
     "inflow": 12400,
     "outflow": 9800,
-    "state": "Madhya Pradesh"
+    "state": "Madhya Pradesh",
+    "country": "India"
   },
   {
     "id": 65,
@@ -712,7 +776,8 @@
     "capacity": 81.6,
     "inflow": 8900,
     "outflow": 7200,
-    "state": "Madhya Pradesh"
+    "state": "Madhya Pradesh",
+    "country": "India"
   },
   {
     "id": 66,
@@ -723,7 +788,8 @@
     "capacity": 35.2,
     "inflow": 4500,
     "outflow": 5100,
-    "state": "Madhya Pradesh"
+    "state": "Madhya Pradesh",
+    "country": "India"
   },
   {
     "id": 67,
@@ -734,7 +800,8 @@
     "capacity": 38.7,
     "inflow": 3800,
     "outflow": 2400,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 68,
@@ -745,7 +812,8 @@
     "capacity": 102.4,
     "inflow": 9400,
     "outflow": 7800,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 69,
@@ -756,7 +824,8 @@
     "capacity": 73.5,
     "inflow": 8200,
     "outflow": 6900,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 70,
@@ -767,7 +836,8 @@
     "capacity": 124.3,
     "inflow": 14500,
     "outflow": 11800,
-    "state": "Uttarakhand"
+    "state": "Uttarakhand",
+    "country": "India"
   },
   {
     "id": 71,
@@ -778,7 +848,8 @@
     "capacity": 82.6,
     "inflow": 7600,
     "outflow": 6200,
-    "state": "Punjab"
+    "state": "Punjab",
+    "country": "India"
   },
   {
     "id": 72,
@@ -789,7 +860,8 @@
     "capacity": 15.5,
     "inflow": 1800,
     "outflow": 1400,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 73,
@@ -800,7 +872,8 @@
     "capacity": 145.75,
     "inflow": 3200,
     "outflow": 2800,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "country": "India"
   },
   {
     "id": 74,
@@ -811,7 +884,8 @@
     "capacity": 36.3,
     "inflow": 620,
     "outflow": 480,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "country": "India"
   },
   {
     "id": 75,
@@ -822,7 +896,8 @@
     "capacity": 38.4,
     "inflow": 1100,
     "outflow": 900,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "country": "India"
   },
   {
     "id": 76,
@@ -833,7 +908,8 @@
     "capacity": 22.8,
     "inflow": 4800,
     "outflow": 4200,
-    "state": "West Bengal"
+    "state": "West Bengal",
+    "country": "India"
   },
   {
     "id": 77,
@@ -844,7 +920,8 @@
     "capacity": 125.2,
     "inflow": 5600,
     "outflow": 4900,
-    "state": "West Bengal"
+    "state": "West Bengal",
+    "country": "India"
   },
   {
     "id": 78,
@@ -855,7 +932,8 @@
     "capacity": 133.2,
     "inflow": 6400,
     "outflow": 5200,
-    "state": "Madhya Pradesh"
+    "state": "Madhya Pradesh",
+    "country": "India"
   },
   {
     "id": 79,
@@ -866,7 +944,8 @@
     "capacity": 86.6,
     "inflow": 7200,
     "outflow": 5800,
-    "state": "Madhya Pradesh"
+    "state": "Madhya Pradesh",
+    "country": "India"
   },
   {
     "id": 80,
@@ -877,7 +956,8 @@
     "capacity": 79.6,
     "inflow": 4100,
     "outflow": 3300,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 81,
@@ -888,7 +968,8 @@
     "capacity": 76.8,
     "inflow": 3700,
     "outflow": 2900,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 82,
@@ -899,7 +980,8 @@
     "capacity": 52.7,
     "inflow": 2600,
     "outflow": 2100,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 83,
@@ -910,7 +992,8 @@
     "capacity": 63.4,
     "inflow": 4900,
     "outflow": 3800,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 84,
@@ -921,7 +1004,8 @@
     "capacity": 11.6,
     "inflow": 1400,
     "outflow": 1200,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 85,
@@ -932,7 +1016,8 @@
     "capacity": 13.1,
     "inflow": 2100,
     "outflow": 1800,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 86,
@@ -943,7 +1028,8 @@
     "capacity": 12.9,
     "inflow": 1900,
     "outflow": 1600,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 87,
@@ -954,7 +1040,8 @@
     "capacity": 16.7,
     "inflow": 820,
     "outflow": 650,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 88,
@@ -965,7 +1052,8 @@
     "capacity": 26.5,
     "inflow": 640,
     "outflow": 480,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 89,
@@ -976,7 +1064,8 @@
     "capacity": 22.3,
     "inflow": 920,
     "outflow": 760,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 90,
@@ -987,7 +1076,8 @@
     "capacity": 7.6,
     "inflow": 310,
     "outflow": 240,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 91,
@@ -998,7 +1088,8 @@
     "capacity": 17.8,
     "inflow": 780,
     "outflow": 620,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 92,
@@ -1009,7 +1100,8 @@
     "capacity": 49.2,
     "inflow": 1800,
     "outflow": 1500,
-    "state": "Uttar Pradesh"
+    "state": "Uttar Pradesh",
+    "country": "India"
   },
   {
     "id": 93,
@@ -1020,7 +1112,8 @@
     "capacity": 113.2,
     "inflow": 2600,
     "outflow": 2100,
-    "state": "Uttar Pradesh"
+    "state": "Uttar Pradesh",
+    "country": "India"
   },
   {
     "id": 94,
@@ -1031,7 +1124,8 @@
     "capacity": 243.8,
     "inflow": 6400,
     "outflow": 5200,
-    "state": "Uttarakhand"
+    "state": "Uttarakhand",
+    "country": "India"
   },
   {
     "id": 95,
@@ -1042,7 +1136,8 @@
     "capacity": 11.1,
     "inflow": 3200,
     "outflow": 2900,
-    "state": "Uttarakhand"
+    "state": "Uttarakhand",
+    "country": "India"
   },
   {
     "id": 96,
@@ -1053,7 +1148,8 @@
     "capacity": 14.1,
     "inflow": 1600,
     "outflow": 1300,
-    "state": "Uttarakhand"
+    "state": "Uttarakhand",
+    "country": "India"
   },
   {
     "id": 97,
@@ -1064,7 +1160,8 @@
     "capacity": 14.8,
     "inflow": 2400,
     "outflow": 2100,
-    "state": "Punjab"
+    "state": "Punjab",
+    "country": "India"
   },
   {
     "id": 98,
@@ -1075,7 +1172,8 @@
     "capacity": 5.9,
     "inflow": 2800,
     "outflow": 2500,
-    "state": "Himachal Pradesh"
+    "state": "Himachal Pradesh",
+    "country": "India"
   },
   {
     "id": 99,
@@ -1086,7 +1184,8 @@
     "capacity": 57.0,
     "inflow": 3600,
     "outflow": 3100,
-    "state": "Himachal Pradesh"
+    "state": "Himachal Pradesh",
+    "country": "India"
   },
   {
     "id": 100,
@@ -1097,7 +1196,8 @@
     "capacity": 11.4,
     "inflow": 1900,
     "outflow": 1600,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 101,
@@ -1108,7 +1208,8 @@
     "capacity": 6.3,
     "inflow": 680,
     "outflow": 560,
-    "state": "Himachal Pradesh"
+    "state": "Himachal Pradesh",
+    "country": "India"
   },
   {
     "id": 102,
@@ -1119,7 +1220,8 @@
     "capacity": 43.6,
     "inflow": 5200,
     "outflow": 4400,
-    "state": "Himachal Pradesh"
+    "state": "Himachal Pradesh",
+    "country": "India"
   },
   {
     "id": 103,
@@ -1130,7 +1232,8 @@
     "capacity": 20.7,
     "inflow": 1600,
     "outflow": 1300,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 104,
@@ -1141,7 +1244,8 @@
     "capacity": 86.4,
     "inflow": 4100,
     "outflow": 3400,
-    "state": "Maharashtra"
+    "state": "Maharashtra",
+    "country": "India"
   },
   {
     "id": 105,
@@ -1152,7 +1256,8 @@
     "capacity": 18.6,
     "inflow": 1800,
     "outflow": 1500,
-    "state": "Gujarat"
+    "state": "Gujarat",
+    "country": "India"
   },
   {
     "id": 106,
@@ -1163,7 +1268,8 @@
     "capacity": 17.9,
     "inflow": 1100,
     "outflow": 890,
-    "state": "Gujarat"
+    "state": "Gujarat",
+    "country": "India"
   },
   {
     "id": 107,
@@ -1174,7 +1280,8 @@
     "capacity": 8.4,
     "inflow": 560,
     "outflow": 440,
-    "state": "Assam"
+    "state": "Assam",
+    "country": "India"
   },
   {
     "id": 108,
@@ -1185,7 +1292,8 @@
     "capacity": 4.6,
     "inflow": 420,
     "outflow": 340,
-    "state": "Meghalaya"
+    "state": "Meghalaya",
+    "country": "India"
   },
   {
     "id": 109,
@@ -1196,7 +1304,8 @@
     "capacity": 8.2,
     "inflow": 680,
     "outflow": 560,
-    "state": "Manipur"
+    "state": "Manipur",
+    "country": "India"
   },
   {
     "id": 110,
@@ -1207,7 +1316,8 @@
     "capacity": 14.9,
     "inflow": 1200,
     "outflow": 980,
-    "state": "Assam"
+    "state": "Assam",
+    "country": "India"
   },
   {
     "id": 111,
@@ -1218,7 +1328,8 @@
     "capacity": 22.7,
     "inflow": 1800,
     "outflow": 1500,
-    "state": "Assam"
+    "state": "Assam",
+    "country": "India"
   },
   {
     "id": 112,
@@ -1229,7 +1340,8 @@
     "capacity": 18.4,
     "inflow": 1400,
     "outflow": 1200,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "country": "India"
   },
   {
     "id": 113,
@@ -1240,7 +1352,8 @@
     "capacity": 195.4,
     "inflow": 4200,
     "outflow": 3600,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "country": "India"
   },
   {
     "id": 114,
@@ -1251,7 +1364,8 @@
     "capacity": 33.8,
     "inflow": 1100,
     "outflow": 920,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "country": "India"
   },
   {
     "id": 115,
@@ -1262,7 +1376,8 @@
     "capacity": 127.8,
     "inflow": 3800,
     "outflow": 3200,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "country": "India"
   },
   {
     "id": 116,
@@ -1273,7 +1388,8 @@
     "capacity": 11.2,
     "inflow": 480,
     "outflow": 380,
-    "state": "Bihar"
+    "state": "Bihar",
+    "country": "India"
   },
   {
     "id": 117,
@@ -1284,7 +1400,8 @@
     "capacity": 8.6,
     "inflow": 960,
     "outflow": 820,
-    "state": "Bihar"
+    "state": "Bihar",
+    "country": "India"
   },
   {
     "id": 118,
@@ -1295,7 +1412,8 @@
     "capacity": 21.4,
     "inflow": 1600,
     "outflow": 1300,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 119,
@@ -1306,7 +1424,8 @@
     "capacity": 22.2,
     "inflow": 7400,
     "outflow": 6800,
-    "state": "Rajasthan"
+    "state": "Rajasthan",
+    "country": "India"
   },
   {
     "id": 120,
@@ -1317,7 +1436,8 @@
     "capacity": 3.8,
     "inflow": 8600,
     "outflow": 7800,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 121,
@@ -1328,7 +1448,8 @@
     "capacity": 3.3,
     "inflow": 240,
     "outflow": 180,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 122,
@@ -1339,7 +1460,8 @@
     "capacity": 3.3,
     "inflow": 380,
     "outflow": 290,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 123,
@@ -1350,7 +1472,8 @@
     "capacity": 3.6,
     "inflow": 420,
     "outflow": 320,
-    "state": "Tamil Nadu"
+    "state": "Tamil Nadu",
+    "country": "India"
   },
   {
     "id": 124,
@@ -1361,7 +1484,8 @@
     "capacity": 5.2,
     "inflow": 680,
     "outflow": 540,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 125,
@@ -1372,7 +1496,8 @@
     "capacity": 41.3,
     "inflow": 2100,
     "outflow": 1700,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 126,
@@ -1383,7 +1508,8 @@
     "capacity": 15.1,
     "inflow": 1400,
     "outflow": 1100,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 127,
@@ -1394,7 +1520,8 @@
     "capacity": 7.7,
     "inflow": 920,
     "outflow": 740,
-    "state": "Kerala"
+    "state": "Kerala",
+    "country": "India"
   },
   {
     "id": 128,
@@ -1405,7 +1532,8 @@
     "capacity": 3.8,
     "inflow": 480,
     "outflow": 380,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 129,
@@ -1416,7 +1544,8 @@
     "capacity": 14.2,
     "inflow": 1200,
     "outflow": 980,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 130,
@@ -1427,7 +1556,8 @@
     "capacity": 11.8,
     "inflow": 1800,
     "outflow": 1500,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 131,
@@ -1438,7 +1568,8 @@
     "capacity": 37.2,
     "inflow": 5400,
     "outflow": 4600,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 132,
@@ -1449,7 +1580,8 @@
     "capacity": 8.6,
     "inflow": 1100,
     "outflow": 920,
-    "state": "Karnataka"
+    "state": "Karnataka",
+    "country": "India"
   },
   {
     "id": 133,
@@ -1460,7 +1592,8 @@
     "capacity": 271.0,
     "inflow": 6800,
     "outflow": 5600,
-    "state": "Chhattisgarh"
+    "state": "Chhattisgarh",
+    "country": "India"
   },
   {
     "id": 134,
@@ -1471,7 +1604,8 @@
     "capacity": 53.4,
     "inflow": 2400,
     "outflow": 2000,
-    "state": "Chhattisgarh"
+    "state": "Chhattisgarh",
+    "country": "India"
   },
   {
     "id": 135,
@@ -1482,7 +1616,8 @@
     "capacity": 44.6,
     "inflow": 3200,
     "outflow": 2700,
-    "state": "Chhattisgarh"
+    "state": "Chhattisgarh",
+    "country": "India"
   },
   {
     "id": 136,
@@ -1493,7 +1628,8 @@
     "capacity": 22.8,
     "inflow": 1100,
     "outflow": 890,
-    "state": "Chhattisgarh"
+    "state": "Chhattisgarh",
+    "country": "India"
   },
   {
     "id": 137,
@@ -1504,7 +1640,8 @@
     "capacity": 184.4,
     "inflow": 5600,
     "outflow": 4700,
-    "state": "Odisha"
+    "state": "Odisha",
+    "country": "India"
   },
   {
     "id": 138,
@@ -1515,7 +1652,8 @@
     "capacity": 77.0,
     "inflow": 4200,
     "outflow": 3500,
-    "state": "Odisha"
+    "state": "Odisha",
+    "country": "India"
   },
   {
     "id": 139,
@@ -1526,7 +1664,8 @@
     "capacity": 90.4,
     "inflow": 3800,
     "outflow": 3200,
-    "state": "Odisha"
+    "state": "Odisha",
+    "country": "India"
   },
   {
     "id": 140,
@@ -1537,6 +1676,7 @@
     "capacity": 118.4,
     "inflow": 4600,
     "outflow": 3900,
-    "state": "Odisha"
+    "state": "Odisha",
+    "country": "India"
   }
 ]

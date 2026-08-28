@@ -1,9 +1,26 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Analytics } from "@vercel/analytics/react";
-import DAMS from "./data/dams.json";
+import DAMS_INDIA from "./data/dams.json";
+import DAMS_USA from "./data/dams_usa.json";
+import DAMS_BRAZIL from "./data/dams_brazil.json";
 import SCRAPE_STATUS from "./data/scrape_status.json";
 import DAM_STATIC_INFO from "./data/dam_static_info.json";
 import TRANSLATIONS from "./data/translations.json";
+
+const DAMS = DAMS_INDIA;
+const ALL_GLOBAL_DAMS = [...DAMS_INDIA, ...DAMS_USA, ...DAMS_BRAZIL];
+
+const COUNTRIES = [
+  { code: "India", label: "🇮🇳 India", name: "India", sub: "All India" },
+  { code: "USA", label: "🇺🇸 USA", name: "USA", sub: "United States" },
+  { code: "Brazil", label: "🇧🇷 Brazil", name: "Brazil", sub: "Brazil" }
+];
+
+const COUNTRY_ZONES = {
+  "India": ["All", "North", "South", "East", "West", "Central"],
+  "USA": ["All", "California", "Colorado River", "Columbia River", "Missouri River", "Tennessee River"],
+  "Brazil": ["All", "Amazon", "São Francisco", "Paraná", "Northeast", "Uruguay"]
+};
 
 // ===================== MONGODB VERCEL SERVERLESS TELEMETRY API =====================
 const callMongo = async (action, collection, payload = {}) => {
@@ -582,19 +599,33 @@ function DamCard({ dam, delay, onClick, t }) {
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontWeight:800,fontSize:15,color:"#DDEFFC",lineHeight:1.25,marginBottom:3}}>{t(dam.name)}</div>
           <div style={{fontSize:11,color:"rgba(220,240,255,0.38)"}}>
-            <span style={{color:mid,fontWeight:600}}>{t(dam.river)}</span>{" \u00b7 "}{t(dam.district)}
+            <span style={{color:mid,fontWeight:600}}>{t(dam.river)}</span>
+            {" \u00b7 "}
+            {dam.district ? t(dam.district) : (dam.basin ? `${dam.basin} \u00b7 ` : "") + (getLocalizedState(dam.state, t) || dam.state)}
           </div>
         </div>
       </div>
       <WaterViz level={safeLevel} outflow={dam.outflow} capacity={dam.capacity} active={vis}/>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
         {[
-          {l:"Inflow",  v:dam.inflow  !== null ? `\u2191 ${fmtK(dam.inflow)}`  : "\u2014", c:"#86EFAC"},
-          {l:"Outflow", v:dam.outflow !== null ? `\u2193 ${fmtK(dam.outflow)}` : "\u2014", c:"#FCA5A5"}
-        ].map(({l,v,c})=>(
+          {
+            l: "Inflow",
+            v: dam.inflow !== null ? `\u2191 ${fmtK(dam.inflow)}` : "\u2014",
+            unit: dam.unit === "m3/s" ? "m³/s" : (dam.unit === "cfs" ? "cfs" : "cusecs"),
+            c: "#86EFAC"
+          },
+          {
+            l: "Outflow",
+            v: dam.outflow !== null ? `\u2193 ${fmtK(dam.outflow)}` : "\u2014",
+            unit: dam.unit === "m3/s" ? "m³/s" : (dam.unit === "cfs" ? "cfs" : "cusecs"),
+            c: "#FCA5A5"
+          }
+        ].map(({l,v,unit,c})=>(
           <div key={l} style={{padding:"9px 11px",background:"rgba(255,255,255,0.025)",borderRadius:9,border:"1px solid rgba(255,255,255,0.05)"}}>
             <div style={{fontSize:10,color:"rgba(220,240,255,0.3)",textTransform:"uppercase",letterSpacing:1,marginBottom:3}}>{l}</div>
-            <div style={{fontSize:14,fontWeight:700,color:c,fontFamily:"monospace"}}>{v}{v !== "\u2014" && <span style={{fontSize:9,opacity:0.55,marginLeft:2}}>cusecs</span>}</div>
+            <div style={{fontSize:13,fontWeight:700,color:c,fontFamily:"monospace"}}>
+              {v}{v !== "\u2014" && <span style={{fontSize:9,opacity:0.65,marginLeft:2}}>{unit}</span>}
+            </div>
           </div>
         ))}
       </div>
@@ -602,12 +633,26 @@ function DamCard({ dam, delay, onClick, t }) {
         border:"1px solid rgba(6,182,212,0.18)",display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
         <div>
           <div style={{fontSize:9,color:"rgba(220,240,255,0.45)",textTransform:"uppercase",letterSpacing:1.2,marginBottom:2}}>Live Storage</div>
-          <div style={{fontSize:18,fontWeight:800,color:"#38BDF8",fontFamily:"monospace"}}>
-            {(dam.capacity*safeLevel/100).toFixed(2)} <span style={{fontSize:11,fontWeight:600,color:"#7DD3FC"}}>TMC</span>
+          <div style={{fontSize:17,fontWeight:800,color:"#38BDF8",fontFamily:"monospace"}}>
+            {(dam.capacity*safeLevel/100).toFixed(2)} <span style={{fontSize:10,fontWeight:600,color:"#7DD3FC"}}>TMC</span>
+            {dam.country === "USA" && dam.capacity_af && (
+              <span style={{fontSize:10,fontWeight:600,color:"#A5F3FC",marginLeft:4}}>
+                ({((dam.capacity_af * safeLevel / 100) / 1000).toFixed(0)}k AF)
+              </span>
+            )}
+            {dam.country === "Brazil" && dam.capacity_hm3 && (
+              <span style={{fontSize:10,fontWeight:600,color:"#A5F3FC",marginLeft:4}}>
+                ({(dam.capacity_hm3 * safeLevel / 100).toFixed(0)} hm³)
+              </span>
+            )}
           </div>
         </div>
         <div style={{textAlign:"right"}}>
-          <div style={{fontSize:9,color:"rgba(220,240,255,0.35)",textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>Cap: {dam.capacity} TMC</div>
+          <div style={{fontSize:9,color:"rgba(220,240,255,0.35)",textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>
+            Cap: {dam.capacity} TMC
+            {dam.country === "USA" && dam.capacity_af ? ` (${(dam.capacity_af/1000).toFixed(0)}k AF)` : ""}
+            {dam.country === "Brazil" && dam.capacity_hm3 ? ` (${dam.capacity_hm3} hm³)` : ""}
+          </div>
           <div style={{fontSize:11,fontWeight:600,color:"rgba(224,242,254,0.5)",fontFamily:"monospace"}}>
             {safeLevel.toFixed(1)}%
           </div>
@@ -2529,14 +2574,14 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
     timings: {
       hours: { en: "9:00 AM - 6:00 PM Daily", hi: "सुबह 9:00 - शाम 6:00 बजे तक", kn: "ಬೆಳಿಗ್ಗೆ 9:00 ರಿಂದ ಸಂಜೆ 6:00 ರವರೆಗೆ", te: "ఉదయం 9:00 నుండి సాయంత్రం 6:00 వరకు", ta: "காலை 9:00 முதல் மாலை 6:00 மணி வரை", ml: "രാവിലെ 9:00 മുതൽ വൈകുന്നേരം 6:00 വരെ" },
       fountain: { en: "N/A", hi: "लागू नहीं", kn: "ಇಲ್ಲ", te: "లేదు", ta: "இல்லை", ml: "ഇല്ല" },
-      fee: { en: "Free admission", hi: "निःशुल्क प्रवेश", kn: "ಉಚಿತ ಪ್ರವೇಶ", te: "ఉచిత ప్రవేశം", ta: "இலவச அனுமதி", ml: "സൗജന്യ പ്രവേശനം" }
+      fee: { en: "Free admission", hi: "निःशुल्क प्रवेश", kn: "ಉಚಿತ ಪ್ರವೇಶ", te: "ఉచిత ప్రవేశം", ta: "இலவச அனுமதி", ml: "സൗಜന്യ പ്രവേശനം" }
     },
     map: {
       flowPath: {
         en: `Outflow discharges downstream into the ${dam.river} River, feeding the local river basin and agricultural canal networks.`,
         hi: `बाहरी बहाव नीचे की ओर ${dam.river} नदी में बहता है, जिससे स्थानीय कृषि नहरों को पानी मिलता है।`,
         kn: `ಹೊರಹರಿವು ಕೆಳಮುಖವಾಗಿ ${dam.river} ನದಿಗೆ ಸೇರುತ್ತದೆ, ಇದು ಸ್ಥಳೀಯ ಕೃಷಿ ಕಾಲುವೆಗಳಿಗೆ ನೀರು ಒದಗಿಸುತ್ತದೆ.`,
-        te: `दिగువకు ప్రవహించే నీరు ${dam.river} నదిలో కలిసి స్థానిక సాగునీటి కాలువలకు అందుతుంది.`,
+        te: `దిగువకు ప్రవహించే నీరు ${dam.river} నదిలో కలిసి స్థానిక సాగునీటి కాలువలకు అందుతుంది.`,
         ta: `நீர் வெளியேற்றம் காவிரி ஆற்றில் கலந்து உள்ளூர் விவசாய கால்வாய்களுக்குச் செல்கிறது.`,
         ml: `പുറത്തേക്കുള്ള ഒഴുക്ക് താഴോട്ട് ${dam.river} നദിയിലൂടെ കനാലുകളിലേക്ക് ഒഴുകുന്നു.`
       }
@@ -2556,27 +2601,29 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
       });
   };
 
-  const netFlowCusecs = (dam.inflow || 0) - (dam.outflow || 0);
+  const flowUnit = dam.unit || "cusecs";
+  const netFlowRaw = (dam.inflow || 0) - (dam.outflow || 0);
+  const netFlowCusecs = dam.unit === "m3s" ? netFlowRaw * 35.314666 : netFlowRaw;
   const netFlowTmcPerDay = netFlowCusecs * 0.0000864;
 
   const localizedTitle = () => {
     if (lang === "hi") return `${dam.name} जल स्तर आज`;
     if (lang === "kn") return `${dam.name} ನೀರಿನ ಮಟ್ಟ ಇಂದು`;
     if (lang === "te") return `${dam.name} నీటి మట్టం ఈ రోజు`;
-    if (lang === "ta") return `${dam.name} நீர் मட்டம் இன்று`;
+    if (lang === "ta") return `${dam.name} நீர் மட்டம் இன்று`;
     if (lang === "ml") return `${dam.name} ജലനിരപ്പ് ഇന്ന്`;
     return `${dam.name} Water Level Today`;
   };
 
   const localizedBackText = () => {
-    const stateName = dam.state || "Karnataka";
+    const stateName = dam.state || (dam.country === "USA" ? "California" : dam.country === "Brazil" ? "Pará" : "Karnataka");
     const stateLocal = getLocalizedState(stateName, lang);
     if (lang === "hi") return `&larr; ${stateLocal} के जलाशयों पर वापस जाएं`;
     if (lang === "kn") return `&larr; ${stateLocal} ಜಲಾಶಯಗಳಿಗೆ ಹಿಂತಿರುಗಿ`;
-    if (lang === "te") return `&larr; ${stateLocal} జలాಶಯాలకు తిరిగి వెళ్ళండి`;
+    if (lang === "te") return `&larr; ${stateLocal} జలాశయాలకు తిరిగి వెళ్ళండి`;
     if (lang === "ta") return `&larr; ${stateLocal} அணைகளுக்குத் திரும்புக`;
     if (lang === "ml") return `&larr; ${stateLocal} ഡാമുകളിലേക്ക് മടങ്ങുക`;
-    return `&larr; Back to ${stateName} Reservoirs`;
+    return `&larr; Back to ${stateName} (${dam.country || "India"}) Reservoirs`;
   };
 
   const localizedHistoryTitle = () => {
@@ -2647,7 +2694,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
                 </h1>
               </div>
               <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)" }}>
-                {t(dam.river)} {t("river")} &middot; {t(dam.district)} {t("district")}, {getLocalizedState(dam.state, lang)} &middot; {t("storageStatus")}
+                {t(dam.river)} {t("river")} &middot; {t(dam.district)} {t("district")}, {getLocalizedState(dam.state, lang)} ({dam.country || "India"}) &middot; {t("storageStatus")}
               </div>
               {SCRAPE_STATUS?.last_run_timestamp && (
                 <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "3px 8px", borderRadius: 6 }}>
@@ -2659,18 +2706,18 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
             </div>
             
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              {netFlowCusecs !== 0 && (
+              {netFlowRaw !== 0 && (
                 <div style={{
                   display: "flex", flexDirection: "column", alignItems: "flex-end",
-                  background: netFlowCusecs > 0 ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)",
-                  border: `1px solid ${netFlowCusecs > 0 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"}`,
+                  background: netFlowRaw > 0 ? "rgba(34,197,94,0.06)" : "rgba(239,68,68,0.06)",
+                  border: `1px solid ${netFlowRaw > 0 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)"}`,
                   padding: "6px 12px", borderRadius: 10
                 }}>
                   <span style={{ fontSize: 9, color: "rgba(224,242,254,0.4)", textTransform: "uppercase", letterSpacing: 0.5 }}>
                     {t("dailyChange")}
                   </span>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: netFlowCusecs > 0 ? "#4ade80" : "#f87171" }}>
-                    {netFlowCusecs > 0 ? "+" : ""}{netFlowTmcPerDay.toFixed(3)} {t("tmc")}/{lang === "hi" ? "दिन" : lang === "kn" ? "ದಿನ" : lang === "te" ? "రోజు" : lang === "ta" ? "நாள்" : lang === "ml" ? "ദിവസം" : "day"}
+                  <span style={{ fontSize: 14, fontWeight: 800, color: netFlowRaw > 0 ? "#4ade80" : "#f87171" }}>
+                    {netFlowRaw > 0 ? "+" : ""}{netFlowTmcPerDay.toFixed(3)} {t("tmc")}/{lang === "hi" ? "दिन" : lang === "kn" ? "ದಿನ" : lang === "te" ? "రోజు" : lang === "ta" ? "நாள்" : lang === "ml" ? "ദിവസം" : "day"}
                   </span>
                 </div>
               )}
@@ -2691,7 +2738,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
           </div>
         </div>
 
-        {/* 1. VISUALS & KEY STATS (At the top! Using a responsive grid layout) */}
+        {/* 1. VISUALS & KEY STATS */}
         <div className="dam-top-grid">
           {/* Column A: Interactive Wave simulation */}
           <div style={{
@@ -2702,7 +2749,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
             <div>
               <h3 style={{ fontSize: 15, fontWeight: 800, color: "#fff", margin: 0 }}>{t("visualSimulation")}</h3>
               <p style={{ fontSize: 11, color: "rgba(224,242,254,0.4)", margin: "2px 0 0 0" }}>
-                {lang === "hi" ? "इंटरैक्टिव प्रवाह और लहर वेग मॉडल" : lang === "kn" ? "ಸಂವಾದಾತ್ಮಕ ಹೊರಹರಿವು ಮತ್ತು ತರಂಗ ವೇಗದ ಮಾದರಿ" : lang === "te" ? "ఇంటరాక్టివ్ అవుట్‌ఫ్లో & వేవ్ వెలాసిటీ మోడల్" : lang === "ta" ? "ஊடாடும் நீர்வெளியேற்றம் மற்றும் அலை திசைвеக மாதிரி" : lang === "ml" ? "തത്സമയ ഒഴുക്ക് മാതൃക" : "Interactive outflow & wave velocity model"}
+                {lang === "hi" ? "इंटरैक्टिव प्रवाह और लहर वेग मॉडल" : lang === "kn" ? "ಸಂವಾದಾತ್ಮಕ ಹೊರಹರಿವು ಮತ್ತು ತರಂಗ ವೇಗದ ಮಾದರಿ" : lang === "te" ? "ఇంటరాక్టివ్ అవుట్‌ఫ్లో & వేవ్ వెలాసిటీ మోడల్" : lang === "ta" ? "ஊடாடும் நீர்வெளியேற்றம் மற்றும் அலை திசைவேக மாதிரி" : lang === "ml" ? "തത്സമയ ഒഴുക്ക് മാതൃക" : "Interactive outflow & wave velocity model"}
               </p>
             </div>
 
@@ -2718,7 +2765,11 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
                 <span style={{ color: "rgba(224,242,254,0.4)" }}>{t("dischargeRate")}:</span>
                 <span style={{ color: "#fb7171", fontWeight: 600, fontFamily: "monospace" }}>
-                  {dam.outflow !== null ? `${dam.outflow.toLocaleString()} ${t("cusecs")}` : `0 ${t("cusecs")}`}
+                  {dam.outflow !== null ? (
+                    dam.unit === "cfs" ? `${dam.outflow.toLocaleString()} cfs (${Math.round(dam.outflow * 0.0283).toLocaleString()} m³/s)` :
+                    dam.unit === "m3s" ? `${dam.outflow.toLocaleString()} m³/s (${Math.round(dam.outflow * 35.315).toLocaleString()} cfs)` :
+                    `${dam.outflow.toLocaleString()} ${t("cusecs")}`
+                  ) : `0 ${t("cusecs")}`}
                 </span>
               </div>
             </div>
@@ -2726,13 +2777,33 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
 
           {/* Column B: KPIs & Specs */}
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            {/* KPI Cards Grid */}
+            {/* KPI Cards Grid with Dual Units */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
               {[
-                { label: t("storage"), value: `${safeLevel.toFixed(1)}%`, sub: `${(dam.capacity * safeLevel / 100).toFixed(2)} ${t("tmc")}`, color: "#38bdf8" },
-                { label: t("capacity"), value: `${dam.capacity} ${t("tmc")}`, sub: t("fullReservoir"), color: "#a5f3fc" },
-                { label: t("inflow"), value: dam.inflow !== null ? `${fmtK(dam.inflow)}` : "—", sub: dam.inflow !== null ? t("cusecs") : "", color: "#86efac" },
-                { label: t("outflow"), value: dam.outflow !== null ? `${fmtK(dam.outflow)}` : "—", sub: dam.outflow !== null ? t("cusecs") : "", color: "#fca5a5" }
+                { 
+                  label: t("storage"), 
+                  value: `${safeLevel.toFixed(1)}%`, 
+                  sub: `${(dam.capacity * safeLevel / 100).toFixed(2)} TMC ${dam.capacity_af ? `(${(dam.capacity_af * safeLevel / 100 / 1000).toFixed(1)}k AF)` : dam.capacity_hm3 ? `(${(dam.capacity_hm3 * safeLevel / 100).toFixed(1)} hm³)` : ''}`, 
+                  color: "#38bdf8" 
+                },
+                { 
+                  label: t("capacity"), 
+                  value: `${dam.capacity} TMC`, 
+                  sub: dam.capacity_af ? `${(dam.capacity_af/1000).toFixed(0)}k AF` : dam.capacity_hm3 ? `${dam.capacity_hm3.toLocaleString()} hm³` : t("fullReservoir"), 
+                  color: "#a5f3fc" 
+                },
+                { 
+                  label: t("inflow"), 
+                  value: dam.inflow !== null ? (dam.unit === "cfs" ? `${fmtK(dam.inflow)} cfs` : dam.unit === "m3s" ? `${fmtK(dam.inflow)} m³/s` : `${fmtK(dam.inflow)}`) : "—", 
+                  sub: dam.inflow !== null ? (dam.unit === "cfs" ? `(${fmtK(Math.round(dam.inflow * 0.0283))} m³/s)` : dam.unit === "m3s" ? `(${fmtK(Math.round(dam.inflow * 35.315))} cfs)` : t("cusecs")) : "", 
+                  color: "#86efac" 
+                },
+                { 
+                  label: t("outflow"), 
+                  value: dam.outflow !== null ? (dam.unit === "cfs" ? `${fmtK(dam.outflow)} cfs` : dam.unit === "m3s" ? `${fmtK(dam.outflow)} m³/s` : `${fmtK(dam.outflow)}`) : "—", 
+                  sub: dam.outflow !== null ? (dam.unit === "cfs" ? `(${fmtK(Math.round(dam.outflow * 0.0283))} m³/s)` : dam.unit === "m3s" ? `(${fmtK(Math.round(dam.outflow * 35.315))} cfs)` : t("cusecs")) : "", 
+                  color: "#fca5a5" 
+                }
               ].map((kpi, i) => (
                 <div key={i} style={{
                   background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)",
@@ -2741,7 +2812,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
                   <span style={{ fontSize: 10, color: "rgba(224,242,254,0.38)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 4 }}>
                     {kpi.label}
                   </span>
-                  <span style={{ fontSize: 20, fontWeight: 800, color: kpi.color, fontFamily: "monospace", lineHeight: 1.1 }}>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: kpi.color, fontFamily: "monospace", lineHeight: 1.1 }}>
                     {kpi.value}
                   </span>
                   {kpi.sub && (
@@ -2978,8 +3049,8 @@ function AboutUsPage({ navigate, setView, lang, t }) {
             <ul style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.8, marginTop: 8, paddingLeft: 20 }}>
               <li>{lang === "hi" ? "कर्नाटक राज्य प्राकृतिक आपदा निगरानी केंद्र (KSNDMC)" : lang === "kn" ? "ಕರ್ನಾಟಕ ರಾಜ್ಯ ನೈಸರ್ಗಿಕ ವಿಕೋಪ ಉಸ್ತುವಾರಿ ಕೇಂದ್ರ (KSNDMC)" : lang === "te" ? "కర్ణాటక రాష్ట్ర విపత్తు నిర్వహణ సంస్థ (KSNDMC)" : lang === "ta" ? "கர்நாடகா மாநில இயற்கை பேரிடர் கண்காணிப்பு மையம் (KSNDMC)" : lang === "ml" ? "കർണ്ണാടക സംസ്ഥാന ദുരന്ത നിവാരണ കേന്ദ്രം (KSNDMC)" : "Karnataka State Natural Disaster Monitoring Centre (KSNDMC)"}</li>
               <li>{lang === "hi" ? "तमिलनाडु जल संसाधन विभाग (TNWRD)" : lang === "kn" ? "ತಮಿಳುನಾಡು ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (TNWRD)" : lang === "te" ? "తమిళనాడు నీటి వనరుల శాఖ (TNWRD)" : lang === "ta" ? "தமிழ்நாடு நீர்வளத் துறை (TNWRD)" : lang === "ml" ? "തമിഴ്നാട് ജലവിഭവ വകുപ്പ് (TNWRD)" : "Tamil Nadu Water Resources Department (TNWRD)"}</li>
-              <li>{lang === "hi" ? "आंध्र प्रदेश जल संसाधन विभाग (APWRD)" : lang === "kn" ? "ಆಂಧ್ರಪ್ರದೇಶ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (APWRD)" : lang === "te" ? "ఆంధ్రప్రదేశ్ నీటి వనరుల శాఖ (APWRD)" : lang === "ta" ? "ஆந்திரப் பிரதேச நீர்வளத் துறை (APWRD)" : lang === "ml" ? "ആന്ധ്രാപ്രദേശ് ജലവിഭവ വകുപ്പ് (APWRD)" : "Andhra Pradesh Water Resources Department (APWRD)"}</li>
-              <li>{lang === "hi" ? "भाखड़ा ब्यास प्रबंधन बोर्ड (BBMB)" : lang === "kn" ? "ಭಾಕ್ರಾ ಬಿಯಾಸ್ ವ್ಯವಸ್ಥಾಪನಾ ಮಂಡಳಿ (BBMB)" : lang === "te" ? "భాక్రా బియాస్ మేనేజ్‌మెంట్ బోర్డ్ (BBMB)" : lang === "ta" ? "பக்ரா பியாസ് மேలాண்மை வாரியம் (BBMB)" : lang === "ml" ? "ഭക്രാ ബിയാസ് മാനേജ്‌മെന്റ് ബോർഡ് (BBMB)" : "Bhakra Beas Management Board (BBMB)"}</li>
+              <li>{lang === "hi" ? "आंध्र प्रदेश जल संसाधन विभाग (APWRD)" : lang === "kn" ? "ಆಂಧ್ರಪ್ರದೇಶ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (APWRD)" : lang === "te" ? "ఆంధ్రప్రదేశ్ నీటి వనరుల శాఖ (APWRD)" : lang === "ta" ? "ஆந்திரப் பிரதேச நீர்வளத் துறை (APWRD)" : lang === "ml" ? "ആന്ധ്രാപ്രദേശ് ಜಲവിഭവ വകുപ്പ് (APWRD)" : "Andhra Pradesh Water Resources Department (APWRD)"}</li>
+              <li>{lang === "hi" ? "भाखड़ा ब्यास प्रबंधन बोर्ड (BBMB)" : lang === "kn" ? "ಭಾಕ್ರಾ ಬಿಯಾಸ್ ವ್ಯವಸ್ಥಾಪನಾ ಮಂಡಳಿ (BBMB)" : lang === "te" ? "భాక్రా బియాస్ మేనేజ్‌మెంట్ బోర్డ్ (BBMB)" : lang === "ta" ? "பக்ரா பியாஸ் மேலாண்மை வாரியம் (BBMB)" : lang === "ml" ? "ഭക്രാ ബിയാസ് മാനേജ്‌മെന്റ് ബോർഡ് (BBMB)" : "Bhakra Beas Management Board (BBMB)"}</li>
               <li>{lang === "hi" ? "सरदार सरोवर नर्मदा निगम लिमिटेड (SSNNL)" : lang === "kn" ? "ಸರ್ದಾರ್ ಸರೋವರ್ ನರ್ಮದಾ ನಿಗಮ ಲಿಮಿಟೆಡ್ (SSNNL)" : lang === "te" ? "సర్దార్ సరోవర్ నర్మదా నిగమ్ లిమిటెడ్ (SSNNL)" : lang === "ta" ? "சர்தார் சரோவர் நர்மதா நிகாம் லிமிடெட் (SSNNL)" : lang === "ml" ? "സർദാർ സരോവർ നർമ്മദ നിഗം ലിമിറ്റഡ് (SSNNL)" : "Sardar Sarovar Narmada Nigam Ltd (SSNNL)"}</li>
               <li>{lang === "hi" ? "केंद्रीय जल आयोग (CWC) और राज्य जल संसाधन विभाग" : lang === "kn" ? "ಕೇಂದ್ರ ಜಲ ಆಯೋಗ (CWC) ಮತ್ತು ರಾಜ್ಯ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆಗಳು" : lang === "te" ? "కేంద్ర జల సంఘం (CWC) & రాష్ట్ర నీటి వనరుల శాఖలు" : lang === "ta" ? "மத்திய நீர் ஆணையம் (CWC) & மாநில நீர்வளத் துறைகள்" : lang === "ml" ? "കേന്ദ്ര ജല കമ്മീഷൻ (CWC) & സംസ്ഥാന ജലവിഭവ വകുപ്പുകൾ" : "Central Water Commission (CWC) & State WRDs"}</li>
             </ul>
@@ -2990,7 +3061,7 @@ function AboutUsPage({ navigate, setView, lang, t }) {
             <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
               <p style={{ marginBottom: 8 }}><strong>{t("tmc")} (Thousand Million Cubic feet)</strong>: {lang === "hi" ? "जलाशयों में संग्रहीत पानी की मात्रा का वर्णन करने के लिए इस्तेमाल की जाने वाली इकाई। एक टीएमसी लगभग 28.3 अरब लीटर पानी के बराबर होती है।" : lang === "kn" ? "ಜಲಾಶಯಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ನೀರಿನ ಪ್ರಮಾಣವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ಘಟಕ. ಒಂದು ಟಿಎಂಸಿ ಎಂದರೆ ಸುಮಾರು 28.3 ಶತಕೋಟಿ ಲೀಟರ್ ನೀರು." : lang === "te" ? "రిజర్వాయర్లలో నిల్వ ఉన్న నీటి పరిమాణాన్ని తెలియజేసే ప్రమాణం. ఒక టీఎండీ అంటే సుమారు 28.3 బిలియన్ లీటర్ల నీరు." : lang === "ta" ? "நீர்த்தேக்கங்களில் சேமிக்கப்படும் நீரின் அளவை விவரிக்கும் அலகு. ஒரு டிஎம்சி என்பது தோராயமாக 28.3 பில்லியன் லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലാശയങ്ങളിലെ ജലത്തിന്റെ അളവ് സൂചിപ്പിക്കുന്ന യൂണിറ്റ്. ഒരു ടിഎംസി എന്നാൽ ഏകദേശം 28.3 ബില്യൺ ലിറ്റർ ജലമാണ്." : "The unit used to describe the volume of water stored in reservoirs. One TMC is equal to approximately 28.3 billion liters of water."}</p>
               <p style={{ marginBottom: 8 }}><strong>{t("cusecs").charAt(0).toUpperCase() + t("cusecs").slice(1)} (Cubic feet per second)</strong>: {lang === "hi" ? "प्रवाह वेग का वर्णन करने के लिए इस्तेमाल की जाने वाली दर। 1 क्यूसेक हर सेकंड एक बिंदु से गुजरने वाले 28.3 लीटर पानी के बराबर होता है।" : lang === "kn" ? "ನೀರಿನ ಹರಿವಿನ ವೇಗವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ದರ. 1 ಕ್ಯೂಸೆಕ್ ಎಂದರೆ ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಒಂದು ಬಿಂದುವನ್ನು ದಾಟುವ 28.3 ಲೀಟರ್ ನೀರು." : lang === "te" ? "నీటి ప్రవాహ వేగాన్ని తెలియజేసే కొలత. ఒక క్యూసెక్కు అంటే ప్రతి సెకనుకు ఒక బిందువును దాటి ప్రవహించే 28.3 లీటర్ల నీరు." : lang === "ta" ? "நீர் ஓட்டத்தின் வேகத்தை விவரிக்கும் அலகு. 1 கனஅடி என்பது ஒவ்வொரு வினாடியும் ஒரு புள்ளியைக் கடந்து செல்லும் 28.3 லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലപ്രവാഹത്തിന്റെ വേഗത അളക്കുന്ന യൂണിറ്റ്. ഒരു ക്യൂസെക്സ് എന്നാൽ ഒരു സെക്കൻഡിൽ ഒരു പോയിന്റിലൂടെ ഒഴുകിപ്പോകുന്ന 28.3 ലിറ്റർ ജലമാണ്." : "The rate used to describe flow velocity. 1 cusec equals 28.3 liters of water passing a point every second."}</p>
-              <p style={{ marginBottom: 8 }}><strong>{lang === "hi" ? "प्रवाह संतुलन" : lang === "kn" ? "ಹರಿವಿನ ಸಮತೋಲನ" : lang === "te" ? "ప్రవాహ సమతుల్యత" : lang === "ta" ? "ஓட்ட சமநிலை" : lang === "ml" ? "നീരൊഴുക്ക് സന്തുലിതാവസ്ഥ" : "Flow Balance"}</strong>: {lang === "hi" ? "जब आवक निकासी से अधिक हो जाती है, तो जलाशय में भंडारण जमा होता है। जब निकासी आवक से अधिक हो जाती है, तो भंडारण कम हो जाता है।" : lang === "kn" ? "ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಜಲಾಶಯದಲ್ಲಿ ನೀರು ಸಂಗ್ರಹವಾಗುತ್ತದೆ. ಹೊರಹರಿವು ಒಳಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತದೆ." : lang === "te" ? "ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు రిజర్వాయర్‌లో నిల్వ పెరుగుతుంది. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు నిల్వ తగ్గుతుంది." : lang === "ta" ? "நீர்வரத்து வெளியேற்றத்தை விட அதிகமாக இருக்கும்போது, நீர்த்தೇக்கத்தின் சேമിப்பு அதிகரிக்கும். வெளியேற்றம் நீர்வரத்தை விட அதிகமாக இருக்கும்போது, சேമിப்பு குறையும்." : lang === "ml" ? "നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കൂടുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കുറയുന്നു." : "When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes."}</p>
+              <p style={{ marginBottom: 8 }}><strong>{lang === "hi" ? "प्रवाह संतुलन" : lang === "kn" ? "ಹರಿವಿನ ಸಮತೋಲನ" : lang === "te" ? "ప్రవాహ సమతుల్యత" : lang === "ta" ? "ஓட்ட சமநிலை" : lang === "ml" ? "നീരൊഴുക്ക് സന്തുലിതാവസ്ഥ" : "Flow Balance"}</strong>: {lang === "hi" ? "जब आवक निकासी से अधिक हो जाती है, तो जलाशय में भंडारण जमा होता है। जब निकासी आवक से अधिक हो जाती है, तो भंडारण कम हो जाता है।" : lang === "kn" ? "ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಜಲಾಶಯದಲ್ಲಿ ನೀರು ಸಂಗ್ರಹವಾಗುತ್ತದೆ. ಹೊರಹರಿವು ಒಳಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತದೆ." : lang === "te" ? "ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు రిజర్వాయర్‌లో నిల్వ పెరుగుతుంది. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు నిల్వ తగ్గుతుంది." : lang === "ta" ? "நீர்வரத்து வெளியேற்றத்தை விட அதிகமாக இருக்கும்போது, நீர்த்தேக்கத்தின் சேமிப்பு அதிகரிக்கும். வெளியேற்றம் நீர்வரத்தை விட அதிகமாக இருக்கும்போது, சேமிப்பு குறையும்." : lang === "ml" ? "നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കൂടുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കുറയുന്നു." : "When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes."}</p>
             </div>
           </div>
         </div>
@@ -3429,32 +3500,49 @@ function useRouter() {
   return { path, navigate };
 }
 
-const sliderDams = (() => {
-  const featuredNames = [
-    "Tungabhadra",
-    "Tehri Dam",
-    "Sardar Sarovar",
-    "Nagarjunsagar",
-    "Bhakra (Gobind Sagar)",
-    "Idukki",
-    "Srisailam",
-    "Hirakud",
-    "Koyna",
-    "Indira Sagar",
-    "Mettur",
-    "Krishna Raja Sagara (KRS)",
-    "Ukai",
-    "Rihand",
-    "Almatti",
-    "Gandhi Sagar"
+// Dynamic slider dams per active country: strictly top 5 largest for USA and Brazil
+const getFeaturedDamsForCountry = (countryDamsList, countryName) => {
+  if (!countryDamsList || countryDamsList.length === 0) return [];
+  if (countryName === "USA") {
+    const usTop5Names = [
+      "Hoover Dam",
+      "Glen Canyon Dam",
+      "Grand Coulee",
+      "Shasta",
+      "Oroville"
+    ];
+    const found = [];
+    for (const key of usTop5Names) {
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
+  if (countryName === "Brazil") {
+    const brTop5Names = [
+      "Serra da Mesa",
+      "Tucuruí",
+      "Sobradinho",
+      "Itaipu",
+      "Furnas"
+    ];
+    const found = [];
+    for (const key of brTop5Names) {
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
+  const inFeatured = [
+    "Tungabhadra", "Tehri Dam", "Sardar Sarovar", "Nagarjunsagar", "Bhakra (Gobind Sagar)",
+    "Idukki", "Srisailam", "Hirakud", "Koyna", "Indira Sagar", "Mettur", "Krishna Raja Sagara (KRS)"
   ];
-  const featured = featuredNames
-    .map(name => DAMS.find(d => d.name === name || d.name.startsWith(name)))
-    .filter(Boolean);
-  return featured.length > 0 ? featured : DAMS.slice(0, 12);
-})();
+  const found = inFeatured.map(n => countryDamsList.find(d => d.name === n || d.name.startsWith(n))).filter(Boolean);
+  return found.length > 0 ? found : countryDamsList.slice(0, 12);
+};
 
 const DAM_PHOTOS = {
+  // India
   "Krishna Raja Sagara (KRS)": "/images/dams/krs.jpg",
   "KRS": "/images/dams/krs.jpg",
   "Krishna Raja Sagara": "/images/dams/krs.jpg",
@@ -3520,7 +3608,39 @@ const DAM_PHOTOS = {
   "Ranjit Sagar": "/images/dams/ranjitsagar.jpg",
   "Ranjit Sagar (Thein Dam)": "/images/dams/ranjitsagar.jpg",
   "Thein (Ranjit Sagar)": "/images/dams/ranjitsagar.jpg",
-  "Ranjitsagar (Thein)": "/images/dams/ranjitsagar.jpg"
+  "Ranjitsagar (Thein)": "/images/dams/ranjitsagar.jpg",
+
+  // USA Top 5
+  "Hoover Dam (Lake Mead)": "/images/dams/hoover_dam.jpg",
+  "Hoover Dam": "/images/dams/hoover_dam.jpg",
+  "Lake Mead": "/images/dams/hoover_dam.jpg",
+  "Glen Canyon Dam (Lake Powell)": "/images/dams/glen_canyon_dam.jpg",
+  "Glen Canyon Dam": "/images/dams/glen_canyon_dam.jpg",
+  "Lake Powell": "/images/dams/glen_canyon_dam.jpg",
+  "Grand Coulee Dam": "/images/dams/grand_coulee_dam.jpg",
+  "Grand Coulee": "/images/dams/grand_coulee_dam.jpg",
+  "Franklin D. Roosevelt Lake": "/images/dams/grand_coulee_dam.jpg",
+  "Shasta Lake": "/images/dams/shasta_dam.jpg",
+  "Shasta Dam": "/images/dams/shasta_dam.jpg",
+  "Lake Shasta (Shasta Dam)": "/images/dams/shasta_dam.jpg",
+  "Lake Shasta": "/images/dams/shasta_dam.jpg",
+  "Lake Oroville": "/images/dams/oroville_dam.jpg",
+  "Oroville Dam": "/images/dams/oroville_dam.jpg",
+  "Lake Oroville (Oroville Dam)": "/images/dams/oroville_dam.jpg",
+  "Fort Peck Dam": "/images/dams/fort_peck_dam.jpg",
+  "Fort Peck Lake": "/images/dams/fort_peck_dam.jpg",
+  "Garrison Dam (Lake Sakakawea)": "/images/dams/garrison_dam.jpg",
+  "Garrison Dam": "/images/dams/garrison_dam.jpg",
+  "Lake Sakakawea": "/images/dams/garrison_dam.jpg",
+
+  // Brazil Top 5
+  "Serra da Mesa": "/images/dams/serra_da_mesa_dam.jpg",
+  "Tucuruí": "/images/dams/tucurui_dam.jpg",
+  "Tucurui": "/images/dams/tucurui_dam.jpg",
+  "Sobradinho": "/images/dams/sobradinho_dam.jpg",
+  "Itaipu": "/images/dams/itaipu_dam.jpg",
+  "Furnas": "/images/dams/furnas_dam.jpg",
+  "Belo Monte": "/images/dams/belo_monte_dam.jpg"
 };
 
 const FALLBACK_PHOTOS = [
@@ -3540,10 +3660,14 @@ const FALLBACK_PHOTOS = [
 
 const getDamPhoto = (damObj) => {
   if (!damObj) return FALLBACK_PHOTOS[0];
+  if (damObj.image) return damObj.image;
   const raw = (damObj.name || "").trim();
   const clean = raw.replace(/\s*\(.*\)/, '').trim();
   if (DAM_PHOTOS[raw]) return DAM_PHOTOS[raw];
   if (DAM_PHOTOS[clean]) return DAM_PHOTOS[clean];
+  for (const [k, v] of Object.entries(DAM_PHOTOS)) {
+    if (raw.includes(k) || k.includes(raw)) return v;
+  }
   const idNum = typeof damObj.id === 'number' ? damObj.id : (raw.length || 0);
   return FALLBACK_PHOTOS[idNum % FALLBACK_PHOTOS.length];
 };
@@ -3577,26 +3701,36 @@ function HeroDamSlider({
   setSelectedDam,
   setView,
   lang,
-  tickerText
+  tickerText,
+  dams,
+  selectedCountry
 }) {
+  const sliderDams = useMemo(() => {
+    return getFeaturedDamsForCountry(dams, selectedCountry);
+  }, [dams, selectedCountry]);
   const [slide, setSlide] = useState(0);
 
+  useEffect(() => {
+    setSlide(0);
+  }, [selectedCountry]);
+
+  const safeSlide = sliderDams.length > 0 ? (slide % sliderDams.length) : 0;
   const goTo = (i) => { setSlide(i); };
-  const prev = () => goTo((slide - 1 + sliderDams.length) % sliderDams.length);
-  const next = () => goTo((slide + 1) % sliderDams.length);
+  const prev = () => goTo((safeSlide - 1 + sliderDams.length) % sliderDams.length);
+  const next = () => goTo((safeSlide + 1) % sliderDams.length);
 
   // Auto-advance every 9s (only when hero section is in view)
   useEffect(() => {
     const id = setInterval(() => {
       if (typeof window !== 'undefined' && window.scrollY < window.innerHeight * 1.2) {
-        setSlide(s => (s + 1) % sliderDams.length);
+        setSlide(s => (s + 1) % (sliderDams.length || 1));
       }
     }, 9000);
     return () => clearInterval(id);
-  }, []);
+  }, [sliderDams.length]);
 
-  const dam = sliderDams[slide];
-  const pal = PALETTES[slide % PALETTES.length];
+  const dam = sliderDams[safeSlide] || sliderDams[0] || {};
+  const pal = PALETTES[safeSlide % PALETTES.length];
   const level = typeof dam.level==='number' ? dam.level : parseFloat(dam.level)||0;
   const inflow = typeof dam.inflow==='number' ? dam.inflow : parseFloat(dam.inflow)||0;
   const outflow = typeof dam.outflow==='number' ? dam.outflow : parseFloat(dam.outflow)||0;
@@ -3733,44 +3867,57 @@ function HeroDamSlider({
           fontSize:'0.82rem', color:'rgba(255,255,255,0.6)',
           lineHeight:1.65, marginBottom:22, maxWidth:380
         }}>
-          {`${dam.state || ''} reservoir — currently at `}
-          <strong style={{color:lvlColor}}>{level.toFixed(1)}% capacity ({tmc} TMC present)</strong>
-          {`. Real-time monitoring of water levels, inflow and outflow from India's network of ${DAMS.length}+ reservoirs.`}
+          {`${dam.state || ''} reservoir (${dam.country || selectedCountry}) — currently at `}
+          <strong style={{color:lvlColor}}>
+            {level.toFixed(1)}% capacity ({tmc} TMC {dam.capacity_af ? ` / ${(dam.capacity_af * level / 100 / 1000).toFixed(0)}k AF` : dam.capacity_hm3 ? ` / ${(dam.capacity_hm3 * level / 100).toFixed(0)} hm³` : ''})
+          </strong>
+          {`. Live monitoring of storage levels, inflow and outflow telemetry across ${selectedCountry} reservoirs.`}
         </p>
 
-        {/* LIVE DATA BLOCK — like travel agency pricing block */}
+        {/* LIVE DATA BLOCK */}
         <div className="hero-slide-data" style={{
           background:'rgba(255,255,255,0.06)',
           border:`1px solid ${pal.accent}30`,
           backdropFilter:'blur(14px)',
           borderRadius:16, padding:'16px 20px',
-          marginBottom:24, maxWidth:360
+          marginBottom:24, maxWidth:380
         }}>
-          {/* Fill level & TMC present */}
+          {/* Fill level & Storage present */}
           <div style={{ display:'flex', alignItems:'baseline', gap:8, marginBottom:6, flexWrap:'wrap' }}>
             <span style={{
               fontFamily:"'Barlow Condensed', system-ui, sans-serif",
               fontSize:'2.4rem', fontWeight:900, color:lvlColor, letterSpacing:'-0.5px'
             }}>{level.toFixed(1)}%</span>
-            <span style={{ fontSize:'0.88rem', color:pal.accent, fontWeight:700 }}>{tmc} TMC</span>
-
+            <span style={{ fontSize:'0.88rem', color:pal.accent, fontWeight:700 }}>
+              {tmc} TMC {dam.capacity_af ? `(${(dam.capacity_af * level / 100 / 1000).toFixed(0)}k AF)` : dam.capacity_hm3 ? `(${(dam.capacity_hm3 * level / 100).toFixed(0)} hm³)` : ''}
+            </span>
           </div>
           {/* Capacity summary */}
           <div style={{ fontSize:'0.75rem', color:'rgba(255,255,255,0.5)', fontWeight:500, marginBottom:10 }}>
-            Total Gross Capacity: <strong style={{ color:'#fff' }}>{dam.capacity} TMC</strong>
+            Total Gross Capacity: <strong style={{ color:'#fff' }}>
+              {dam.capacity} TMC {dam.capacity_af ? `(${(dam.capacity_af/1000).toFixed(0)}k AF)` : dam.capacity_hm3 ? `(${dam.capacity_hm3.toLocaleString()} hm³)` : ''}
+            </strong>
           </div>
           {/* Inflow / Outflow row */}
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
             <div>
               <div style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:1, marginBottom:3 }}>↑ Inflow</div>
-              <div style={{ fontSize:'1rem', fontWeight:700, color:'#86EFAC', fontFamily:'monospace' }}>
-                {inflow>0?`${fmtK(inflow)} cusecs`:'—'}
+              <div style={{ fontSize:'0.92rem', fontWeight:700, color:'#86EFAC', fontFamily:'monospace' }}>
+                {inflow > 0 ? (
+                  dam.unit === "cfs" ? `${fmtK(inflow)} cfs (${fmtK(Math.round(inflow * 0.0283))} m³/s)` :
+                  dam.unit === "m3s" ? `${fmtK(inflow)} m³/s (${fmtK(Math.round(inflow * 35.315))} cfs)` :
+                  `${fmtK(inflow)} cusecs`
+                ) : '—'}
               </div>
             </div>
             <div>
               <div style={{ fontSize:'0.62rem', color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:1, marginBottom:3 }}>↓ Outflow</div>
-              <div style={{ fontSize:'1rem', fontWeight:700, color:'#FCA5A5', fontFamily:'monospace' }}>
-                {outflow>0?`${fmtK(outflow)} cusecs`:'—'}
+              <div style={{ fontSize:'0.92rem', fontWeight:700, color:'#FCA5A5', fontFamily:'monospace' }}>
+                {outflow > 0 ? (
+                  dam.unit === "cfs" ? `${fmtK(outflow)} cfs (${fmtK(Math.round(outflow * 0.0283))} m³/s)` :
+                  dam.unit === "m3s" ? `${fmtK(outflow)} m³/s (${fmtK(Math.round(outflow * 35.315))} cfs)` :
+                  `${fmtK(outflow)} cusecs`
+                ) : '—'}
               </div>
             </div>
           </div>
@@ -3847,7 +3994,7 @@ function HeroDamSlider({
         {/* BUTTONS */}
         <div className="hero-slide-btns" style={{ display:'flex', alignItems:'center', gap:14 }}>
           <button
-            onClick={()=>{ const d=DAMS.find(x=>x.name===dam.name); if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
+            onClick={()=>{ const d=ALL_GLOBAL_DAMS.find(x=>x.name===dam.name) || dam; if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
             style={{
               background:pal.accent, color:'#fff', border:'none',
               padding:'13px 32px', borderRadius:50, fontSize:'0.88rem',
@@ -3878,7 +4025,7 @@ function HeroDamSlider({
           <span style={{
             fontFamily:"'Barlow Condensed',system-ui,sans-serif",
             fontSize:'2rem', fontWeight:800, color:'#fff'
-          }}>{String(slide+1).padStart(2,'0')}</span>
+          }}>{String(safeSlide+1).padStart(2,'0')}</span>
           <span style={{ fontSize:'0.85rem', color:'rgba(255,255,255,0.3)', margin:'0 2px' }}>/</span>
           <span style={{ fontSize:'0.85rem', color:'rgba(255,255,255,0.35)', fontWeight:500 }}>
             {String(sliderDams.length).padStart(2,'0')}
@@ -4260,6 +4407,22 @@ export default function App() {
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
   const [searchHistory, setSearchHistory] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(() => localStorage.getItem("dam_country") || "India");
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  const countryDams = useMemo(() => {
+    if (selectedCountry === "USA") return DAMS_USA;
+    if (selectedCountry === "Brazil") return DAMS_BRAZIL;
+    return DAMS_INDIA;
+  }, [selectedCountry]);
+
+  const selectCountry = (newCountry) => {
+    setSelectedCountry(newCountry);
+    localStorage.setItem("dam_country", newCountry);
+    setSelectedZone("All");
+    setSelectedState("all");
+    setCountryDropdownOpen(false);
+  };
+
   const [filter,setFilter] = useState("all");
   const [selectedState,setSelectedState] = useState("all");
   const [selectedZone, setSelectedZone] = useState("All");
@@ -4312,13 +4475,14 @@ export default function App() {
   };
 
   const tickerText = useMemo(() => {
-    return DAMS.map(d => {
+    return countryDams.map(d => {
       const cap = typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0;
       const lvl = typeof d.level === 'number' ? d.level : parseFloat(d.level) || 0;
       const tmc = (cap * lvl / 100).toFixed(2);
-      return `${t(d.name)}: ${tmc} TMC`;
+      const extraUnit = d.capacity_af ? ` (${Math.round(d.capacity_af * lvl / 100 / 1000)}k AF)` : d.capacity_hm3 ? ` (${Math.round(d.capacity_hm3 * lvl / 100)} hm³)` : '';
+      return `${t(d.name)}: ${tmc} TMC${extraUnit}`;
     }).join("  ◆  ");
-  }, [lang]);
+  }, [countryDams, lang]);
 
 
   useEffect(() => {
@@ -4548,8 +4712,12 @@ export default function App() {
       }
     } else if (damMatch) {
       const slug = damMatch[1];
-      const found = DAMS.find(d => getDamSlug(d.name) === slug);
+      const found = ALL_GLOBAL_DAMS.find(d => getDamSlug(d.name) === slug);
       if (found) {
+        if (found.country && found.country !== selectedCountry) {
+          setSelectedCountry(found.country);
+          localStorage.setItem("dam_country", found.country);
+        }
         setSelectedDam(found);
         setView("detail");
 
@@ -4821,10 +4989,10 @@ export default function App() {
   };
 
   const stateFilteredDams = selectedState !== "all" 
-    ? DAMS.filter(d => d.state === selectedState)
+    ? countryDams.filter(d => d.state === selectedState)
     : selectedZone !== "All"
-      ? DAMS.filter(d => (ZONE_MAP[selectedZone] || []).includes(d.state))
-      : DAMS;
+      ? countryDams.filter(d => (ZONE_MAP[selectedZone] || []).includes(d.state))
+      : countryDams;
   const currentAvgLevel = stateFilteredDams.length > 0
     ? parseFloat((stateFilteredDams.reduce((s,d)=>s+(typeof d.level==='number'?d.level:parseFloat(d.level)||0),0)/stateFilteredDams.length).toFixed(1))
     : 0.0;
@@ -5145,7 +5313,9 @@ export default function App() {
               }}>&#128167;</div>
               <div>
                 <div style={{ fontWeight: 900, fontSize: 15, color: "#E0F2FE", letterSpacing: 0.3 }}>Damtoday</div>
-                <div style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.33)", letterSpacing: 2, textTransform: "uppercase" }}>{t("brandSub")}</div>
+                <div style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.33)", letterSpacing: 2, textTransform: "uppercase" }}>
+                  {selectedCountry === "USA" ? t("brandSubUSA") : selectedCountry === "Brazil" ? t("brandSubBrazil") : t("brandSubIndia")}
+                </div>
               </div>
             </a>
 
@@ -5205,6 +5375,91 @@ export default function App() {
                 >
                   {t("privacy")}
                 </a>
+              </div>
+
+              {/* Premium Glassmorphic Country Selector */}
+              <div className="main-nav-country-selector" style={{ position: "relative", zIndex: 101 }}>
+                <button
+                  onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.05)",
+                    backdropFilter: "blur(12px)",
+                    border: "1px solid rgba(6, 182, 212, 0.25)",
+                    borderRadius: "8px",
+                    color: "#E0F2FE",
+                    padding: "6px 12px",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)";
+                    e.currentTarget.style.borderColor = "rgba(6, 182, 212, 0.5)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
+                    e.currentTarget.style.borderColor = "rgba(6, 182, 212, 0.25)";
+                  }}
+                >
+                  <span>{COUNTRIES.find(c => c.name === selectedCountry)?.flag || "🇮🇳"} {COUNTRIES.find(c => c.name === selectedCountry)?.label || selectedCountry}</span>
+                  <span style={{ transition: "transform 0.2s", transform: countryDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
+                </button>
+
+                {countryDropdownOpen && (
+                  <div style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "125%",
+                    background: "rgba(3, 10, 20, 0.94)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(6, 182, 212, 0.25)",
+                    borderRadius: "10px",
+                    padding: "6px 0",
+                    width: 140,
+                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    animation: "fadeSlideUp 0.15s ease-out"
+                  }}>
+                    {COUNTRIES.map(opt => (
+                      <button
+                        key={opt.id}
+                        onClick={() => selectCountry(opt.name)}
+                        style={{
+                          background: selectedCountry === opt.name ? "rgba(6, 182, 212, 0.15)" : "transparent",
+                          border: "none",
+                          color: selectedCountry === opt.name ? "#38bdf8" : "rgba(224, 242, 254, 0.7)",
+                          padding: "8px 14px",
+                          fontSize: 12,
+                          fontWeight: selectedCountry === opt.name ? 700 : 500,
+                          textAlign: "left",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          width: "100%"
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)";
+                          e.currentTarget.style.color = "#38bdf8";
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = selectedCountry === opt.name ? "rgba(6, 182, 212, 0.15)" : "transparent";
+                          e.currentTarget.style.color = selectedCountry === opt.name ? "#38bdf8" : "rgba(224, 242, 254, 0.7)";
+                        }}
+                      >
+                        <span>{opt.flag}</span>
+                        <span>{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Premium Glassmorphic Language Selector */}
@@ -5414,6 +5669,40 @@ export default function App() {
                 ))}
               </div>
 
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 30 }}>
+                <span style={{ fontSize: 10, color: "rgba(6, 182, 212, 0.6)", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>{t("selectCountry") || "Country / ದೇಶ"}</span>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                  {COUNTRIES.map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => {
+                        selectCountry(opt.name);
+                        setMobileMenuOpen(false);
+                      }}
+                      style={{
+                        background: selectedCountry === opt.name ? "rgba(6, 182, 212, 0.18)" : "rgba(255,255,255,0.03)",
+                        border: `1px solid ${selectedCountry === opt.name ? "rgba(6, 182, 212, 0.45)" : "rgba(255,255,255,0.08)"}`,
+                        borderRadius: 8,
+                        color: selectedCountry === opt.name ? "#67E8F9" : "rgba(224, 242, 254, 0.7)",
+                        padding: "10px 6px",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        textAlign: "center",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 4
+                      }}
+                    >
+                      <span style={{ fontSize: 16 }}>{opt.flag}</span>
+                      <span>{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 40 }}>
                 <span style={{ fontSize: 10, color: "rgba(6, 182, 212, 0.6)", fontWeight: 700, letterSpacing: 2, textTransform: "uppercase" }}>Language / ಭಾಷೆ</span>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -5490,6 +5779,8 @@ export default function App() {
                   setView={setView}
                   lang={lang}
                   tickerText={tickerText}
+                  dams={countryDams}
+                  selectedCountry={selectedCountry}
                 />
 
 
@@ -5499,9 +5790,23 @@ export default function App() {
             borderBottom:"1px solid rgba(255,255,255,0.03)", position:"relative", zIndex:6
           }}>
             <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:24 }}>
-              <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={t("monitoredDamsSub")} decimals={0} />
+              <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={selectedCountry === "USA" ? "Active US federal & state dams" : selectedCountry === "Brazil" ? "Barragens monitoradas pelo ONS" : t("monitoredDamsSub")} decimals={0} />
               <StatCard label={t("averageLevel")} target={currentAvgLevel} active={goStats} suffix="%" color="#22D3EE" sub={t("averageLevelSub")} decimals={1} />
-              <StatCardLarge label={t("totalCapacity")} target={currentTotalCapacity} active={goStats} suffix=" TMC" color="#38BDF8" sub={t("totalCapacitySub")} decimals={1} />
+              <StatCardLarge
+                label={t("totalCapacity")}
+                target={currentTotalCapacity}
+                active={goStats}
+                suffix=" TMC"
+                color="#38BDF8"
+                sub={
+                  selectedCountry === "USA" 
+                    ? `Total: ${Math.round(currentTotalCapacity / 0.00123348).toLocaleString()}k AF (${currentTotalCapacity} TMC)`
+                    : selectedCountry === "Brazil"
+                      ? `Total: ${Math.round(currentTotalCapacity / 0.035315).toLocaleString()} hm³ (${currentTotalCapacity} TMC)`
+                      : t("totalCapacitySub")
+                }
+                decimals={1}
+              />
             </div>
           </div>
           {/* DAMS SECTION */}
@@ -5528,7 +5833,7 @@ export default function App() {
                   {t("selectRegion")}
                 </span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", background: "rgba(255, 255, 255, 0.02)", border: "1px solid rgba(255, 255, 255, 0.05)", padding: 4, borderRadius: 20 }}>
-                  {["All", "North", "South", "East", "West", "Central"].map(zone => {
+                  {(COUNTRY_ZONES[selectedCountry] || ["All"]).map(zone => {
                     const isActive = selectedZone === zone && selectedState === "all";
                     const href = zone === "All" ? "/" : `/zone/${getZoneSlug(zone)}`;
                     return (
@@ -5580,26 +5885,23 @@ export default function App() {
                   }
                 }}
                 lang={lang}
-                dams={DAMS}
+                dams={countryDams}
               />
             </div>
             {/* Header, search, sub-filters */}
             <div className="filter-row" style={{ display:"flex", flexDirection:"column", marginBottom:32, gap:16 }}>
               <div>
                 <h2 className="section-heading" style={{ fontSize:"clamp(20px, 5vw, 28px)", fontWeight:900, color:"#E0F2FE", letterSpacing:"-0.5px" }}>
-                  {lang === "hi" ? (
-                    <span>{selectedState === "all" ? (selectedZone === "All" ? "अखिल भारतीय" : `${getLocalizedZone(selectedZone, lang)} भारत`) : getLocalizedState(selectedState, lang)} जलाशय</span>
-                  ) : lang === "kn" ? (
-                    <span>{selectedState === "all" ? (selectedZone === "All" ? "ಅಖಿಲ ಭಾರತ" : `${getLocalizedZone(selectedZone, lang)} ಭಾರತದ`) : getLocalizedState(selectedState, lang)} ಜಲಾಶಯಗಳು</span>
-                  ) : lang === "te" ? (
-                    <span>{selectedState === "all" ? (selectedZone === "All" ? "భారతదేశం" : `${getLocalizedZone(selectedZone, lang)} భారతదేశ`) : getLocalizedState(selectedState, lang)} రిజర్వాయర్లు</span>
-                  ) : lang === "ta" ? (
-                    <span>{selectedState === "all" ? (selectedZone === "All" ? "அனைத்திந்தியா" : `${getLocalizedZone(selectedZone, lang)} இந்திய`) : getLocalizedState(selectedState, lang)} அணைகள்</span>
-                  ) : lang === "ml" ? (
-                    <span>{selectedState === "all" ? (selectedZone === "All" ? "ഭാരതമൊട്ടാകെ" : `${getLocalizedZone(selectedZone, lang)} ഇന്ത്യൻ`) : getLocalizedState(selectedState, lang)} അണക്കെട്ടുകൾ</span>
-                  ) : (
-                    <span>{selectedState === "all" ? (selectedZone === "All" ? "All India" : `${selectedZone} India`) : selectedState} Reservoirs</span>
-                  )}
+                  {(() => {
+                    const countryLabel = selectedCountry === "USA" ? "USA" : selectedCountry === "Brazil" ? "Brazil" : "India";
+                    if (selectedState !== "all") {
+                      return `${getLocalizedState(selectedState, lang)} (${countryLabel}) Reservoirs`;
+                    }
+                    if (selectedZone !== "All") {
+                      return `${getLocalizedZone(selectedZone, lang)} (${countryLabel}) Reservoirs`;
+                    }
+                    return `${selectedCountry === "USA" ? "United States" : selectedCountry === "Brazil" ? "Brazil" : "All India"} Reservoirs`;
+                  })()}
                 </h2>
                 <p style={{ fontSize:13, color:"rgba(224,242,254,0.4)", marginTop:4 }}>{t("searchAndSelectFilters")}</p>
               </div>

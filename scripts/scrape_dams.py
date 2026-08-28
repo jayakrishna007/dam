@@ -320,6 +320,86 @@ def main():
         
     print(f"Successfully wrote {len(final_dams)} dams to dams.json!")
 
+    # --- 5. Scrape USA (CDEC + USACE) ---
+    usa_ok = False
+    usa_count = 0
+    print("Scraping USA dams (CDEC + USACE)...")
+    try:
+        from scrape_usa import scrape_usa
+        usa_data = scrape_usa()
+        usa_json_path = os.path.join(script_dir, "..", "src", "data", "dams_usa.json")
+        # Load existing USA JSON to preserve static entries
+        old_usa = []
+        if os.path.exists(usa_json_path):
+            try:
+                with open(usa_json_path, "r", encoding="utf-8") as f:
+                    old_usa = json.load(f)
+            except Exception:
+                pass
+        # Merge live data into existing entries
+        if old_usa and usa_data:
+            scraped_usa_by_name = {v["name"].lower(): v for v in usa_data.values()}
+            for dam in old_usa:
+                matched = scraped_usa_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_af") is not None:
+                        dam["storage_af"] = matched["storage_af"]
+            final_usa = old_usa
+        else:
+            final_usa = old_usa
+        with open(usa_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_usa, f, indent=2)
+        usa_count = len([v for v in usa_data.values() if v.get("level") is not None])
+        usa_ok = usa_count > 0
+        print(f"  USA: {usa_count} live readings merged into dams_usa.json")
+    except Exception as e:
+        print(f"  [ERROR] USA scraper: {e}")
+
+    # --- 6. Scrape Brazil (ONS CKAN) ---
+    brazil_ok = False
+    brazil_count = 0
+    print("Scraping Brazil dams (ONS CKAN)...")
+    try:
+        from scrape_brazil import scrape_brazil
+        brazil_data = scrape_brazil()
+        brazil_json_path = os.path.join(script_dir, "..", "src", "data", "dams_brazil.json")
+        old_brazil = []
+        if os.path.exists(brazil_json_path):
+            try:
+                with open(brazil_json_path, "r", encoding="utf-8") as f:
+                    old_brazil = json.load(f)
+            except Exception:
+                pass
+        if old_brazil and brazil_data:
+            scraped_br_by_name = {v["name"].lower(): v for v in brazil_data.values()}
+            for dam in old_brazil:
+                matched = scraped_br_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_hm3") is not None:
+                        dam["storage_hm3"] = matched["storage_hm3"]
+            final_brazil = old_brazil
+        else:
+            final_brazil = old_brazil
+        with open(brazil_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_brazil, f, indent=2)
+        brazil_count = len([v for v in brazil_data.values() if v.get("level") is not None])
+        brazil_ok = brazil_count > 0
+        print(f"  Brazil: {brazil_count} live readings merged into dams_brazil.json")
+    except Exception as e:
+        print(f"  [ERROR] Brazil scraper: {e}")
+
     # Post historical readings to MongoDB via serverless API
     try:
         import datetime
@@ -418,7 +498,9 @@ def main():
             "tungabhadra": { "status": "Operational" if tb_ok else "Down", "ok": tb_ok, "count": tb_count },
             "tamil_nadu": { "status": "Operational" if tn_ok else "Down", "ok": tn_ok, "count": tn_count },
             "bbmb": { "status": "Operational" if bbmb_ok else "Down", "ok": bbmb_ok, "count": bbmb_count },
-            "pan_india": { "status": "Operational", "ok": True, "count": len(final_dams) }
+            "pan_india": { "status": "Operational", "ok": True, "count": len(final_dams) },
+            "usa": { "status": "Operational" if usa_ok else "Down", "ok": usa_ok, "count": usa_count },
+            "brazil": { "status": "Operational" if brazil_ok else "Down", "ok": brazil_ok, "count": brazil_count }
         },
         "metrics": {
             "dams_changed": dams_changed,

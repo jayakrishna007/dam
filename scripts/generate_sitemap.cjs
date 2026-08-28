@@ -12,14 +12,29 @@ const getDamSlug = (name) => {
 
 function main() {
   const rootDir = path.resolve(__dirname, '..');
-  const damsPath = path.join(rootDir, 'src', 'data', 'dams.json');
-  
-  if (!fs.existsSync(damsPath)) {
-    console.error(`Dams data file not found at ${damsPath}`);
-    process.exit(1);
+  const dataDir = path.join(rootDir, 'src', 'data');
+  const indiaPath = path.join(dataDir, 'dams.json');
+  const usaPath = path.join(dataDir, 'dams_usa.json');
+  const brazilPath = path.join(dataDir, 'dams_brazil.json');
+
+  let allDams = [];
+
+  if (fs.existsSync(indiaPath)) {
+    try {
+      allDams = allDams.concat(JSON.parse(fs.readFileSync(indiaPath, 'utf8')));
+    } catch (e) {}
+  }
+  if (fs.existsSync(usaPath)) {
+    try {
+      allDams = allDams.concat(JSON.parse(fs.readFileSync(usaPath, 'utf8')));
+    } catch (e) {}
+  }
+  if (fs.existsSync(brazilPath)) {
+    try {
+      allDams = allDams.concat(JSON.parse(fs.readFileSync(brazilPath, 'utf8')));
+    } catch (e) {}
   }
 
-  const dams = JSON.parse(fs.readFileSync(damsPath, 'utf8'));
   const baseUrl = 'https://damtoday.com';
   const today = new Date().toISOString().split('T')[0];
 
@@ -44,21 +59,25 @@ function main() {
   });
 
   // Add dynamic dam pages
-  dams.forEach(dam => {
+  const seenSlugs = new Set();
+  allDams.forEach(dam => {
     const slug = getDamSlug(dam.name);
-    xml += '  <url>\n';
-    xml += `    <loc>${baseUrl}/dam/${slug}</loc>\n`;
-    xml += `    <lastmod>${today}</lastmod>\n`;
-    xml += `    <changefreq>daily</changefreq>\n`;
-    xml += `    <priority>0.8</priority>\n`;
-    xml += '  </url>\n';
+    if (!seenSlugs.has(slug)) {
+      seenSlugs.add(slug);
+      xml += '  <url>\n';
+      xml += `    <loc>${baseUrl}/dam/${slug}</loc>\n`;
+      xml += `    <lastmod>${today}</lastmod>\n`;
+      xml += `    <changefreq>daily</changefreq>\n`;
+      xml += `    <priority>0.8</priority>\n`;
+      xml += '  </url>\n';
+    }
   });
 
   xml += '</urlset>\n';
 
   const sitemapPath = path.join(rootDir, 'public', 'sitemap.xml');
   fs.writeFileSync(sitemapPath, xml, 'utf8');
-  console.log(`Successfully generated sitemap.xml with ${staticRoutes.length + dams.length} URLs at ${sitemapPath}`);
+  console.log(`Successfully generated sitemap.xml with ${staticRoutes.length + seenSlugs.size} URLs at ${sitemapPath}`);
 }
 
 main();
