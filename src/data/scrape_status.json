@@ -1,7 +1,7 @@
 {
-  "last_run_timestamp": "2026-08-29 02:37 AM",
+  "last_run_timestamp": "2026-08-29 04:57 AM",
   "success": true,
-  "duration_seconds": 17.31,
+  "duration_seconds": 13.86,
   "sources": {
     "tungabhadra": {
       "status": "Operational",
@@ -31,7 +31,7 @@
     "brazil": {
       "status": "Operational",
       "ok": true,
-      "count": 32
+      "count": 28
     }
   },
   "metrics": {
@@ -41,6 +41,49 @@
     "outflow_delta_cusecs": 0
   },
   "history": [
+    {
+      "timestamp": "2026-08-29 04:57 AM",
+      "success": true,
+      "duration_seconds": 13.86,
+      "sources": {
+        "tungabhadra": {
+          "status": "Operational",
+          "ok": true,
+          "count": 1
+        },
+        "tamil_nadu": {
+          "status": "Operational",
+          "ok": true,
+          "count": 19
+        },
+        "bbmb": {
+          "status": "Operational",
+          "ok": true,
+          "count": 2
+        },
+        "pan_india": {
+          "status": "Operational",
+          "ok": true,
+          "count": 140
+        },
+        "usa": {
+          "status": "Operational",
+          "ok": true,
+          "count": 13
+        },
+        "brazil": {
+          "status": "Operational",
+          "ok": true,
+          "count": 28
+        }
+      },
+      "metrics": {
+        "dams_changed": 0,
+        "storage_delta_tmc": 0.0,
+        "inflow_delta_cusecs": 0,
+        "outflow_delta_cusecs": 0
+      }
+    },
     {
       "timestamp": "2026-08-29 02:37 AM",
       "success": true,
@@ -508,39 +551,6 @@
         "storage_delta_tmc": 14.789,
         "inflow_delta_cusecs": 62621,
         "outflow_delta_cusecs": -15464
-      }
-    },
-    {
-      "timestamp": "2026-08-19 10:33 AM",
-      "success": true,
-      "duration_seconds": 10.11,
-      "sources": {
-        "tungabhadra": {
-          "status": "Operational",
-          "ok": true,
-          "count": 1
-        },
-        "tamil_nadu": {
-          "status": "Operational",
-          "ok": true,
-          "count": 19
-        },
-        "oneindia": {
-          "status": "Operational",
-          "ok": true,
-          "count": 15
-        },
-        "bbmb": {
-          "status": "Operational",
-          "ok": true,
-          "count": 2
-        }
-      },
-      "metrics": {
-        "dams_changed": 31,
-        "storage_delta_tmc": 3.881,
-        "inflow_delta_cusecs": -2751,
-        "outflow_delta_cusecs": 3100
       }
     }
   ]
