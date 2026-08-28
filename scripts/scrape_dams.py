@@ -409,18 +409,56 @@ def main():
         if api_url:
             if not api_url.startswith("http"):
                 api_url = f"https://{api_url}"
-            readings = []
+            all_readings = []
+            now_iso = datetime.datetime.utcnow().isoformat() + "Z"
+            
             for d in final_dams:
-                readings.append({
-                    "dam_id": d["id"],
-                    "name": d["name"],
-                    "level": d["level"],
-                    "capacity": d["capacity"],
-                    "inflow": d["inflow"],
-                    "outflow": d["outflow"],
-                    "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+                all_readings.append({
+                    "dam_id": d.get("id"),
+                    "name": d.get("name"),
+                    "level": d.get("level"),
+                    "capacity": d.get("capacity"),
+                    "inflow": d.get("inflow"),
+                    "outflow": d.get("outflow"),
+                    "timestamp": now_iso
                 })
-            payload = json.dumps({"readings": readings}).encode("utf-8")
+            
+            # Also include USA and Brazil dams in history
+            try:
+                usa_p = os.path.join(DATA_DIR, "dams_usa.json")
+                if os.path.exists(usa_p):
+                    with open(usa_p, "r", encoding="utf-8") as f:
+                        for d in json.load(f):
+                            all_readings.append({
+                                "dam_id": d.get("id"),
+                                "name": d.get("name"),
+                                "level": d.get("level"),
+                                "capacity": d.get("capacity"),
+                                "inflow": d.get("inflow"),
+                                "outflow": d.get("outflow"),
+                                "timestamp": now_iso
+                            })
+            except Exception as ex:
+                print(f"  Warning adding USA dams to history: {ex}")
+
+            try:
+                br_p = os.path.join(DATA_DIR, "dams_brazil.json")
+                if os.path.exists(br_p):
+                    with open(br_p, "r", encoding="utf-8") as f:
+                        for d in json.load(f):
+                            all_readings.append({
+                                "dam_id": d.get("id"),
+                                "name": d.get("name"),
+                                "level": d.get("level"),
+                                "capacity": d.get("capacity"),
+                                "inflow": d.get("inflow"),
+                                "outflow": d.get("outflow"),
+                                "timestamp": now_iso
+                            })
+            except Exception as ex:
+                print(f"  Warning adding Brazil dams to history: {ex}")
+
+            payload = json.dumps({"readings": all_readings}).encode("utf-8")
             req = urllib.request.Request(
                 f"{api_url}/api/dam-history",
                 data=payload,
@@ -428,7 +466,7 @@ def main():
                 method="POST"
             )
             resp = urllib.request.urlopen(req, timeout=15)
-            print(f"Posted {len(readings)} dam readings to history API (status {resp.status})")
+            print(f"Posted {len(all_readings)} global dam readings to history API (status {resp.status})")
         else:
             print("api_url not set, skipping history API post.")
     except Exception as e:
