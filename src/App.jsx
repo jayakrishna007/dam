@@ -11,15 +11,15 @@ const DAMS = DAMS_INDIA;
 const ALL_GLOBAL_DAMS = [...DAMS_INDIA, ...DAMS_USA, ...DAMS_BRAZIL];
 
 const COUNTRIES = [
-  { code: "India", label: "🇮🇳 India", name: "India", sub: "All India" },
-  { code: "USA", label: "🇺🇸 USA", name: "USA", sub: "United States" },
-  { code: "Brazil", label: "🇧🇷 Brazil", name: "Brazil", sub: "Brazil" }
+  { code: "India", label: "India", name: "India", sub: "All India" },
+  { code: "USA", label: "USA", name: "USA", sub: "United States" },
+  { code: "Brazil", label: "Brazil", name: "Brazil", sub: "Brazil" }
 ];
 
 const COUNTRY_ZONES = {
   "India": ["All", "North", "South", "East", "West", "Central"],
   "USA": ["All", "California", "Colorado River", "Columbia River", "Missouri River", "Tennessee River"],
-  "Brazil": ["All", "Amazon", "São Francisco", "Paraná", "Northeast", "Uruguay"]
+  "Brazil": ["All", "Amazon", "São Francisco", "Paraná"]
 };
 
 // ===================== MONGODB VERCEL SERVERLESS TELEMETRY API =====================
@@ -3387,27 +3387,18 @@ const getStateFromSlug = (slug) => {
 };
 
 const STATE_TO_ZONE = {
-  "Karnataka": "South",
-  "Tamil Nadu": "South",
-  "Kerala": "South",
-  "Andhra Pradesh": "South",
-  "Telangana": "South",
-  "Himachal Pradesh": "North",
-  "Uttarakhand": "North",
-  "Punjab": "North",
-  "Gujarat": "West",
-  "Maharashtra": "West",
-  "Rajasthan": "West",
-  "Madhya Pradesh": "Central",
-  "Uttar Pradesh": "Central",
-  "Chhattisgarh": "Central",
-  "Odisha": "East",
-  "Jharkhand": "East",
-  "West Bengal": "East",
-  "Bihar": "East",
-  "Assam": "East",
-  "Meghalaya": "East",
-  "Manipur": "East"
+  "Karnataka": "South", "Tamil Nadu": "South", "Kerala": "South", "Andhra Pradesh": "South", "Telangana": "South",
+  "Himachal Pradesh": "North", "Uttarakhand": "North", "Punjab": "North",
+  "Gujarat": "West", "Maharashtra": "West", "Rajasthan": "West",
+  "Madhya Pradesh": "Central", "Uttar Pradesh": "Central", "Chhattisgarh": "Central",
+  "Odisha": "East", "Jharkhand": "East", "West Bengal": "East", "Bihar": "East", "Assam": "East", "Meghalaya": "East", "Manipur": "East",
+  "California": "California", "Nevada": "Colorado River", "Arizona": "Colorado River", "Utah": "Colorado River",
+  "Washington": "Columbia River", "Oregon": "Columbia River",
+  "Montana": "Missouri River", "North Dakota": "Missouri River", "South Dakota": "Missouri River",
+  "Kentucky": "Tennessee River", "Tennessee": "Tennessee River",
+  "Pará": "Amazon", "Goiás": "Amazon", "Rondônia": "Amazon", "Tocantins": "Amazon",
+  "Bahia": "São Francisco", "Sergipe": "São Francisco",
+  "Paraná": "Paraná", "São Paulo": "Paraná"
 };
 
 const ALL_STATES = [
@@ -3424,7 +3415,15 @@ const ZONE_MAP = {
   "South": ["Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana"],
   "West": ["Gujarat", "Maharashtra", "Rajasthan"],
   "East": ["Odisha", "Jharkhand", "West Bengal", "Bihar", "Assam", "Meghalaya", "Manipur"],
-  "Central": ["Madhya Pradesh", "Uttar Pradesh", "Chhattisgarh"]
+  "Central": ["Madhya Pradesh", "Uttar Pradesh", "Chhattisgarh"],
+  "California": ["California"],
+  "Colorado River": ["Nevada", "Arizona", "Utah"],
+  "Columbia River": ["Washington", "Oregon"],
+  "Missouri River": ["Montana", "North Dakota", "South Dakota"],
+  "Tennessee River": ["Kentucky", "Tennessee"],
+  "Amazon": ["Pará", "Goiás", "Rondônia", "Tocantins"],
+  "São Francisco": ["Bahia", "Sergipe", "Minas Gerais"],
+  "Paraná": ["Paraná", "São Paulo", "Minas Gerais"]
 };
 
 
@@ -4186,9 +4185,12 @@ function StateFilterDropdown({ selectedState, selectedZone, onSelectState, lang,
     let pool = dams || [];
     if (selectedZone !== "All") {
       pool = dams.filter(d => {
-        if (d.basin && (d.basin === selectedZone || d.basin.toLowerCase().includes(selectedZone.toLowerCase()))) return true;
+        if (d.basin) {
+          return d.basin.toLowerCase() === selectedZone.toLowerCase() || d.basin.toLowerCase().includes(selectedZone.toLowerCase());
+        }
+        if (STATE_TO_ZONE[d.state] && STATE_TO_ZONE[d.state].toLowerCase() === selectedZone.toLowerCase()) return true;
         if (ZONE_MAP[selectedZone] && ZONE_MAP[selectedZone].includes(d.state)) return true;
-        if (d.state === selectedZone) return true;
+        if (d.state && d.state.toLowerCase() === selectedZone.toLowerCase()) return true;
         return false;
       });
     }
@@ -5042,16 +5044,23 @@ export default function App() {
     }
   };
 
-  const stateFilteredDams = selectedState !== "all" 
-    ? countryDams.filter(d => d.state === selectedState)
-    : selectedZone !== "All"
-      ? countryDams.filter(d => {
-          if (d.basin && (d.basin === selectedZone || d.basin.toLowerCase().includes(selectedZone.toLowerCase()))) return true;
-          if (ZONE_MAP[selectedZone] && ZONE_MAP[selectedZone].includes(d.state)) return true;
-          if (d.state === selectedZone) return true;
-          return false;
-        })
-      : countryDams;
+  const stateFilteredDams = useMemo(() => {
+    let list = countryDams || [];
+    if (selectedState !== "all") {
+      list = list.filter(d => d.state === selectedState);
+    } else if (selectedZone !== "All") {
+      list = list.filter(d => {
+        if (d.basin) {
+          return d.basin.toLowerCase() === selectedZone.toLowerCase() || d.basin.toLowerCase().includes(selectedZone.toLowerCase());
+        }
+        if (STATE_TO_ZONE[d.state] && STATE_TO_ZONE[d.state].toLowerCase() === selectedZone.toLowerCase()) return true;
+        if (ZONE_MAP[selectedZone] && ZONE_MAP[selectedZone].includes(d.state)) return true;
+        if (d.state && d.state.toLowerCase() === selectedZone.toLowerCase()) return true;
+        return false;
+      });
+    }
+    return list;
+  }, [countryDams, selectedState, selectedZone]);
   const currentAvgLevel = stateFilteredDams.length > 0
     ? parseFloat((stateFilteredDams.reduce((s,d)=>s+(typeof d.level==='number'?d.level:parseFloat(d.level)||0),0)/stateFilteredDams.length).toFixed(1))
     : 0.0;
@@ -5070,12 +5079,11 @@ export default function App() {
     const matchesFilter = (FILTER_FN[filter] || FILTER_FN.all)(dam);
     const query = searchQuery.trim().toLowerCase();
     const matchesSearch = query === "" ||
-      dam.name.toLowerCase().includes(query) ||
-      t(dam.name).toLowerCase().includes(query) ||
-      dam.river.toLowerCase().includes(query) ||
-      t(dam.river).toLowerCase().includes(query) ||
-      dam.district.toLowerCase().includes(query) ||
-      t(dam.district).toLowerCase().includes(query);
+      (dam.name && (dam.name.toLowerCase().includes(query) || t(dam.name).toLowerCase().includes(query))) ||
+      (dam.river && (dam.river.toLowerCase().includes(query) || t(dam.river).toLowerCase().includes(query))) ||
+      (dam.district && (dam.district.toLowerCase().includes(query) || t(dam.district).toLowerCase().includes(query))) ||
+      (dam.state && (dam.state.toLowerCase().includes(query) || (getLocalizedState(dam.state, lang) || "").toLowerCase().includes(query))) ||
+      (dam.basin && dam.basin.toLowerCase().includes(query));
     return matchesFilter && matchesSearch;
   });
 
@@ -5465,7 +5473,7 @@ export default function App() {
                     e.currentTarget.style.borderColor = "rgba(6, 182, 212, 0.25)";
                   }}
                 >
-                  <span>{COUNTRIES.find(c => c.name === selectedCountry)?.flag || "🇮🇳"} {COUNTRIES.find(c => c.name === selectedCountry)?.label || selectedCountry}</span>
+                  <span>{COUNTRIES.find(c => c.name === selectedCountry)?.label || selectedCountry}</span>
                   <span style={{ transition: "transform 0.2s", transform: countryDropdownOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
                 </button>
 
@@ -5488,7 +5496,7 @@ export default function App() {
                   }}>
                     {COUNTRIES.map(opt => (
                       <button
-                        key={opt.id}
+                        key={opt.code}
                         onClick={() => selectCountry(opt.name)}
                         style={{
                           background: selectedCountry === opt.name ? "rgba(6, 182, 212, 0.15)" : "transparent",
@@ -5513,7 +5521,6 @@ export default function App() {
                           e.currentTarget.style.color = selectedCountry === opt.name ? "#38bdf8" : "rgba(224, 242, 254, 0.7)";
                         }}
                       >
-                        <span>{opt.flag}</span>
                         <span>{opt.label}</span>
                       </button>
                     ))}
@@ -5733,7 +5740,7 @@ export default function App() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
                   {COUNTRIES.map((opt) => (
                     <button
-                      key={opt.id}
+                      key={opt.code}
                       onClick={() => {
                         selectCountry(opt.name);
                         setMobileMenuOpen(false);
@@ -5752,10 +5759,10 @@ export default function App() {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
+                        justifyContent: "center",
                         gap: 4
                       }}
                     >
-                      <span style={{ fontSize: 16 }}>{opt.flag}</span>
                       <span>{opt.label}</span>
                     </button>
                   ))}
