@@ -1,7 +1,7 @@
 {
-  "last_run_timestamp": "2026-08-28 05:09 AM",
+  "last_run_timestamp": "2026-08-28 10:14 AM",
   "success": true,
-  "duration_seconds": 8.08,
+  "duration_seconds": 6.66,
   "sources": {
     "tungabhadra": {
       "status": "Operational",
@@ -25,12 +25,45 @@
     }
   },
   "metrics": {
-    "dams_changed": 0,
-    "storage_delta_tmc": 0.0,
-    "inflow_delta_cusecs": 0,
-    "outflow_delta_cusecs": 0
+    "dams_changed": 3,
+    "storage_delta_tmc": 1.232,
+    "inflow_delta_cusecs": -586,
+    "outflow_delta_cusecs": -1503
   },
   "history": [
+    {
+      "timestamp": "2026-08-28 10:14 AM",
+      "success": true,
+      "duration_seconds": 6.66,
+      "sources": {
+        "tungabhadra": {
+          "status": "Operational",
+          "ok": true,
+          "count": 1
+        },
+        "tamil_nadu": {
+          "status": "Operational",
+          "ok": true,
+          "count": 19
+        },
+        "bbmb": {
+          "status": "Operational",
+          "ok": true,
+          "count": 2
+        },
+        "pan_india": {
+          "status": "Operational",
+          "ok": true,
+          "count": 140
+        }
+      },
+      "metrics": {
+        "dams_changed": 3,
+        "storage_delta_tmc": 1.232,
+        "inflow_delta_cusecs": -586,
+        "outflow_delta_cusecs": -1503
+      }
+    },
     {
       "timestamp": "2026-08-28 05:09 AM",
       "success": true,
@@ -446,39 +479,6 @@
           "status": "Down",
           "ok": false,
           "count": 0
-        },
-        "pan_india": {
-          "status": "Operational",
-          "ok": true,
-          "count": 140
-        }
-      },
-      "metrics": {
-        "dams_changed": 0,
-        "storage_delta_tmc": 0.0,
-        "inflow_delta_cusecs": 0,
-        "outflow_delta_cusecs": 0
-      }
-    },
-    {
-      "timestamp": "2026-08-24 04:46 PM",
-      "success": true,
-      "duration_seconds": 5.71,
-      "sources": {
-        "tungabhadra": {
-          "status": "Operational",
-          "ok": true,
-          "count": 1
-        },
-        "tamil_nadu": {
-          "status": "Operational",
-          "ok": true,
-          "count": 19
-        },
-        "bbmb": {
-          "status": "Operational",
-          "ok": true,
-          "count": 2
         },
         "pan_india": {
           "status": "Operational",

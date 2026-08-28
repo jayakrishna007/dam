@@ -48,10 +48,10 @@
     "name": "Tungabhadra",
     "river": "Tungabhadra",
     "district": "Vijayanagara",
-    "level": 90.39,
+    "level": 90.96,
     "capacity": 105.788,
-    "inflow": 15952,
-    "outflow": 8551,
+    "inflow": 16317,
+    "outflow": 8914,
     "state": "Karnataka"
   },
   {
@@ -389,10 +389,10 @@
     "name": "Bhakra (Gobind Sagar)",
     "river": "Sutlej",
     "district": "Bilaspur",
-    "level": 62.69,
+    "level": 62.8,
     "capacity": 197.7,
-    "inflow": 32881,
-    "outflow": 25717,
+    "inflow": 34335,
+    "outflow": 25738,
     "state": "Himachal Pradesh"
   },
   {
@@ -400,10 +400,10 @@
     "name": "Pong (Maharana Pratap Sagar)",
     "river": "Beas",
     "district": "Kangra",
-    "level": 66.33,
+    "level": 66.49,
     "capacity": 257.0,
-    "inflow": 25476,
-    "outflow": 16405,
+    "inflow": 23071,
+    "outflow": 14518,
     "state": "Himachal Pradesh"
   },
   {
