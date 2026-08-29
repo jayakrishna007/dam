@@ -10,8 +10,8 @@
     "capacity_hm3": 45790.0,
     "capacity": 1617.2,
     "storage_hm3": 37547.8,
-    "inflow": 32435,
-    "outflow": 2404,
+    "inflow": 32440,
+    "outflow": 2526,
     "unit": "m3/s",
     "image": "/images/dams/tucurui_dam.jpg"
   },
@@ -26,8 +26,8 @@
     "capacity_hm3": 54400.0,
     "capacity": 1921.7,
     "storage_hm3": 38624.0,
-    "inflow": 654,
-    "outflow": 654,
+    "inflow": 651,
+    "outflow": 651,
     "unit": "m3/s",
     "image": "/images/dams/serra_da_mesa_dam.jpg"
   },
@@ -38,11 +38,11 @@
     "state": "Par\u00e1",
     "basin": "Amazon",
     "country": "Brazil",
-    "level": 85.8,
+    "level": 84.8,
     "capacity_hm3": 3560.0,
     "capacity": 125.7,
     "storage_hm3": 2420.8,
-    "inflow": 0,
+    "inflow": 160,
     "outflow": 0,
     "unit": "m3/s",
     "image": "/images/dams/belo_monte_dam.jpg"
@@ -58,8 +58,8 @@
     "capacity_hm3": 3627.0,
     "capacity": 128.1,
     "storage_hm3": 2684.0,
-    "inflow": 9391,
-    "outflow": 9391,
+    "inflow": 9528,
+    "outflow": 9528,
     "unit": "m3/s"
   },
   {
@@ -73,8 +73,8 @@
     "capacity_hm3": 2848.0,
     "capacity": 100.6,
     "storage_hm3": 2164.5,
-    "inflow": 9451,
-    "outflow": 9451,
+    "inflow": 9654,
+    "outflow": 9654,
     "unit": "m3/s"
   },
   {
@@ -84,12 +84,12 @@
     "state": "Tocantins",
     "basin": "Amazon",
     "country": "Brazil",
-    "level": 31.8,
+    "level": 30.6,
     "capacity_hm3": 1503.0,
     "capacity": 53.1,
     "storage_hm3": 1187.4,
-    "inflow": 785,
-    "outflow": 785,
+    "inflow": -874,
+    "outflow": 781,
     "unit": "m3/s"
   },
   {
@@ -99,12 +99,12 @@
     "state": "Bahia",
     "basin": "S\u00e3o Francisco",
     "country": "Brazil",
-    "level": 71.6,
+    "level": 71.9,
     "capacity_hm3": 34116.0,
     "capacity": 1204.9,
     "storage_hm3": 13987.6,
-    "inflow": 1041,
-    "outflow": 1041,
+    "inflow": 1183,
+    "outflow": 1183,
     "unit": "m3/s",
     "image": "/images/dams/sobradinho_dam.jpg"
   },
@@ -115,12 +115,12 @@
     "state": "Sergipe",
     "basin": "S\u00e3o Francisco",
     "country": "Brazil",
-    "level": 34.1,
+    "level": 17.1,
     "capacity_hm3": 3800.0,
     "capacity": 134.2,
     "storage_hm3": 2470.0,
-    "inflow": 701,
-    "outflow": 978,
+    "inflow": 425,
+    "outflow": 981,
     "unit": "m3/s"
   },
   {
@@ -134,8 +134,8 @@
     "capacity_hm3": 19528.0,
     "capacity": 689.7,
     "storage_hm3": 11130.9,
-    "inflow": 244,
-    "outflow": 159,
+    "inflow": 0,
+    "outflow": 0,
     "unit": "m3/s"
   },
   {
@@ -145,12 +145,12 @@
     "state": "Bahia",
     "basin": "S\u00e3o Francisco",
     "country": "Brazil",
-    "level": 70.8,
+    "level": 71.6,
     "capacity_hm3": 10782.0,
     "capacity": 380.9,
     "storage_hm3": 5930.1,
-    "inflow": 394,
-    "outflow": 394,
+    "inflow": 4837,
+    "outflow": 392,
     "unit": "m3/s"
   },
   {
@@ -164,8 +164,8 @@
     "capacity_hm3": 29000.0,
     "capacity": 1024.1,
     "storage_hm3": 25810.0,
-    "inflow": 6898,
-    "outflow": 6898,
+    "inflow": 3203,
+    "outflow": 6814,
     "unit": "m3/s",
     "image": "/images/dams/itaipu_dam.jpg"
   },
@@ -211,8 +211,8 @@
     "capacity_hm3": 17580.0,
     "capacity": 620.8,
     "storage_hm3": 11602.8,
-    "inflow": 214,
-    "outflow": 185,
+    "inflow": 0,
+    "outflow": 0,
     "unit": "m3/s"
   },
   {
@@ -226,8 +226,8 @@
     "capacity_hm3": 6050.0,
     "capacity": 213.6,
     "storage_hm3": 4719.0,
-    "inflow": 1521,
-    "outflow": 1521,
+    "inflow": 1512,
+    "outflow": 1512,
     "unit": "m3/s"
   }
 ]
