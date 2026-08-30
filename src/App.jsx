@@ -6012,7 +6012,7 @@ export default function App() {
             borderBottom:"1px solid rgba(255,255,255,0.03)", position:"relative", zIndex:6
           }}>
             <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:24 }}>
-              <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={selectedCountry === "USA" ? "Active US federal & state dams" : selectedCountry === "Brazil" ? "Barragens monitoradas pelo ONS" : t("monitoredDamsSub")} decimals={0} />
+              <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={selectedCountry === "USA" ? "Active US federal & state dams" : selectedCountry === "Brazil" ? "Barragens monitoradas pelo ONS" : selectedCountry === "Thailand" ? "EGAT hydro reservoirs across 4 river basins" : selectedCountry === "Laos" ? "Mekong mainstream & tributary cascade dams" : selectedCountry === "Vietnam" ? "Sesan, Srepok & national hydro reservoirs" : t("monitoredDamsSub")} decimals={0} />
               <StatCard label={t("averageLevel")} target={currentAvgLevel} active={goStats} suffix="%" color="#22D3EE" sub={t("averageLevelSub")} decimals={1} />
               <StatCardLarge
                 label={t("totalCapacity")}
@@ -6116,14 +6116,14 @@ export default function App() {
               <div>
                 <h2 className="section-heading" style={{ fontSize:"clamp(20px, 5vw, 28px)", fontWeight:900, color:"#E0F2FE", letterSpacing:"-0.5px" }}>
                   {(() => {
-                    const countryLabel = selectedCountry === "USA" ? "USA" : selectedCountry === "Brazil" ? "Brazil" : "India";
+                    const countryLabel = selectedCountry;
                     if (selectedState !== "all") {
                       return `${getLocalizedState(selectedState, lang)} (${countryLabel}) Reservoirs`;
                     }
                     if (selectedZone !== "All") {
                       return `${getLocalizedZone(selectedZone, lang)} (${countryLabel}) Reservoirs`;
                     }
-                    return `${selectedCountry === "USA" ? "United States" : selectedCountry === "Brazil" ? "Brazil" : "All India"} Reservoirs`;
+                    return selectedCountry === "India" ? "All India Reservoirs" : `All ${selectedCountry} Reservoirs`;
                   })()}
                 </h2>
                 <p style={{ fontSize:13, color:"rgba(224,242,254,0.4)", marginTop:4 }}>{t("searchAndSelectFilters")}</p>
