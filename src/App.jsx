@@ -5242,6 +5242,53 @@ export default function App() {
           }
         }
         @media (max-height: 820px) and (min-width: 769px) {
+          .hero-slider-container {
+            min-height: calc(100vh - 30px) !important;
+            height: auto !important;
+            padding-bottom: 80px !important;
+          }
+          .hero-left-content {
+            padding-top: 45px !important;
+          }
+          .hero-cards-panel {
+            transform: translateY(-50%) scale(0.82) !important;
+            transform-origin: right center !important;
+          }
+          .hero-bottom-nav {
+            bottom: 24px !important;
+          }
+          .hero-slide-title {
+            font-size: 2.8rem !important;
+            margin-bottom: 8px !important;
+          }
+          .hero-slide-desc {
+            margin-bottom: 14px !important;
+          }
+          .hero-slide-data {
+            margin-bottom: 16px !important;
+            padding: 12px 16px !important;
+          }
+        }
+        @media (max-width:768px){
+          .nav-search-container{display:none!important}
+          .hero-cards-panel{display:none!important}
+          .hero-vert-nav{display:none!important}
+          .main-nav-bar {
+            padding: 8px 14px !important;
+            min-height: 50px !important;
+          }
+          .main-nav-links {
+            display: none !important;
+          }
+          .main-nav-lang-selector {
+            display: none !important;
+          }
+          .main-nav-timestamp {
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: block !important;
+          }
           .hero-mobile-search-wrap {
             display: block !important;
             width: 100% !important;
