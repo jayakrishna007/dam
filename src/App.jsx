@@ -2674,7 +2674,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
     if (lang === "te") return `&larr; ${stateLocal} జలాశయాలకు తిరిగి వెళ్ళండి`;
     if (lang === "ta") return `&larr; ${stateLocal} அணைகளுக்குத் திரும்புக`;
     if (lang === "ml") return `&larr; ${stateLocal} ഡാമുകളിലേക്ക് മടങ്ങുക`;
-    return `&larr; Back to ${stateName} (${dam.country || "India"}) Reservoirs`;
+    return `&larr; Back to ${stateName} (${dam.country || selectedCountry}) Reservoirs`;
   };
 
   const localizedHistoryTitle = () => {
@@ -2745,7 +2745,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
                 </h1>
               </div>
               <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)" }}>
-                {t(dam.river)} {t("river")} &middot; {t(dam.district)} {t("district")}, {getLocalizedState(dam.state, lang)} ({dam.country || "India"}) &middot; {t("storageStatus")}
+                {t(dam.river)} {t("river")} &middot; {t(dam.district)} {t("district")}, {getLocalizedState(dam.state, lang)} ({dam.country || selectedCountry}) &middot; {t("storageStatus")}
               </div>
               {SCRAPE_STATUS?.last_run_timestamp && (
                 <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "3px 8px", borderRadius: 6 }}>
