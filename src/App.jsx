@@ -3393,18 +3393,41 @@ const getStateFromSlug = (slug) => {
 };
 
 const STATE_TO_ZONE = {
+  // India
   "Karnataka": "South", "Tamil Nadu": "South", "Kerala": "South", "Andhra Pradesh": "South", "Telangana": "South",
-  "Himachal Pradesh": "North", "Uttarakhand": "North", "Punjab": "North",
-  "Gujarat": "West", "Maharashtra": "West", "Rajasthan": "West",
-  "Madhya Pradesh": "Central", "Uttar Pradesh": "Central", "Chhattisgarh": "Central",
-  "Odisha": "East", "Jharkhand": "East", "West Bengal": "East", "Bihar": "East", "Assam": "East", "Meghalaya": "East", "Manipur": "East",
+  "Himachal Pradesh": "North", "Uttarakhand": "North", "Punjab": "North", "Uttar Pradesh": "North",
+  "Gujarat": "West", "Maharashtra": "West", "Rajasthan": "West", "Goa": "West",
+  "Madhya Pradesh": "Central", "Chhattisgarh": "Central",
+  "Odisha": "East", "Jharkhand": "East", "West Bengal": "East", "Bihar": "East", "Assam": "East", "Meghalaya": "East", "Manipur": "East", "Sikkim": "East",
+
+  // USA
   "California": "California", "Nevada": "Colorado River", "Arizona": "Colorado River", "Utah": "Colorado River",
   "Washington": "Columbia River", "Oregon": "Columbia River",
   "Montana": "Missouri River", "North Dakota": "Missouri River", "South Dakota": "Missouri River",
   "Kentucky": "Tennessee River", "Tennessee": "Tennessee River",
+
+  // Brazil
   "Pará": "Amazon", "Goiás": "Amazon", "Rondônia": "Amazon", "Tocantins": "Amazon",
   "Bahia": "São Francisco", "Sergipe": "São Francisco",
-  "Paraná": "Paraná", "São Paulo": "Paraná"
+  "Paraná": "Paraná", "São Paulo": "Paraná", "Minas Gerais": "São Francisco",
+
+  // Thailand
+  "Tak": "Northern Basin", "Uttaradit": "Northern Basin",
+  "Kanchanaburi": "Western Basin",
+  "Ubon Ratchathani": "Mekong Basin", "Khon Kaen": "Mekong Basin", "Chaiyaphum": "Mekong Basin", "Sakon Nakhon": "Mekong Basin",
+  "Surat Thani": "Southern Basin", "Yala": "Southern Basin",
+
+  // Laos
+  "Xayabury": "Mekong Mainstream", "Champasak": "Mekong Mainstream",
+  "Vientiane": "Nam Ngum Basin",
+  "Khammouane": "Nam Theun Basin", "Bolikhamxay": "Nam Theun Basin",
+  "Luang Prabang": "Nam Ou Cascade", "Phongsaly": "Nam Ou Cascade",
+
+  // Vietnam
+  "Gia Lai": "Sesan Basin (Mekong)", "Kon Tum": "Sesan Basin (Mekong)",
+  "Dak Lak": "Srepok Basin (Mekong)", "Dak Nong": "Srepok Basin (Mekong)",
+  "Son La": "Northern Basin", "Hoa Binh": "Northern Basin",
+  "Dong Nai": "Southern Basin"
 };
 
 const ALL_STATES = [
@@ -3416,29 +3439,42 @@ const ALL_STATES = [
 ];
 
 const ZONE_MAP = {
+  // India
   "North": ["Himachal Pradesh", "Punjab", "Uttarakhand", "Uttar Pradesh"],
   "South": ["Andhra Pradesh", "Karnataka", "Kerala", "Tamil Nadu", "Telangana"],
   "East": ["Assam", "Bihar", "Jharkhand", "Manipur", "Meghalaya", "Nagaland", "Odisha", "Tripura", "West Bengal", "Sikkim"],
   "West": ["Goa", "Gujarat", "Maharashtra", "Rajasthan"],
   "Central": ["Chhattisgarh", "Madhya Pradesh"],
+
+  // USA
   "California": ["California"],
   "Colorado River": ["Nevada", "Arizona", "Utah"],
   "Columbia River": ["Washington", "Oregon"],
   "Missouri River": ["Montana", "North Dakota", "South Dakota"],
   "Tennessee River": ["Kentucky", "Tennessee"],
+
+  // Brazil
   "Amazon": ["Pará", "Goiás", "Rondônia", "Tocantins"],
   "São Francisco": ["Bahia", "Sergipe", "Minas Gerais"],
   "Paraná": ["Paraná", "São Paulo", "Goiás", "Minas Gerais"],
+
+  // Thailand
   "Mekong Basin": ["Ubon Ratchathani", "Khon Kaen", "Chaiyaphum", "Sakon Nakhon"],
-  "Northern Basin": ["Tak", "Uttaradit", "Son La", "Hoa Binh"],
+  "Northern Basin": ["Tak", "Uttaradit"],
   "Western Basin": ["Kanchanaburi"],
-  "Southern Basin": ["Surat Thani", "Yala", "Dong Nai"],
+  "Southern Basin": ["Surat Thani", "Yala"],
+
+  // Laos
   "Mekong Mainstream": ["Xayabury", "Champasak"],
   "Nam Ngum Basin": ["Vientiane"],
   "Nam Theun Basin": ["Khammouane", "Bolikhamxay"],
   "Nam Ou Cascade": ["Luang Prabang", "Phongsaly"],
+
+  // Vietnam
   "Sesan Basin (Mekong)": ["Gia Lai", "Kon Tum"],
-  "Srepok Basin (Mekong)": ["Dak Lak", "Dak Nong"]
+  "Srepok Basin (Mekong)": ["Dak Lak", "Dak Nong"],
+  "Northern Basin": ["Son La", "Hoa Binh"],
+  "Southern Basin": ["Dong Nai"]
 };
 
 
@@ -3979,47 +4015,61 @@ function HeroDamSlider({
           </div>
         </div>
 
-        {/* Mobile In-Hero Search Bar */}
+        {/* High-Contrast Mobile In-Hero Search Capsule */}
         <div className="hero-mobile-search-wrap" style={{
-          marginBottom: 16,
+          marginBottom: 18,
           position: "relative",
           width: "100%",
-          maxWidth: 360
+          zIndex: 10
         }}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSearch(searchInput);
+              const el = document.getElementById("dams-section") || document.getElementById("dams-grid");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
             }}
-            style={{ display: "flex", gap: 8, width: "100%" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              width: "100%",
+              background: "rgba(3, 10, 20, 0.94)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: `1.5px solid ${pal.accent}75`,
+              borderRadius: 16,
+              padding: "6px 8px 6px 14px",
+              boxShadow: `0 12px 36px rgba(0,0,0,0.85), 0 0 24px ${pal.glow}, inset 0 1px 0 rgba(255,255,255,0.12)`
+            }}
           >
-            <div style={{ position: "relative", flex: 1 }}>
+            <div style={{ position: "relative", flex: 1, display: "flex", alignItems: "center" }}>
+              <span style={{ fontSize: 16, marginRight: 10, opacity: 0.9, color: pal.accent, pointerEvents: "none" }}>🔍</span>
               <input
                 type="text"
-                placeholder={t("searchPlaceholder") || "Search dam, river, district..."}
+                placeholder={t("searchPlaceholder") || "Search dam, river, state..."}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "10px 30px 10px 34px",
-                  borderRadius: 50,
-                  border: `1px solid ${pal.accent}60`,
-                  background: "rgba(3, 10, 20, 0.85)",
-                  backdropFilter: "blur(12px)",
-                  color: "#E0F2FE",
-                  fontSize: 13,
-                  outline: "none",
-                  boxShadow: `0 4px 20px rgba(0,0,0,0.4), 0 0 12px ${pal.glow}`
+                  padding: "8px 24px 8px 0",
+                  background: "transparent",
+                  border: "none",
+                  color: "#FFFFFF",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  outline: "none"
                 }}
               />
-              <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 13, opacity: 0.7, pointerEvents: "none" }}>🔍</span>
               {searchInput && (
                 <button
                   type="button"
                   onClick={handleClearSearch}
                   style={{
-                    position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-                    background: "none", border: "none", color: "rgba(224,242,254,0.6)", fontSize: 12, cursor: "pointer", padding: 2
+                    position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
+                    background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
+                    color: "#E0F2FE", width: 22, height: 22, fontSize: 11, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center"
                   }}
                 >✕</button>
               )}
@@ -4027,22 +4077,24 @@ function HeroDamSlider({
             <button
               type="submit"
               style={{
-                background: pal.accent,
-                color: "#fff",
+                background: `linear-gradient(135deg, ${pal.accent} 0%, #0284c7 100%)`,
+                color: "#ffffff",
                 border: "none",
-                borderRadius: 50,
-                padding: "0 18px",
+                borderRadius: 12,
+                padding: "10px 18px",
                 fontSize: 13,
-                fontWeight: 700,
+                fontWeight: 800,
+                letterSpacing: 0.5,
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 gap: 4,
-                boxShadow: `0 4px 15px ${pal.accent}40`,
-                whiteSpace: "nowrap"
+                boxShadow: `0 4px 16px ${pal.accent}50`,
+                whiteSpace: "nowrap",
+                flexShrink: 0
               }}
             >
-              Search
+              {t("search") || "Search"}
             </button>
           </form>
         </div>
