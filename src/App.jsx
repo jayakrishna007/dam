@@ -5299,7 +5299,7 @@ export default function App() {
             height: auto !important;
             min-height: calc(100vh - 20px) !important;
             padding-top: 32px !important;
-            padding-bottom: 90px !important;
+            padding-bottom: 58px !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: flex-start !important;
@@ -5331,7 +5331,7 @@ export default function App() {
           .hero-slide-btns {
             gap: 10px !important;
             flex-wrap: nowrap !important;
-            margin-bottom: 28px !important;
+            margin-bottom: 12px !important;
           }
           .hero-slide-btns button {
             padding: 12px 16px !important;
@@ -5344,8 +5344,8 @@ export default function App() {
             display: none !important;
           }
           .hero-bottom-nav {
-            bottom: 22px !important;
-            gap: 12px !important;
+            bottom: 14px !important;
+            gap: 10px !important;
             z-index: 20 !important;
           }
         }
