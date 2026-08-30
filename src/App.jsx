@@ -3596,13 +3596,7 @@ function useRouter() {
 const getFeaturedDamsForCountry = (countryDamsList, countryName) => {
   if (!countryDamsList || countryDamsList.length === 0) return [];
   if (countryName === "USA") {
-    const usTop5Names = [
-      "Hoover Dam",
-      "Glen Canyon Dam",
-      "Grand Coulee",
-      "Shasta",
-      "Oroville"
-    ];
+    const usTop5Names = ["Hoover Dam","Glen Canyon Dam","Grand Coulee","Shasta","Oroville"];
     const found = [];
     for (const key of usTop5Names) {
       const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
@@ -3611,13 +3605,7 @@ const getFeaturedDamsForCountry = (countryDamsList, countryName) => {
     return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
   }
   if (countryName === "Brazil") {
-    const brTop5Names = [
-      "Serra da Mesa",
-      "Tucuruí",
-      "Sobradinho",
-      "Itaipu",
-      "Furnas"
-    ];
+    const brTop5Names = ["Serra da Mesa","Tucuruí","Sobradinho","Itaipu","Furnas"];
     const found = [];
     for (const key of brTop5Names) {
       const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
@@ -3625,12 +3613,37 @@ const getFeaturedDamsForCountry = (countryDamsList, countryName) => {
     }
     return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
   }
-  const inFeatured = [
-    "Tungabhadra", "Tehri Dam", "Sardar Sarovar", "Nagarjunsagar", "Bhakra (Gobind Sagar)",
-    "Idukki", "Srisailam", "Hirakud", "Koyna", "Indira Sagar", "Mettur", "Krishna Raja Sagara (KRS)"
-  ];
+  if (countryName === "Thailand") {
+    const thTop5Names = ["Bhumibol Dam","Sirikit Dam","Srinagarind Dam","Vajiralongkorn Dam","Sirindhorn Dam"];
+    const found = [];
+    for (const key of thTop5Names) {
+      const d = countryDamsList.find(item => item.name === key || item.name.includes(key));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length > 0 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
+  if (countryName === "Laos") {
+    const laTop5Names = ["Nam Theun 2 Dam","Nam Ngum 1 Dam","Xayaburi Dam","Theun-Hinboun Dam","Nam Ou 5 Dam"];
+    const found = [];
+    for (const key of laTop5Names) {
+      const d = countryDamsList.find(item => item.name === key || item.name.includes(key));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length > 0 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
+  if (countryName === "Vietnam") {
+    const vnTop5Names = ["Hoa Binh Dam","Son La Dam","Yali Falls Dam","Tri An Dam","Plei Krong Dam"];
+    const found = [];
+    for (const key of vnTop5Names) {
+      const d = countryDamsList.find(item => item.name === key || item.name.includes(key));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length > 0 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
+  // India — top 5 most iconic
+  const inFeatured = ["Tehri Dam","Sardar Sarovar","Nagarjunsagar","Bhakra","Hirakud"];
   const found = inFeatured.map(n => countryDamsList.find(d => d.name === n || d.name.startsWith(n))).filter(Boolean);
-  return found.length > 0 ? found : countryDamsList.slice(0, 12);
+  return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
 };
 
 const DAM_PHOTOS = {
