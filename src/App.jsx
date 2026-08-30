@@ -5297,9 +5297,10 @@ export default function App() {
           }
           .hero-slider-container {
             height: auto !important;
-            min-height: calc(100vh - 20px) !important;
+            min-height: auto !important;
+            max-height: none !important;
             padding-top: 32px !important;
-            padding-bottom: 58px !important;
+            padding-bottom: 14px !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: flex-start !important;
@@ -5310,32 +5311,41 @@ export default function App() {
             top: 0 !important;
             transform: none !important;
             max-width: 100% !important;
-            padding: 2px 16px 0px 16px !important;
+            padding: 2px 14px 0px 14px !important;
+          }
+          .hero-slide-tag {
+            font-size: 0.65rem !important;
+            margin-bottom: 2px !important;
           }
           .hero-slide-title {
-            font-size: 2.2rem !important;
-            line-height: 1.0 !important;
-            margin-bottom: 8px !important;
+            font-size: 1.75rem !important;
+            line-height: 1.05 !important;
+            margin-bottom: 4px !important;
           }
           .hero-slide-desc {
-            font-size: 0.8rem !important;
-            line-height: 1.45 !important;
-            margin-bottom: 14px !important;
+            font-size: 0.74rem !important;
+            line-height: 1.35 !important;
+            margin-bottom: 8px !important;
             max-width: 100% !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
           }
           .hero-slide-data {
             max-width: 100% !important;
-            padding: 12px 14px !important;
-            margin-bottom: 16px !important;
+            padding: 8px 12px !important;
+            margin-bottom: 8px !important;
+            border-radius: 12px !important;
           }
           .hero-slide-btns {
-            gap: 10px !important;
+            gap: 8px !important;
             flex-wrap: nowrap !important;
-            margin-bottom: 12px !important;
+            margin-bottom: 2px !important;
           }
           .hero-slide-btns button {
-            padding: 12px 16px !important;
-            font-size: 0.84rem !important;
+            padding: 8px 12px !important;
+            font-size: 0.78rem !important;
             flex: 1 1 50% !important;
             justify-content: center !important;
             white-space: nowrap !important;
@@ -5344,9 +5354,20 @@ export default function App() {
             display: none !important;
           }
           .hero-bottom-nav {
-            bottom: 14px !important;
-            gap: 10px !important;
+            position: relative !important;
+            bottom: auto !important;
+            left: auto !important;
+            transform: none !important;
+            margin: 8px auto 2px auto !important;
+            gap: 8px !important;
             z-index: 20 !important;
+            display: flex !important;
+            justify-content: center !important;
+          }
+          .hero-nav-arrow {
+            width: 30px !important;
+            height: 30px !important;
+            font-size: 0.8rem !important;
           }
         }
 
