@@ -3100,7 +3100,7 @@ function AboutUsPage({ navigate, setView, lang, t }) {
             <ul style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.8, marginTop: 8, paddingLeft: 20 }}>
               <li>{lang === "hi" ? "कर्नाटक राज्य प्राकृतिक आपदा निगरानी केंद्र (KSNDMC)" : lang === "kn" ? "ಕರ್ನಾಟಕ ರಾಜ್ಯ ನೈಸರ್ಗಿಕ ವಿಕೋಪ ಉಸ್ತುವಾರಿ ಕೇಂದ್ರ (KSNDMC)" : lang === "te" ? "కర్ణాటక రాష్ట్ర విపత్తు నిర్వహణ సంస్థ (KSNDMC)" : lang === "ta" ? "கர்நாடகா மாநில இயற்கை பேரிடர் கண்காணிப்பு மையம் (KSNDMC)" : lang === "ml" ? "കർണ്ണാടക സംസ്ഥാന ദുരന്ത നിവാരണ കേന്ദ്രം (KSNDMC)" : "Karnataka State Natural Disaster Monitoring Centre (KSNDMC)"}</li>
               <li>{lang === "hi" ? "तमिलनाडु जल संसाधन विभाग (TNWRD)" : lang === "kn" ? "ತಮಿಳುನಾಡು ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (TNWRD)" : lang === "te" ? "తమిళనాడు నీటి వనరుల శాఖ (TNWRD)" : lang === "ta" ? "தமிழ்நாடு நீர்வளத் துறை (TNWRD)" : lang === "ml" ? "തമിഴ്നാട് ജലവിഭവ വകുപ്പ് (TNWRD)" : "Tamil Nadu Water Resources Department (TNWRD)"}</li>
-              <li>{lang === "hi" ? "आंध्र प्रदेश जल संसाधन विभाग (APWRD)" : lang === "kn" ? "ಆಂಧ್ರಪ್ರದೇಶ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (APWRD)" : lang === "te" ? "ఆంధ్రప్రదేశ్ నీటి వనరుల శాఖ (APWRD)" : lang === "ta" ? "ஆந்திரப் பிரதேச நீர்வளத் துறை (APWRD)" : lang === "ml" ? "ആന്ധ്രാപ്രദേശ് ಜಲവിഭവ വകുപ്പ് (APWRD)" : "Andhra Pradesh Water Resources Department (APWRD)"}</li>
+              <li>{lang === "hi" ? "आंध्र प्रदेश जल संसाधन विभाग (APWRD)" : lang === "kn" ? "ಆಂಧ್ರಪ್ರದೇಶ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (APWRD)" : lang === "te" ? "ఆంధ్రప్రదేశ్ నీటి వనరుల శాఖ (APWRD)" : lang === "ta" ? "ஆந்திரப் பிரதேச நீர்வளத் துறை (APWRD)" : lang === "ml" ? "ആന്ധ്രാപ്രദേശ് ജലവിഭവ വകുപ്പ് (APWRD)" : "Andhra Pradesh Water Resources Department (APWRD)"}</li>
               <li>{lang === "hi" ? "भाखड़ा ब्यास प्रबंधन बोर्ड (BBMB)" : lang === "kn" ? "ಭಾಕ್ರಾ ಬಿಯಾಸ್ ವ್ಯವಸ್ಥಾಪನಾ ಮಂಡಳಿ (BBMB)" : lang === "te" ? "భాక్రా బియాస్ మేనేజ్‌మెంట్ బోర్డ్ (BBMB)" : lang === "ta" ? "பக்ரா பியாஸ் மேலாண்மை வாரியம் (BBMB)" : lang === "ml" ? "ഭക്രാ ബിയാസ് മാനേജ്‌മെന്റ് ബോർഡ് (BBMB)" : "Bhakra Beas Management Board (BBMB)"}</li>
               <li>{lang === "hi" ? "सरदार सरोवर नर्मदा निगम लिमिटेड (SSNNL)" : lang === "kn" ? "ಸರ್ದಾರ್ ಸರೋವರ್ ನರ್ಮದಾ ನಿಗಮ ಲಿಮಿಟೆಡ್ (SSNNL)" : lang === "te" ? "సర్దార్ సరోవర్ నర్మదా నిగమ్ లిమిటెడ్ (SSNNL)" : lang === "ta" ? "சர்தார் சரோவர் நர்மதா நிகாம் லிமிடெட் (SSNNL)" : lang === "ml" ? "സർദാർ സരോവർ നർമ്മദ നിഗം ലിമിറ്റഡ് (SSNNL)" : "Sardar Sarovar Narmada Nigam Ltd (SSNNL)"}</li>
               <li>{lang === "hi" ? "केंद्रीय जल आयोग (CWC) और राज्य जल संसाधन विभाग" : lang === "kn" ? "ಕೇಂದ್ರ ಜಲ ಆಯೋಗ (CWC) ಮತ್ತು ರಾಜ್ಯ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆಗಳು" : lang === "te" ? "కేంద్ర జల సంఘం (CWC) & రాష్ట్ర నీటి వనరుల శాఖలు" : lang === "ta" ? "மத்திய நீர் ஆணையம் (CWC) & மாநில நீர்வளத் துறைகள்" : lang === "ml" ? "കേന്ദ്ര ജല കമ്മീഷൻ (CWC) & സംസ്ഥാന ജലവിഭവ വകുപ്പുകൾ" : "Central Water Commission (CWC) & State WRDs"}</li>
@@ -3123,38 +3123,6 @@ function AboutUsPage({ navigate, setView, lang, t }) {
 
 // ===================== CONTACT US PAGE =====================
 function ContactUsPage({ navigate, setView, lang, t }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [sendError, setSendError] = useState(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!name || !email || !message) return;
-    setSending(true);
-    setSendError(null);
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, message }),
-      });
-      let data = {};
-      try { data = await res.json(); } catch (_) {}
-      if (res.ok && data.success) {
-        setSubmitted(true);
-      } else {
-        setSendError(data.error || "Unable to send message right now. Please try again.");
-      }
-    } catch (err) {
-      setSendError("Network error. Please check your connection and try again.");
-    } finally {
-      setSending(false);
-    }
-  };
-
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: "40px 16px", animation: "fadeSlideUp 0.5s ease" }}>
       <button 
@@ -3175,115 +3143,64 @@ function ContactUsPage({ navigate, setView, lang, t }) {
       <div style={{
         background: "linear-gradient(135deg, #091a2f 0%, #040c17 100%)",
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
-        padding: "32px 40px"
+        padding: "40px",
       }}>
         <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>{t("contact")}</h1>
-        <p style={{ fontSize: 14, color: "rgba(224,242,254,0.5)", lineHeight: 1.6, marginBottom: 28 }}>
+        <p style={{ fontSize: 14, color: "rgba(224,242,254,0.5)", lineHeight: 1.6, marginBottom: 36 }}>
           {t("contactDesc")}
         </p>
 
-        {submitted ? (
+        {/* Email Card */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 18,
+          background: "rgba(6,182,212,0.06)", border: "1px solid rgba(6,182,212,0.18)",
+          borderRadius: 14, padding: "22px 24px", marginBottom: 28
+        }}>
           <div style={{
-            background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)",
-            padding: "24px 20px", borderRadius: 12, textAlign: "center", margin: "20px 0"
-          }}>
-            <span style={{ fontSize: 32, display: "block", marginBottom: 12 }}>&check;</span>
-            <h3 style={{ color: "#4ade80", fontSize: 18, fontWeight: 700, marginBottom: 6 }}>{t("messageSent")}</h3>
-            <p style={{ fontSize: 13, color: "rgba(224,242,254,0.6)", lineHeight: 1.5 }}>
-              {t("contactSuccessDesc").replace("{email}", email)}
-            </p>
-            <button 
-              onClick={() => { setSubmitted(false); setName(""); setEmail(""); setMessage(""); }}
+            width: 48, height: 48, borderRadius: 12, flexShrink: 0,
+            background: "linear-gradient(135deg, #0369A1, #06B6D4)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 22, boxShadow: "0 0 16px rgba(6,182,212,0.3)"
+          }}>✉️</div>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(6,182,212,0.8)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 5 }}>Email Us</div>
+            <a
+              href="mailto:damtoday4@gmail.com"
               style={{
-                marginTop: 16, padding: "8px 16px", borderRadius: 8, border: "none",
-                background: "rgba(34,197,94,0.15)", color: "#4ade80", fontWeight: 600, cursor: "pointer",
-                transition: "all 0.2s"
+                fontSize: 17, fontWeight: 700, color: "#67E8F9",
+                textDecoration: "none", letterSpacing: 0.2
               }}
+              onMouseEnter={e => e.currentTarget.style.color = "#38bdf8"}
+              onMouseLeave={e => e.currentTarget.style.color = "#67E8F9"}
             >
-              {t("sendAnother")}
-            </button>
+              damtoday4@gmail.com
+            </a>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>{t("yourName")}</label>
-              <input 
-                type="text" 
-                required
-                value={name}
-                onChange={e => setName(e.target.value)}
-                style={{
-                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 14, outline: "none"
-                }}
-              />
-            </div>
+        </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>{t("yourEmail")}</label>
-              <input 
-                type="email" 
-                required
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                style={{
-                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 14, outline: "none"
-                }}
-              />
-            </div>
+        {/* Send Email Button */}
+        <a
+          href="mailto:damtoday4@gmail.com?subject=DamToday%20Feedback"
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+            background: "linear-gradient(135deg, #0369A1, #06B6D4)",
+            color: "#fff", textDecoration: "none", borderRadius: 10,
+            padding: "13px 24px", fontWeight: 700, fontSize: 15,
+            boxShadow: "0 4px 20px rgba(6,182,212,0.25)", transition: "all 0.2s",
+          }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 6px 28px rgba(6,182,212,0.45)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 4px 20px rgba(6,182,212,0.25)"; e.currentTarget.style.transform = "none"; }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          Send Us an Email
+        </a>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "rgba(224,242,254,0.6)" }}>{t("message")}</label>
-              <textarea 
-                required
-                rows="5"
-                value={message}
-                onChange={e => setMessage(e.target.value)}
-                style={{
-                  background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: 8, padding: "10px 14px", color: "#fff", fontSize: 14, outline: "none",
-                  resize: "vertical", fontFamily: "inherit"
-                }}
-              />
-            </div>
-
-            {sendError && (
-              <div style={{
-                padding: "10px 14px", borderRadius: 8,
-                background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
-                color: "#F87171", fontSize: 12, lineHeight: 1.5
-              }}>
-                ⚠️ {sendError}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={sending}
-              style={{
-                background: sending ? "rgba(6,182,212,0.3)" : "linear-gradient(135deg, #0369A1, #06B6D4)",
-                color: "#fff", border: "none", borderRadius: 8, padding: "12px 20px",
-                fontWeight: 700, fontSize: 14, cursor: sending ? "not-allowed" : "pointer", marginTop: 8,
-                transition: "transform 0.2s, box-shadow 0.2s",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8
-              }}
-              onMouseEnter={e => { if (!sending) e.currentTarget.style.boxShadow = "0 0 15px rgba(6,182,212,0.4)"; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; }}
-            >
-              {sending ? (
-                <>
-                  <span style={{
-                    width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)",
-                    borderTopColor: "#fff", borderRadius: "50%",
-                    animation: "spin 1s linear infinite", display: "inline-block"
-                  }} />
-                  Sending...
-                </>
-              ) : t("sendMessage")}
-            </button>
-          </form>
-        )}
-
+        <p style={{ marginTop: 20, fontSize: 12, color: "rgba(224,242,254,0.3)", textAlign: "center" }}>
+          We typically respond within 24-48 hours.
+        </p>
       </div>
     </div>
   );
