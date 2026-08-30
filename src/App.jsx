@@ -5296,14 +5296,16 @@ export default function App() {
             margin: 2px 0 10px 0 !important;
           }
           .hero-slider-container {
-            height: auto !important;
-            min-height: auto !important;
-            max-height: none !important;
-            padding-top: 32px !important;
-            padding-bottom: 14px !important;
+            height: calc(100dvh - 50px) !important;
+            min-height: calc(100dvh - 50px) !important;
+            max-height: calc(100dvh - 50px) !important;
+            padding-top: 34px !important;
+            padding-bottom: 65px !important;
+            position: relative !important;
+            overflow: hidden !important;
             display: flex !important;
             flex-direction: column !important;
-            justify-content: flex-start !important;
+            justify-content: space-evenly !important;
           }
           .hero-left-content {
             position: relative !important;
@@ -5311,21 +5313,31 @@ export default function App() {
             top: 0 !important;
             transform: none !important;
             max-width: 100% !important;
-            padding: 2px 14px 0px 14px !important;
+            padding: 0 16px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            flex: 1 !important;
+            justify-content: space-evenly !important;
+          }
+          .hero-mobile-search-wrap {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 0 2px 0 !important;
           }
           .hero-slide-tag {
-            font-size: 0.65rem !important;
+            font-size: 0.68rem !important;
             margin-bottom: 2px !important;
           }
           .hero-slide-title {
-            font-size: 1.75rem !important;
-            line-height: 1.05 !important;
+            font-size: 2.1rem !important;
+            line-height: 1.02 !important;
             margin-bottom: 4px !important;
           }
           .hero-slide-desc {
-            font-size: 0.74rem !important;
-            line-height: 1.35 !important;
-            margin-bottom: 8px !important;
+            font-size: 0.78rem !important;
+            line-height: 1.4 !important;
+            margin-bottom: 6px !important;
             max-width: 100% !important;
             display: -webkit-box !important;
             -webkit-line-clamp: 2 !important;
@@ -5334,18 +5346,18 @@ export default function App() {
           }
           .hero-slide-data {
             max-width: 100% !important;
-            padding: 8px 12px !important;
-            margin-bottom: 8px !important;
-            border-radius: 12px !important;
+            padding: 10px 14px !important;
+            margin-bottom: 6px !important;
+            border-radius: 14px !important;
           }
           .hero-slide-btns {
-            gap: 8px !important;
+            gap: 10px !important;
             flex-wrap: nowrap !important;
-            margin-bottom: 2px !important;
+            margin-bottom: 0 !important;
           }
           .hero-slide-btns button {
-            padding: 8px 12px !important;
-            font-size: 0.78rem !important;
+            padding: 10px 16px !important;
+            font-size: 0.82rem !important;
             flex: 1 1 50% !important;
             justify-content: center !important;
             white-space: nowrap !important;
@@ -5354,20 +5366,20 @@ export default function App() {
             display: none !important;
           }
           .hero-bottom-nav {
-            position: relative !important;
-            bottom: auto !important;
-            left: auto !important;
-            transform: none !important;
-            margin: 8px auto 2px auto !important;
-            gap: 8px !important;
+            position: absolute !important;
+            bottom: 16px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            gap: 12px !important;
             z-index: 20 !important;
             display: flex !important;
+            align-items: center !important;
             justify-content: center !important;
           }
           .hero-nav-arrow {
-            width: 30px !important;
-            height: 30px !important;
-            font-size: 0.8rem !important;
+            width: 34px !important;
+            height: 34px !important;
+            font-size: 0.85rem !important;
           }
         }
 
