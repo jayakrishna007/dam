@@ -3,6 +3,9 @@ import re
 import json
 import os
 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, "..", "src", "data"))
+
 URLS = {
     "tb": "http://tbboard.gov.in/daily_000/daily_level_list.php",
     "tn": "https://tnagriculture.in/ARS/home/reservoir"
@@ -137,6 +140,8 @@ def main():
     tb_count = 0
     tn_count = 0
     bbmb_count = 0
+    bihar_ok = False
+    bihar_count = 0
 
     scraped_dams = {}
     
@@ -536,6 +541,7 @@ def main():
             "tungabhadra": { "status": "Operational" if tb_ok else "Down", "ok": tb_ok, "count": tb_count },
             "tamil_nadu": { "status": "Operational" if tn_ok else "Down", "ok": tn_ok, "count": tn_count },
             "bbmb": { "status": "Operational" if bbmb_ok else "Down", "ok": bbmb_ok, "count": bbmb_count },
+            "bihar_wrd": { "status": "Operational" if bihar_ok else "Down", "ok": bihar_ok, "count": bihar_count },
             "pan_india": { "status": "Operational", "ok": True, "count": len(final_dams) },
             "usa": { "status": "Operational" if usa_ok else "Down", "ok": usa_ok, "count": usa_count },
             "brazil": { "status": "Operational" if brazil_ok else "Down", "ok": brazil_ok, "count": brazil_count }
