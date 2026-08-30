@@ -4007,14 +4007,7 @@ function HeroDamSlider({
             </button>
           </form>
         </div>
-{/* Tag */}
-        <div className="hero-slide-tag" style={{
-          display:'inline-block', fontSize:'0.72rem', fontWeight:700,
-          letterSpacing:2, textTransform:'uppercase',
-          color:pal.accent, marginBottom:10
-        }}>
-          🌊 {dam.river} · {dam.district}
-        </div>
+
 
         {/* Short clean Barlow Condensed title */}
         {(() => {
