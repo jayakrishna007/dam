@@ -3,6 +3,9 @@ import { Analytics } from "@vercel/analytics/react";
 import DAMS_INDIA from "./data/dams.json";
 import DAMS_USA from "./data/dams_usa.json";
 import DAMS_BRAZIL from "./data/dams_brazil.json";
+import DAMS_THAILAND from "./data/dams_thailand.json";
+import DAMS_LAOS from "./data/dams_laos.json";
+import DAMS_VIETNAM from "./data/dams_vietnam.json";
 import SCRAPE_STATUS from "./data/scrape_status.json";
 import DAM_STATIC_INFO from "./data/dam_static_info.json";
 import TRANSLATIONS from "./data/translations.json";
@@ -3919,7 +3922,91 @@ function HeroDamSlider({
         position:'absolute', left:64, top:'50%', transform:'translateY(-50%)',
         zIndex:10, maxWidth:480, paddingTop:30
       }}>
-        {/* Tag */}
+        
+        {/* High-Contrast Mobile In-Hero Search Capsule - Positioned right below Live Telemetry */}
+        <div className="hero-mobile-search-wrap" style={{
+          marginBottom: 16,
+          position: "relative",
+          width: "100%",
+          zIndex: 10
+        }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearch(searchInput);
+              const el = document.getElementById("dams-section") || document.getElementById("dams-grid");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              width: "100%",
+              background: "rgba(3, 10, 20, 0.94)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: `1.5px solid ${pal.accent}75`,
+              borderRadius: 16,
+              padding: "6px 8px 6px 14px",
+              boxShadow: `0 12px 36px rgba(0,0,0,0.85), 0 0 24px ${pal.glow}, inset 0 1px 0 rgba(255,255,255,0.12)`
+            }}
+          >
+            <div style={{ position: "relative", flex: 1, display: "flex", alignItems: "center" }}>
+              <span style={{ fontSize: 16, marginRight: 10, opacity: 0.9, color: pal.accent, pointerEvents: "none" }}>🔍</span>
+              <input
+                type="text"
+                placeholder={t("searchPlaceholder") || "Search dam, river, state..."}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "8px 24px 8px 0",
+                  background: "transparent",
+                  border: "none",
+                  color: "#FFFFFF",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  outline: "none"
+                }}
+              />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  style={{
+                    position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
+                    background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
+                    color: "#E0F2FE", width: 22, height: 22, fontSize: 11, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center"
+                  }}
+                >✕</button>
+              )}
+            </div>
+            <button
+              type="submit"
+              style={{
+                background: `linear-gradient(135deg, ${pal.accent} 0%, #0284c7 100%)`,
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 12,
+                padding: "10px 18px",
+                fontSize: 13,
+                fontWeight: 800,
+                letterSpacing: 0.5,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                boxShadow: `0 4px 16px ${pal.accent}50`,
+                whiteSpace: "nowrap",
+                flexShrink: 0
+              }}
+            >
+              {t("search") || "Search"}
+            </button>
+          </form>
+        </div>
+{/* Tag */}
         <div className="hero-slide-tag" style={{
           display:'inline-block', fontSize:'0.72rem', fontWeight:700,
           letterSpacing:2, textTransform:'uppercase',
@@ -4015,89 +4102,7 @@ function HeroDamSlider({
           </div>
         </div>
 
-        {/* High-Contrast Mobile In-Hero Search Capsule */}
-        <div className="hero-mobile-search-wrap" style={{
-          marginBottom: 18,
-          position: "relative",
-          width: "100%",
-          zIndex: 10
-        }}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch(searchInput);
-              const el = document.getElementById("dams-section") || document.getElementById("dams-grid");
-              if (el) el.scrollIntoView({ behavior: "smooth" });
-            }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              width: "100%",
-              background: "rgba(3, 10, 20, 0.94)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: `1.5px solid ${pal.accent}75`,
-              borderRadius: 16,
-              padding: "6px 8px 6px 14px",
-              boxShadow: `0 12px 36px rgba(0,0,0,0.85), 0 0 24px ${pal.glow}, inset 0 1px 0 rgba(255,255,255,0.12)`
-            }}
-          >
-            <div style={{ position: "relative", flex: 1, display: "flex", alignItems: "center" }}>
-              <span style={{ fontSize: 16, marginRight: 10, opacity: 0.9, color: pal.accent, pointerEvents: "none" }}>🔍</span>
-              <input
-                type="text"
-                placeholder={t("searchPlaceholder") || "Search dam, river, state..."}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 24px 8px 0",
-                  background: "transparent",
-                  border: "none",
-                  color: "#FFFFFF",
-                  fontSize: 14,
-                  fontWeight: 600,
-                  outline: "none"
-                }}
-              />
-              {searchInput && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  style={{
-                    position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
-                    background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
-                    color: "#E0F2FE", width: 22, height: 22, fontSize: 11, cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center"
-                  }}
-                >✕</button>
-              )}
-            </div>
-            <button
-              type="submit"
-              style={{
-                background: `linear-gradient(135deg, ${pal.accent} 0%, #0284c7 100%)`,
-                color: "#ffffff",
-                border: "none",
-                borderRadius: 12,
-                padding: "10px 18px",
-                fontSize: 13,
-                fontWeight: 800,
-                letterSpacing: 0.5,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                boxShadow: `0 4px 16px ${pal.accent}50`,
-                whiteSpace: "nowrap",
-                flexShrink: 0
-              }}
-            >
-              {t("search") || "Search"}
-            </button>
-          </form>
-        </div>
+        
 
         {/* BUTTONS */}
         <div className="hero-slide-btns" style={{ display:'flex', alignItems:'center', gap:14 }}>
@@ -5301,7 +5306,7 @@ export default function App() {
             top: 0 !important;
             transform: none !important;
             max-width: 100% !important;
-            padding: 16px 18px 0px 18px !important;
+            padding: 40px 18px 0px 18px !important;
           }
           .hero-slide-title {
             font-size: 2.2rem !important;
