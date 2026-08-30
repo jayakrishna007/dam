@@ -40,10 +40,10 @@
     }
   },
   "metrics": {
-    "dams_changed": 0,
+    "dams_changed": 1,
     "storage_delta_tmc": 0.0,
-    "inflow_delta_cusecs": 0,
-    "outflow_delta_cusecs": 0
+    "inflow_delta_cusecs": -2258,
+    "outflow_delta_cusecs": 5
   },
   "history": [
     {
