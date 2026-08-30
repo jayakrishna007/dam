@@ -3925,7 +3925,8 @@ function HeroDamSlider({
         
         {/* High-Contrast Mobile In-Hero Search Capsule - Positioned right below Live Telemetry */}
         <div className="hero-mobile-search-wrap" style={{
-          marginBottom: 16,
+          marginBottom: 14,
+          marginTop: 2,
           position: "relative",
           width: "100%",
           zIndex: 10
