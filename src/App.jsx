@@ -5262,7 +5262,28 @@ export default function App() {
             padding: 12px 16px !important;
           }
         }
+        
         @media (max-width:768px){
+          ::-webkit-scrollbar {
+            width: 14px !important;
+            height: 12px !important;
+            background: #030A14 !important;
+          }
+          ::-webkit-scrollbar-track {
+            background: rgba(3, 10, 20, 0.98) !important;
+            border-left: 1.5px solid rgba(6, 182, 212, 0.35) !important;
+          }
+          ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important;
+            border-radius: 10px !important;
+            border: 2.5px solid #030a14 !important;
+            min-height: 48px !important;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
+          }
+          ::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:active {
+            background: linear-gradient(180deg, #7dd3fc 0%, #0ea5e9 100%) !important;
+            border: 2px solid #030a14 !important;
+          }
           .nav-search-container{display:none!important}
           .hero-cards-panel{display:none!important}
           .hero-vert-nav{display:none!important}
