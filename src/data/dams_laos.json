@@ -13,7 +13,7 @@
     "inflow": 142000,
     "outflow": 139500,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Xayaburi_Dam_Laos.jpg/1280px-Xayaburi_Dam_Laos.jpg"
+    "image": "/images/dams/xayaburi.jpg"
   },
   {
     "id": 2,
@@ -22,14 +22,14 @@
     "state": "Champasak",
     "country": "Laos",
     "basin": "Mekong Mainstream",
-    "level": 82.0,
+    "level": 82,
     "capacity": 4.1,
     "capacity_mcm": 115,
     "storage_mcm": 94.3,
     "inflow": 88000,
     "outflow": 86500,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Khone_Phapheng_Falls_Laos.jpg/1280px-Khone_Phapheng_Falls_Laos.jpg"
+    "image": "/images/dams/donsahong.jpg"
   },
   {
     "id": 3,
@@ -45,7 +45,7 @@
     "inflow": 12500,
     "outflow": 8200,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Nam_Ngum_Dam_Reservoir_Laos.jpg/1280px-Nam_Ngum_Dam_Reservoir_Laos.jpg"
+    "image": "/images/dams/namngum1.jpg"
   },
   {
     "id": 4,
@@ -57,11 +57,11 @@
     "level": 76.2,
     "capacity": 123.6,
     "capacity_mcm": 3500,
-    "storage_mcm": 2667.0,
+    "storage_mcm": 2667,
     "inflow": 18200,
     "outflow": 14500,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Nam_Theun_2_Dam_Nakai_Plateau.jpg/1280px-Nam_Theun_2_Dam_Nakai_Plateau.jpg"
+    "image": "/images/dams/namtheun2.jpg"
   },
   {
     "id": 5,
@@ -70,14 +70,14 @@
     "state": "Bolikhamxay",
     "country": "Laos",
     "basin": "Nam Theun Basin",
-    "level": 68.0,
+    "level": 68,
     "capacity": 48.4,
     "capacity_mcm": 1370,
     "storage_mcm": 931.6,
     "inflow": 9800,
     "outflow": 7500,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Nam_Theun_2_Dam_Nakai_Plateau.jpg/1280px-Nam_Theun_2_Dam_Nakai_Plateau.jpg"
+    "image": "/images/dams/theunhinboun.jpg"
   },
   {
     "id": 6,
@@ -86,14 +86,14 @@
     "state": "Luang Prabang",
     "country": "Laos",
     "basin": "Nam Ou Cascade",
-    "level": 74.0,
+    "level": 74,
     "capacity": 4.2,
     "capacity_mcm": 120,
     "storage_mcm": 88.8,
     "inflow": 6500,
     "outflow": 6100,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Xayaburi_Dam_Laos.jpg/1280px-Xayaburi_Dam_Laos.jpg"
+    "image": "/images/dams/namou2.jpg"
   },
   {
     "id": 7,
@@ -109,6 +109,6 @@
     "inflow": 8200,
     "outflow": 7900,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Xayaburi_Dam_Laos.jpg/1280px-Xayaburi_Dam_Laos.jpg"
+    "image": "/images/dams/namou5.jpg"
   }
 ]

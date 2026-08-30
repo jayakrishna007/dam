@@ -13,7 +13,7 @@
     "inflow": 12500,
     "outflow": 11800,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Yali_Falls_Hydropower_Plant.jpg/1280px-Yali_Falls_Hydropower_Plant.jpg"
+    "image": "/images/dams/yalifalls.jpg"
   },
   {
     "id": 2,
@@ -22,14 +22,14 @@
     "state": "Kon Tum",
     "country": "Vietnam",
     "basin": "Sesan Basin (Mekong)",
-    "level": 71.0,
-    "capacity": 37.0,
+    "level": 71,
+    "capacity": 37,
     "capacity_mcm": 1048,
     "storage_mcm": 744.1,
     "inflow": 8900,
     "outflow": 7800,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Yali_Falls_Hydropower_Plant.jpg/1280px-Yali_Falls_Hydropower_Plant.jpg"
+    "image": "/images/dams/pleikrong.jpg"
   },
   {
     "id": 3,
@@ -39,13 +39,13 @@
     "country": "Vietnam",
     "basin": "Srepok Basin (Mekong)",
     "level": 74.2,
-    "capacity": 4.0,
+    "capacity": 4,
     "capacity_mcm": 112,
     "storage_mcm": 83.1,
     "inflow": 6400,
     "outflow": 6200,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Dray_Nur_Waterfall_Dak_Lak.jpg/1280px-Dray_Nur_Waterfall_Dak_Lak.jpg"
+    "image": "/images/dams/buonkuop.jpg"
   },
   {
     "id": 4,
@@ -55,13 +55,13 @@
     "country": "Vietnam",
     "basin": "Northern Basin",
     "level": 82.5,
-    "capacity": 327.0,
+    "capacity": 327,
     "capacity_mcm": 9260,
     "storage_mcm": 7639.5,
     "inflow": 38500,
     "outflow": 32000,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Son_La_Hydropower_Plant.jpg/1280px-Son_La_Hydropower_Plant.jpg"
+    "image": "/images/dams/sonla.jpg"
   },
   {
     "id": 5,
@@ -70,14 +70,14 @@
     "state": "Hoa Binh",
     "country": "Vietnam",
     "basin": "Northern Basin",
-    "level": 80.0,
+    "level": 80,
     "capacity": 333.7,
     "capacity_mcm": 9450,
-    "storage_mcm": 7560.0,
+    "storage_mcm": 7560,
     "inflow": 34200,
     "outflow": 31000,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Hoa_Binh_Dam_Vietnam.jpg/1280px-Hoa_Binh_Dam_Vietnam.jpg"
+    "image": "/images/dams/hoabinh.jpg"
   },
   {
     "id": 6,
@@ -93,6 +93,6 @@
     "inflow": 14500,
     "outflow": 12000,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Tri_An_Hydroelectric_Power_Station.jpg/1280px-Tri_An_Hydroelectric_Power_Station.jpg"
+    "image": "/images/dams/trian.jpg"
   }
 ]

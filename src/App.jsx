@@ -3381,18 +3381,15 @@ const getZoneSlug = (zone) => {
 };
 
 const getZoneFromSlug = (slug) => {
-  const zones = ["All", "North", "South", "East", "West", "Central"];
-  return zones.find(z => z.toLowerCase() === slug) || "All";
+  if (!slug || slug === "all") return "All";
+  const allZones = Array.from(new Set(Object.values(COUNTRY_ZONES).flat()));
+  return allZones.find(z => getZoneSlug(z) === slug || z.toLowerCase() === slug) || "All";
 };
 
 const getStateFromSlug = (slug) => {
-  const states = [
-    "Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana",
-    "Himachal Pradesh", "Gujarat", "Madhya Pradesh", "Odisha", "Uttar Pradesh", "Jharkhand",
-    "Maharashtra", "Rajasthan", "Uttarakhand", "Punjab", "West Bengal", "Chhattisgarh",
-    "Bihar", "Assam", "Meghalaya", "Manipur"
-  ];
-  return states.find(s => s.toLowerCase().replace(/\s+/g, '-') === slug) || "all";
+  if (!slug || slug === "all") return "all";
+  const allStates = Array.from(new Set(ALL_DAMS.map(d => d.state).filter(Boolean)));
+  return allStates.find(s => getStateSlug(s) === slug || s.toLowerCase().replace(/\s+/g, '-') === slug) || "all";
 };
 
 const STATE_TO_ZONE = {
@@ -3705,7 +3702,7 @@ const DAM_PHOTOS = {
   "Thein (Ranjit Sagar)": "/images/dams/ranjitsagar.jpg",
   "Ranjitsagar (Thein)": "/images/dams/ranjitsagar.jpg",
 
-  // USA Top 5
+  // USA
   "Hoover Dam (Lake Mead)": "/images/dams/hoover_dam.jpg",
   "Hoover Dam": "/images/dams/hoover_dam.jpg",
   "Lake Mead": "/images/dams/hoover_dam.jpg",
@@ -3728,14 +3725,45 @@ const DAM_PHOTOS = {
   "Garrison Dam": "/images/dams/garrison_dam.jpg",
   "Lake Sakakawea": "/images/dams/garrison_dam.jpg",
 
-  // Brazil Top 5
+  // Brazil
   "Serra da Mesa": "/images/dams/serra_da_mesa_dam.jpg",
   "Tucuruí": "/images/dams/tucurui_dam.jpg",
   "Tucurui": "/images/dams/tucurui_dam.jpg",
   "Sobradinho": "/images/dams/sobradinho_dam.jpg",
   "Itaipu": "/images/dams/itaipu_dam.jpg",
   "Furnas": "/images/dams/furnas_dam.jpg",
-  "Belo Monte": "/images/dams/belo_monte_dam.jpg"
+  "Belo Monte": "/images/dams/belo_monte_dam.jpg",
+
+  // Thailand
+  "Bhumibol Dam": "/images/dams/bhumibol.jpg",
+  "Sirikit Dam": "/images/dams/sirikit.jpg",
+  "Srinagarind Dam": "/images/dams/srinagarind.jpg",
+  "Vajiralongkorn Dam": "/images/dams/vajiralongkorn.jpg",
+  "Sirindhorn Dam": "/images/dams/sirindhorn.jpg",
+  "Ubol Ratana Dam": "/images/dams/ubolratana.jpg",
+  "Ratchaprapha Dam": "/images/dams/ratchaprapha.jpg",
+  "Bang Lang Dam": "/images/dams/banglang.jpg",
+  "Chulabhorn Dam": "/images/dams/chulabhorn.jpg",
+  "Nam Pung Dam": "/images/dams/nampung.jpg",
+  "Tha Thung Na Dam": "/images/dams/thathungna.jpg",
+  "Huai Kum Dam": "/images/dams/huaikum.jpg",
+
+  // Laos
+  "Xayaburi Dam": "/images/dams/xayaburi.jpg",
+  "Don Sahong Dam": "/images/dams/donsahong.jpg",
+  "Nam Ngum 1 Dam": "/images/dams/namngum1.jpg",
+  "Nam Theun 2 Dam": "/images/dams/namtheun2.jpg",
+  "Theun-Hinboun Dam": "/images/dams/theunhinboun.jpg",
+  "Nam Ou 2 Dam": "/images/dams/namou2.jpg",
+  "Nam Ou 5 Dam": "/images/dams/namou5.jpg",
+
+  // Vietnam
+  "Yali Falls Dam": "/images/dams/yalifalls.jpg",
+  "Plei Krông Dam": "/images/dams/pleikrong.jpg",
+  "Buon Kuop Dam": "/images/dams/buonkuop.jpg",
+  "Son La Dam": "/images/dams/sonla.jpg",
+  "Hoa Binh Dam": "/images/dams/hoabinh.jpg",
+  "Tri An Dam": "/images/dams/trian.jpg"
 };
 
 const FALLBACK_PHOTOS = [
@@ -4696,7 +4724,7 @@ export default function App() {
       setSelectedZone("All");
       setSelectedDam(null);
       let title = `Damtoday - Live ${selectedCountry} Reservoir Water Levels, Inflows & Outflows`;
-      let desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
+      let desc = `Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in ${selectedCountry}. Verified water telemetry for agricultural and public resource planning.`;
       if (lang === "hi") {
         title = "डैमटुडे - भारत के जलाशयों के जल स्तर, आवक और निकासी की लाइव जानकारी";
         desc = "भारत में जलाशयों के जल स्तर, भंडारण क्षमता, आवक और निकासी के दैनिक अपडेट देखें। कृषि और सार्वजनिक संसाधन योजना के लिए सत्यापित जल टेलीमेट्री जानकारी।";
@@ -5509,7 +5537,7 @@ export default function App() {
               <div>
                 <div style={{ fontWeight: 900, fontSize: 15, color: "#E0F2FE", letterSpacing: 0.3 }}>Damtoday</div>
                 <div style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.33)", letterSpacing: 2, textTransform: "uppercase" }}>
-                  {selectedCountry === "USA" ? t("brandSubUSA") : selectedCountry === "Brazil" ? t("brandSubBrazil") : t("brandSubIndia")}
+                  {selectedCountry === "USA" ? t("brandSubUSA") : selectedCountry === "Brazil" ? t("brandSubBrazil") : selectedCountry === "Thailand" ? "Live Thailand Reservoirs" : selectedCountry === "Laos" ? "Live Laos Reservoirs" : selectedCountry === "Vietnam" ? "Live Vietnam Reservoirs" : t("brandSubIndia")}
                 </div>
               </div>
             </a>

@@ -9,11 +9,11 @@
     "level": 56.6,
     "capacity": 475.4,
     "capacity_mcm": 13462,
-    "storage_mcm": 7615.0,
+    "storage_mcm": 7615,
     "inflow": 9350,
     "outflow": 4087,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Bhumibol_Dam.jpg/1280px-Bhumibol_Dam.jpg"
+    "image": "/images/dams/bhumibol.jpg"
   },
   {
     "id": 2,
@@ -25,11 +25,11 @@
     "level": 72.5,
     "capacity": 335.8,
     "capacity_mcm": 9510,
-    "storage_mcm": 6890.0,
+    "storage_mcm": 6890,
     "inflow": 11630,
     "outflow": 4091,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Sirikit_Dam.jpg/1280px-Sirikit_Dam.jpg"
+    "image": "/images/dams/sirikit.jpg"
   },
   {
     "id": 3,
@@ -38,14 +38,14 @@
     "state": "Kanchanaburi",
     "country": "Thailand",
     "basin": "Western Basin",
-    "level": 83.0,
+    "level": 83,
     "capacity": 626.7,
     "capacity_mcm": 17745,
-    "storage_mcm": 14726.0,
+    "storage_mcm": 14726,
     "inflow": 29100,
     "outflow": 1650,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Srinagarind_Dam_Kanchanaburi.jpg/1280px-Srinagarind_Dam_Kanchanaburi.jpg"
+    "image": "/images/dams/srinagarind.jpg"
   },
   {
     "id": 4,
@@ -54,14 +54,14 @@
     "state": "Kanchanaburi",
     "country": "Thailand",
     "basin": "Western Basin",
-    "level": 76.0,
+    "level": 76,
     "capacity": 312.9,
     "capacity_mcm": 8860,
-    "storage_mcm": 6734.0,
+    "storage_mcm": 6734,
     "inflow": 64820,
     "outflow": 1250,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Vajiralongkorn_Dam.jpg/1280px-Vajiralongkorn_Dam.jpg"
+    "image": "/images/dams/vajiralongkorn.jpg"
   },
   {
     "id": 5,
@@ -73,11 +73,11 @@
     "level": 73.8,
     "capacity": 69.4,
     "capacity_mcm": 1966,
-    "storage_mcm": 1452.0,
+    "storage_mcm": 1452,
     "inflow": 3680,
     "outflow": 1440,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Sirindhorn_Dam.jpg/1280px-Sirindhorn_Dam.jpg"
+    "image": "/images/dams/sirindhorn.jpg"
   },
   {
     "id": 6,
@@ -89,11 +89,11 @@
     "level": 36.3,
     "capacity": 85.8,
     "capacity_mcm": 2431,
-    "storage_mcm": 883.0,
+    "storage_mcm": 883,
     "inflow": 2100,
     "outflow": 1660,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Ubol_Ratana_Dam.jpg/1280px-Ubol_Ratana_Dam.jpg"
+    "image": "/images/dams/ubolratana.jpg"
   },
   {
     "id": 7,
@@ -105,11 +105,11 @@
     "level": 64.8,
     "capacity": 199.1,
     "capacity_mcm": 5639,
-    "storage_mcm": 3654.0,
+    "storage_mcm": 3654,
     "inflow": 11230,
     "outflow": 1460,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Cheow_Lan_Lake_Khao_Sok.jpg/1280px-Cheow_Lan_Lake_Khao_Sok.jpg"
+    "image": "/images/dams/ratchaprapha.jpg"
   },
   {
     "id": 8,
@@ -121,11 +121,11 @@
     "level": 55.3,
     "capacity": 51.3,
     "capacity_mcm": 1454,
-    "storage_mcm": 804.0,
+    "storage_mcm": 804,
     "inflow": 650,
     "outflow": 1870,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Bang_Lang_Dam_Yala.jpg/1280px-Bang_Lang_Dam_Yala.jpg"
+    "image": "/images/dams/banglang.jpg"
   },
   {
     "id": 9,
@@ -141,7 +141,7 @@
     "inflow": 65,
     "outflow": 0,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Chulabhorn_Dam.jpg/1280px-Chulabhorn_Dam.jpg"
+    "image": "/images/dams/chulabhorn.jpg"
   },
   {
     "id": 10,
@@ -157,7 +157,7 @@
     "inflow": 120,
     "outflow": 0,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Ubol_Ratana_Dam.jpg/1280px-Ubol_Ratana_Dam.jpg"
+    "image": "/images/dams/nampung.jpg"
   },
   {
     "id": 11,
@@ -173,7 +173,7 @@
     "inflow": 580,
     "outflow": 1640,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Srinagarind_Dam_Kanchanaburi.jpg/1280px-Srinagarind_Dam_Kanchanaburi.jpg"
+    "image": "/images/dams/thathungna.jpg"
   },
   {
     "id": 12,
@@ -189,6 +189,6 @@
     "inflow": 10,
     "outflow": 0,
     "unit": "cfs",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Chulabhorn_Dam.jpg/1280px-Chulabhorn_Dam.jpg"
+    "image": "/images/dams/huaikum.jpg"
   }
 ]
