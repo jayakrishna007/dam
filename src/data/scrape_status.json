@@ -1,7 +1,7 @@
 {
-  "last_run_timestamp": "2026-08-30 11:07 AM",
+  "last_run_timestamp": "2026-08-30 11:09 AM",
   "success": true,
-  "duration_seconds": 22.15,
+  "duration_seconds": 41.86,
   "sources": {
     "tungabhadra": {
       "status": "Operational",
@@ -9,9 +9,9 @@
       "count": 1
     },
     "tamil_nadu": {
-      "status": "Operational",
-      "ok": true,
-      "count": 19
+      "status": "Down",
+      "ok": false,
+      "count": 0
     },
     "bbmb": {
       "status": "Operational",
@@ -36,16 +36,64 @@
     "brazil": {
       "status": "Operational",
       "ok": true,
-      "count": 28
+      "count": 32
     }
   },
   "metrics": {
-    "dams_changed": 1,
+    "dams_changed": 0,
     "storage_delta_tmc": 0.0,
-    "inflow_delta_cusecs": -2258,
-    "outflow_delta_cusecs": 5
+    "inflow_delta_cusecs": 0,
+    "outflow_delta_cusecs": 0
   },
   "history": [
+    {
+      "timestamp": "2026-08-30 11:09 AM",
+      "success": true,
+      "duration_seconds": 41.86,
+      "sources": {
+        "tungabhadra": {
+          "status": "Operational",
+          "ok": true,
+          "count": 1
+        },
+        "tamil_nadu": {
+          "status": "Down",
+          "ok": false,
+          "count": 0
+        },
+        "bbmb": {
+          "status": "Operational",
+          "ok": true,
+          "count": 2
+        },
+        "bihar_wrd": {
+          "status": "Down",
+          "ok": false,
+          "count": 0
+        },
+        "pan_india": {
+          "status": "Operational",
+          "ok": true,
+          "count": 159
+        },
+        "usa": {
+          "status": "Operational",
+          "ok": true,
+          "count": 14
+        },
+        "brazil": {
+          "status": "Operational",
+          "ok": true,
+          "count": 32
+        }
+      },
+      "metrics": {
+        "dams_changed": 0,
+        "storage_delta_tmc": 0.0,
+        "inflow_delta_cusecs": 0,
+        "outflow_delta_cusecs": 0
+      }
+    },
     {
       "timestamp": "2026-08-30 11:07 AM",
       "success": true,
@@ -508,39 +556,6 @@
         "storage_delta_tmc": 3.881,
         "inflow_delta_cusecs": -2751,
         "outflow_delta_cusecs": 3100
-      }
-    },
-    {
-      "timestamp": "2026-08-18 10:32 AM",
-      "success": true,
-      "duration_seconds": 6.97,
-      "sources": {
-        "tungabhadra": {
-          "status": "Operational",
-          "ok": true,
-          "count": 1
-        },
-        "tamil_nadu": {
-          "status": "Operational",
-          "ok": true,
-          "count": 19
-        },
-        "oneindia": {
-          "status": "Operational",
-          "ok": true,
-          "count": 15
-        },
-        "bbmb": {
-          "status": "Operational",
-          "ok": true,
-          "count": 2
-        }
-      },
-      "metrics": {
-        "dams_changed": 0,
-        "storage_delta_tmc": 0.0,
-        "inflow_delta_cusecs": 0,
-        "outflow_delta_cusecs": 0
       }
     }
   ]
