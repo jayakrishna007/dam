@@ -5297,9 +5297,9 @@ export default function App() {
           }
           .hero-slider-container {
             height: auto !important;
-            min-height: auto !important;
+            min-height: calc(100vh - 20px) !important;
             padding-top: 32px !important;
-            padding-bottom: 35px !important;
+            padding-bottom: 90px !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: flex-start !important;
@@ -5310,7 +5310,7 @@ export default function App() {
             top: 0 !important;
             transform: none !important;
             max-width: 100% !important;
-            padding: 2px 14px 0px 14px !important;
+            padding: 2px 16px 0px 16px !important;
           }
           .hero-slide-title {
             font-size: 2.2rem !important;
@@ -5329,12 +5329,13 @@ export default function App() {
             margin-bottom: 16px !important;
           }
           .hero-slide-btns {
-            gap: 8px !important;
+            gap: 10px !important;
             flex-wrap: nowrap !important;
+            margin-bottom: 28px !important;
           }
           .hero-slide-btns button {
-            padding: 10px 14px !important;
-            font-size: 0.8rem !important;
+            padding: 12px 16px !important;
+            font-size: 0.84rem !important;
             flex: 1 1 50% !important;
             justify-content: center !important;
             white-space: nowrap !important;
@@ -5343,8 +5344,9 @@ export default function App() {
             display: none !important;
           }
           .hero-bottom-nav {
-            bottom: 18px !important;
-            gap: 10px !important;
+            bottom: 22px !important;
+            gap: 12px !important;
+            z-index: 20 !important;
           }
         }
 
