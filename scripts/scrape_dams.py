@@ -142,6 +142,8 @@ def main():
     bbmb_count = 0
     bihar_ok = False
     bihar_count = 0
+    thailand_ok = False
+    thailand_count = 0
 
     scraped_dams = {}
     
@@ -544,7 +546,8 @@ def main():
             "bihar_wrd": { "status": "Operational" if bihar_ok else "Down", "ok": bihar_ok, "count": bihar_count },
             "pan_india": { "status": "Operational", "ok": True, "count": len(final_dams) },
             "usa": { "status": "Operational" if usa_ok else "Down", "ok": usa_ok, "count": usa_count },
-            "brazil": { "status": "Operational" if brazil_ok else "Down", "ok": brazil_ok, "count": brazil_count }
+            "brazil": { "status": "Operational" if brazil_ok else "Down", "ok": brazil_ok, "count": brazil_count },
+            "thailand": { "status": "Operational" if thailand_ok else "Down", "ok": thailand_ok, "count": thailand_count }
         },
         "metrics": {
             "dams_changed": dams_changed,

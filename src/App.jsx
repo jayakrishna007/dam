@@ -8,18 +8,24 @@ import DAM_STATIC_INFO from "./data/dam_static_info.json";
 import TRANSLATIONS from "./data/translations.json";
 
 const DAMS = DAMS_INDIA;
-const ALL_GLOBAL_DAMS = [...DAMS_INDIA, ...DAMS_USA, ...DAMS_BRAZIL];
+const ALL_DAMS = [...DAMS_INDIA, ...DAMS_USA, ...DAMS_BRAZIL, ...DAMS_THAILAND, ...DAMS_LAOS, ...DAMS_VIETNAM];
 
 const COUNTRIES = [
-  { code: "India", label: "India", name: "India", sub: "All India" },
+  { code: "India", label: "India", name: "India", sub: "India" },
   { code: "USA", label: "USA", name: "USA", sub: "United States" },
-  { code: "Brazil", label: "Brazil", name: "Brazil", sub: "Brazil" }
+  { code: "Brazil", label: "Brazil", name: "Brazil", sub: "Brazil" },
+  { code: "Thailand", label: "Thailand", name: "Thailand", sub: "Thailand" },
+  { code: "Laos", label: "Laos", name: "Laos", sub: "Laos" },
+  { code: "Vietnam", label: "Vietnam", name: "Vietnam", sub: "Vietnam" }
 ];
 
 const COUNTRY_ZONES = {
   "India": ["All", "North", "South", "East", "West", "Central"],
   "USA": ["All", "California", "Colorado River", "Columbia River", "Missouri River", "Tennessee River"],
-  "Brazil": ["All", "Amazon", "São Francisco", "Paraná"]
+  "Brazil": ["All", "Amazon", "São Francisco", "Paraná"],
+  "Thailand": ["All", "Mekong Basin", "Northern Basin", "Western Basin", "Southern Basin"],
+  "Laos": ["All", "Mekong Mainstream", "Nam Ngum Basin", "Nam Theun Basin", "Nam Ou Cascade"],
+  "Vietnam": ["All", "Sesan Basin (Mekong)", "Srepok Basin (Mekong)", "Northern Basin", "Southern Basin"]
 };
 
 // ===================== MONGODB VERCEL SERVERLESS TELEMETRY API =====================
@@ -651,7 +657,7 @@ function DamCard({ dam, delay, onClick, t }) {
           <div style={{fontSize:9,color:"rgba(220,240,255,0.35)",textTransform:"uppercase",letterSpacing:1,marginBottom:2}}>
             Cap: {dam.capacity} TMC
             {dam.country === "USA" && dam.capacity_af ? ` (${(dam.capacity_af/1000).toFixed(0)}k AF)` : ""}
-            {dam.country === "Brazil" && dam.capacity_hm3 ? ` (${dam.capacity_hm3} hm³)` : ""}
+            {dam.country === "Brazil" && dam.capacity_hm3 ? ` (${dam.capacity_hm3} hm³)` : dam.capacity_mcm ? ` (${dam.capacity_mcm} MCM)` : ""}
           </div>
           <div style={{fontSize:11,fontWeight:600,color:"rgba(224,242,254,0.5)",fontFamily:"monospace"}}>
             {safeLevel.toFixed(1)}%
@@ -941,7 +947,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   }, []);
 
   const stats = [
-    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: "Across 21 Indian states", positive: true, icon: "🌊" },
+    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: selectedCountry === "USA" ? "Across 11 US states & basins" : selectedCountry === "Brazil" ? "Across 9 hydro basins" : selectedCountry === "Thailand" ? "Across 4 major river basins" : selectedCountry === "Laos" ? "Across Mekong tributaries & cascade" : selectedCountry === "Vietnam" ? "Across Sesan, Srepok & national basins" : "Across 21 Indian states & basins", positive: true, icon: "🌊" },
     { label: "Live Visitors Today", value: todayCount !== null ? todayCount.toLocaleString() : "142", change: isNewVisitor ? "✓ You're counted" : "Active session", subtext: "Unique visits (6-hr window)", positive: true, icon: "👁" },
     { label: "Total Region Inflow", value: `${fmtK(totalInflow)}`, change: "cusecs", subtext: "Cumulative river inflows", positive: totalInflow >= totalOutflow, icon: "📥" },
     { label: "Total Region Outflow", value: `${fmtK(totalOutflow)}`, change: "cusecs", subtext: "Cumulative released flow", positive: true, icon: "📤" },
@@ -974,9 +980,9 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
       ok: true 
     },
     { 
-      source: "Pan-India Verified Telemetry", 
+      source: selectedCountry === "USA" ? "USACE & CDEC Official Telemetry" : selectedCountry === "Brazil" ? "ONS Brazil Hydro Telemetry" : selectedCountry === "Thailand" ? "EGAT Water Intelligence Telemetry" : (selectedCountry === "Laos" || selectedCountry === "Vietnam") ? "Mekong River Commission Telemetry" : "Verified Government Telemetry", 
       status: "Operational", 
-      detail: `Monitoring 140 major reservoirs across 21 Indian states with verified telemetry baselines.`, 
+      detail: `Monitoring ${totalDams} major reservoirs with verified daily telemetry baselines.`, 
       ok: true 
     },
     { 
@@ -3410,12 +3416,11 @@ const ALL_STATES = [
 ];
 
 const ZONE_MAP = {
-  "All": ALL_STATES,
-  "North": ["Himachal Pradesh", "Uttarakhand", "Punjab"],
-  "South": ["Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana"],
-  "West": ["Gujarat", "Maharashtra", "Rajasthan"],
-  "East": ["Odisha", "Jharkhand", "West Bengal", "Bihar", "Assam", "Meghalaya", "Manipur"],
-  "Central": ["Madhya Pradesh", "Uttar Pradesh", "Chhattisgarh"],
+  "North": ["Himachal Pradesh", "Punjab", "Uttarakhand", "Uttar Pradesh"],
+  "South": ["Andhra Pradesh", "Karnataka", "Kerala", "Tamil Nadu", "Telangana"],
+  "East": ["Assam", "Bihar", "Jharkhand", "Manipur", "Meghalaya", "Nagaland", "Odisha", "Tripura", "West Bengal", "Sikkim"],
+  "West": ["Goa", "Gujarat", "Maharashtra", "Rajasthan"],
+  "Central": ["Chhattisgarh", "Madhya Pradesh"],
   "California": ["California"],
   "Colorado River": ["Nevada", "Arizona", "Utah"],
   "Columbia River": ["Washington", "Oregon"],
@@ -3423,7 +3428,17 @@ const ZONE_MAP = {
   "Tennessee River": ["Kentucky", "Tennessee"],
   "Amazon": ["Pará", "Goiás", "Rondônia", "Tocantins"],
   "São Francisco": ["Bahia", "Sergipe", "Minas Gerais"],
-  "Paraná": ["Paraná", "São Paulo", "Minas Gerais"]
+  "Paraná": ["Paraná", "São Paulo", "Goiás", "Minas Gerais"],
+  "Mekong Basin": ["Ubon Ratchathani", "Khon Kaen", "Chaiyaphum", "Sakon Nakhon"],
+  "Northern Basin": ["Tak", "Uttaradit", "Son La", "Hoa Binh"],
+  "Western Basin": ["Kanchanaburi"],
+  "Southern Basin": ["Surat Thani", "Yala", "Dong Nai"],
+  "Mekong Mainstream": ["Xayabury", "Champasak"],
+  "Nam Ngum Basin": ["Vientiane"],
+  "Nam Theun Basin": ["Khammouane", "Bolikhamxay"],
+  "Nam Ou Cascade": ["Luang Prabang", "Phongsaly"],
+  "Sesan Basin (Mekong)": ["Gia Lai", "Kon Tum"],
+  "Srepok Basin (Mekong)": ["Dak Lak", "Dak Nong"]
 };
 
 
@@ -4035,7 +4050,7 @@ function HeroDamSlider({
         {/* BUTTONS */}
         <div className="hero-slide-btns" style={{ display:'flex', alignItems:'center', gap:14 }}>
           <button
-            onClick={()=>{ const d=ALL_GLOBAL_DAMS.find(x=>x.name===dam.name) || dam; if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
+            onClick={()=>{ const d=ALL_DAMS.find(x=>x.name===dam.name) || dam; if(d){ setSelectedDam(d); setView('detail'); navigate('/dam/'+getDamSlug(d.name)); } }}
             style={{
               background:pal.accent, color:'#fff', border:'none',
               padding:'13px 32px', borderRadius:50, fontSize:'0.88rem',
@@ -4468,6 +4483,9 @@ export default function App() {
   const countryDams = useMemo(() => {
     if (selectedCountry === "USA") return DAMS_USA;
     if (selectedCountry === "Brazil") return DAMS_BRAZIL;
+    if (selectedCountry === "Thailand") return DAMS_THAILAND;
+    if (selectedCountry === "Laos") return DAMS_LAOS;
+    if (selectedCountry === "Vietnam") return DAMS_VIETNAM;
     return DAMS_INDIA;
   }, [selectedCountry]);
 
@@ -4535,7 +4553,7 @@ export default function App() {
       const cap = typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0;
       const lvl = typeof d.level === 'number' ? d.level : parseFloat(d.level) || 0;
       const tmc = (cap * lvl / 100).toFixed(2);
-      const extraUnit = d.capacity_af ? ` (${Math.round(d.capacity_af * lvl / 100 / 1000)}k AF)` : d.capacity_hm3 ? ` (${Math.round(d.capacity_hm3 * lvl / 100)} hm³)` : '';
+      const extraUnit = d.capacity_af ? ` (${Math.round(d.capacity_af * lvl / 100 / 1000)}k AF)` : d.capacity_hm3 ? ` (${Math.round(d.capacity_hm3 * lvl / 100)} hm³)` : d.capacity_mcm ? ` (${Math.round((d.capacity_mcm * lvl / 100))} MCM)` : '';
       return `${t(d.name)}: ${tmc} TMC${extraUnit}`;
     }).join("  ◆  ");
   }, [countryDams, lang]);
@@ -4626,7 +4644,7 @@ export default function App() {
       setSelectedState("all");
       setSelectedZone("All");
       setSelectedDam(null);
-      let title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
+      let title = `Damtoday - Live ${selectedCountry} Reservoir Water Levels, Inflows & Outflows`;
       let desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
       if (lang === "hi") {
         title = "डैमटुडे - भारत के जलाशयों के जल स्तर, आवक और निकासी की लाइव जानकारी";
@@ -4768,7 +4786,7 @@ export default function App() {
       }
     } else if (damMatch) {
       const slug = damMatch[1];
-      const found = ALL_GLOBAL_DAMS.find(d => getDamSlug(d.name) === slug);
+      const found = ALL_DAMS.find(d => getDamSlug(d.name) === slug);
       if (found) {
         if (found.country && found.country !== selectedCountry) {
           setSelectedCountry(found.country);
@@ -4914,7 +4932,7 @@ export default function App() {
         title = `${zoneLocal} ഇന്ത്യയിലെ അണക്കെട്ടുകളുടെ ജലനിരപ്പ് - തത്സമയ വിവരങ്ങൾ | ഡാംടുഡേ`;
         desc = `${zoneLocal} ഇന്ത്യയിലെ എല്ലാ പ്രധാന അണക്കെട്ടുകളുടെയും തത്സമയ ജലനിരപ്പ്, നീരൊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് വിവരങ്ങൾ. സംഭരണശേഷിയും സംഭരണ തോതും പരിശോധിക്കാം.`;
       } else {
-        title = `${zoneName} India Reservoir Water Levels - Live Daily Telemetry | Damtoday`;
+        title = `${zoneName} (${selectedCountry}) Reservoir Water Levels - Live Daily Telemetry | Damtoday`;
         desc = `Live daily water storage levels, inflows, and outflows for all major reservoirs and dams across ${zoneName} India. View active capacity and total daily volume accumulation.`;
       }
       document.title = title;
@@ -4973,7 +4991,7 @@ export default function App() {
           title = "ഡാംടുഡേ - ഇന്ത്യയിലെ അണക്കെട്ടുകളുടെ ജലനിരപ്പ്, നീരൊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് തത്സമയ വിവരങ്ങൾ";
           desc = "ഇന്ത്യയിലെ പ്രധാന ഡാമുകളിലെ ജലനിരപ്പ്, സംഭരണശേഷി, നീരೊഴുക്ക്, പുറത്തേക്കുള്ള ഒഴുക്ക് എന്നിവയുടെ ദൈനംദിന അപ്ഡേറ്റുകൾ ഇവിടെ പരിശോധിക്കാം. കൃഷിക്കും പൊതു ആവശ്യങ്ങൾക്കുമുള്ള കൃത്യമായ വിവരങ്ങൾ.";
         } else {
-          title = "Damtoday - Live India Reservoir Water Levels, Inflows & Outflows";
+          title = `Damtoday - Live ${selectedCountry} Reservoir Water Levels, Inflows & Outflows`;
           desc = "Check live daily updates for reservoir water levels, storage capacities, inflows, and outflows in India. Verified water telemetry for agricultural and public resource planning.";
         }
       }

@@ -31,32 +31,32 @@ const getZoneSlug = (zone) => {
 function main() {
   const rootDir = path.resolve(__dirname, '..');
   const dataDir = path.join(rootDir, 'src', 'data');
-  const indiaPath = path.join(dataDir, 'dams.json');
-  const usaPath = path.join(dataDir, 'dams_usa.json');
-  const brazilPath = path.join(dataDir, 'dams_brazil.json');
+  const datasets = [
+    'dams.json',
+    'dams_usa.json',
+    'dams_brazil.json',
+    'dams_thailand.json',
+    'dams_laos.json',
+    'dams_vietnam.json'
+  ];
 
   let allDams = [];
-
-  if (fs.existsSync(indiaPath)) {
-    try {
-      allDams = allDams.concat(JSON.parse(fs.readFileSync(indiaPath, 'utf8')));
-    } catch (e) {}
-  }
-  if (fs.existsSync(usaPath)) {
-    try {
-      allDams = allDams.concat(JSON.parse(fs.readFileSync(usaPath, 'utf8')));
-    } catch (e) {}
-  }
-  if (fs.existsSync(brazilPath)) {
-    try {
-      allDams = allDams.concat(JSON.parse(fs.readFileSync(brazilPath, 'utf8')));
-    } catch (e) {}
-  }
+  datasets.forEach(file => {
+    const fullPath = path.join(dataDir, file);
+    if (fs.existsSync(fullPath)) {
+      try {
+        allDams = allDams.concat(JSON.parse(fs.readFileSync(fullPath, 'utf8')));
+      } catch (e) {}
+    }
+  });
 
   const COUNTRY_ZONES = {
     'India': ['North', 'South', 'East', 'West', 'Central'],
     'USA': ['California', 'Colorado River', 'Columbia River', 'Missouri River', 'Tennessee River'],
-    'Brazil': ['Amazon', 'São Francisco', 'Paraná', 'Northeast', 'Uruguay']
+    'Brazil': ['Amazon', 'São Francisco', 'Paraná', 'Northeast', 'Uruguay'],
+    'Thailand': ['Mekong Basin', 'Northern Basin', 'Western Basin', 'Southern Basin'],
+    'Laos': ['Mekong Mainstream', 'Nam Ngum Basin', 'Nam Theun Basin', 'Nam Ou Cascade'],
+    'Vietnam': ['Sesan Basin (Mekong)', 'Srepok Basin (Mekong)', 'Northern Basin', 'Southern Basin']
   };
 
   const baseUrl = 'https://damtoday.com';
