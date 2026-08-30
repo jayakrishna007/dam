@@ -3925,8 +3925,8 @@ function HeroDamSlider({
         
         {/* High-Contrast Mobile In-Hero Search Capsule - Positioned right below Live Telemetry */}
         <div className="hero-mobile-search-wrap" style={{
-          marginBottom: 14,
-          marginTop: 2,
+          marginBottom: 10,
+          marginTop: 0,
           position: "relative",
           width: "100%",
           zIndex: 10
@@ -5242,64 +5242,20 @@ export default function App() {
           }
         }
         @media (max-height: 820px) and (min-width: 769px) {
-          .hero-slider-container {
-            min-height: calc(100vh - 30px) !important;
-            height: auto !important;
-            padding-bottom: 80px !important;
-          }
-          .hero-left-content {
-            padding-top: 45px !important;
-          }
-          .hero-cards-panel {
-            transform: translateY(-50%) scale(0.82) !important;
-            transform-origin: right center !important;
-          }
-          .hero-bottom-nav {
-            bottom: 24px !important;
-          }
-          .hero-slide-title {
-            font-size: 2.8rem !important;
-            margin-bottom: 8px !important;
-          }
-          .hero-slide-desc {
-            margin-bottom: 14px !important;
-          }
-          .hero-slide-data {
-            margin-bottom: 16px !important;
-            padding: 12px 16px !important;
-          }
-        }
-        @media (max-width:768px){
-          .nav-search-container{display:none!important}
-          .hero-cards-panel{display:none!important}
-          .hero-vert-nav{display:none!important}
-          .main-nav-bar {
-            padding: 8px 14px !important;
-            min-height: 50px !important;
-          }
-          .main-nav-links {
-            display: none !important;
-          }
-          .main-nav-lang-selector {
-            display: none !important;
-          }
-          .main-nav-timestamp {
-            display: none !important;
-          }
-          .mobile-menu-btn {
-            display: block !important;
-          }
           .hero-mobile-search-wrap {
             display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 2px 0 10px 0 !important;
           }
           .hero-slider-container {
             height: auto !important;
-            min-height: calc(100vh - 40px) !important;
-            padding-top: 40px !important;
-            padding-bottom: 70px !important;
+            min-height: auto !important;
+            padding-top: 32px !important;
+            padding-bottom: 35px !important;
             display: flex !important;
             flex-direction: column !important;
-            justify-content: center !important;
+            justify-content: flex-start !important;
           }
           .hero-left-content {
             position: relative !important;
@@ -5307,7 +5263,7 @@ export default function App() {
             top: 0 !important;
             transform: none !important;
             max-width: 100% !important;
-            padding: 40px 18px 0px 18px !important;
+            padding: 2px 14px 0px 14px !important;
           }
           .hero-slide-title {
             font-size: 2.2rem !important;
