@@ -26,8 +26,8 @@
     "capacity_hm3": 54400.0,
     "capacity": 1921.7,
     "storage_hm3": 38624.0,
-    "inflow": 991,
-    "outflow": 991,
+    "inflow": 936,
+    "outflow": 936,
     "unit": "m3/s",
     "image": "/images/dams/serra_da_mesa_dam.jpg"
   },
@@ -58,8 +58,8 @@
     "capacity_hm3": 3627.0,
     "capacity": 128.1,
     "storage_hm3": 2684.0,
-    "inflow": 8654,
-    "outflow": 7851,
+    "inflow": 7864,
+    "outflow": 7864,
     "unit": "m3/s"
   },
   {
@@ -73,8 +73,8 @@
     "capacity_hm3": 2848.0,
     "capacity": 100.6,
     "storage_hm3": 2164.5,
-    "inflow": 8134,
-    "outflow": 8134,
+    "inflow": 7815,
+    "outflow": 7815,
     "unit": "m3/s"
   },
   {
@@ -99,11 +99,11 @@
     "state": "Bahia",
     "basin": "S\u00e3o Francisco",
     "country": "Brazil",
-    "level": 70.9,
+    "level": 70.8,
     "capacity_hm3": 34116.0,
     "capacity": 1204.9,
     "storage_hm3": 13987.6,
-    "inflow": 1040,
+    "inflow": -8127,
     "outflow": 1040,
     "unit": "m3/s",
     "image": "/images/dams/sobradinho_dam.jpg"
@@ -115,12 +115,12 @@
     "state": "Sergipe",
     "basin": "S\u00e3o Francisco",
     "country": "Brazil",
-    "level": 53.7,
+    "level": 51.2,
     "capacity_hm3": 3800.0,
     "capacity": 134.2,
     "storage_hm3": 2470.0,
-    "inflow": 86,
-    "outflow": 1475,
+    "inflow": 688,
+    "outflow": 1521,
     "unit": "m3/s"
   },
   {
@@ -130,11 +130,11 @@
     "state": "Minas Gerais",
     "basin": "S\u00e3o Francisco",
     "country": "Brazil",
-    "level": 86.8,
+    "level": 86.6,
     "capacity_hm3": 19528.0,
     "capacity": 689.7,
     "storage_hm3": 11130.9,
-    "inflow": 154,
+    "inflow": 127,
     "outflow": 157,
     "unit": "m3/s"
   },
@@ -145,12 +145,12 @@
     "state": "Bahia",
     "basin": "S\u00e3o Francisco",
     "country": "Brazil",
-    "level": 69.9,
+    "level": 70.1,
     "capacity_hm3": 10782.0,
     "capacity": 380.9,
     "storage_hm3": 5930.1,
-    "inflow": 2331,
-    "outflow": 387,
+    "inflow": 2608,
+    "outflow": 386,
     "unit": "m3/s"
   },
   {
@@ -160,12 +160,12 @@
     "state": "Paran\u00e1",
     "basin": "Paran\u00e1",
     "country": "Brazil",
-    "level": 94.5,
+    "level": 94.3,
     "capacity_hm3": 29000.0,
     "capacity": 1024.1,
     "storage_hm3": 25810.0,
-    "inflow": 14566,
-    "outflow": 7341,
+    "inflow": 7464,
+    "outflow": 7464,
     "unit": "m3/s",
     "image": "/images/dams/itaipu_dam.jpg"
   },
@@ -195,8 +195,8 @@
     "capacity_hm3": 22950.0,
     "capacity": 810.5,
     "storage_hm3": 13999.5,
-    "inflow": 1047,
-    "outflow": 1047,
+    "inflow": 515,
+    "outflow": 515,
     "unit": "m3/s",
     "image": "/images/dams/furnas_dam.jpg"
   },
@@ -211,8 +211,8 @@
     "capacity_hm3": 17580.0,
     "capacity": 620.8,
     "storage_hm3": 11602.8,
-    "inflow": 199,
-    "outflow": 236,
+    "inflow": 198,
+    "outflow": 185,
     "unit": "m3/s"
   },
   {
@@ -226,8 +226,8 @@
     "capacity_hm3": 6050.0,
     "capacity": 213.6,
     "storage_hm3": 4719.0,
-    "inflow": 1773,
-    "outflow": 1257,
+    "inflow": 1663,
+    "outflow": 1146,
     "unit": "m3/s"
   }
 ]

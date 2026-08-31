@@ -4,6 +4,7 @@ import DAMS_INDIA from "./data/dams.json";
 import DAMS_USA from "./data/dams_usa.json";
 import DAMS_BRAZIL from "./data/dams_brazil.json";
 import DAMS_THAILAND from "./data/dams_thailand.json";
+import DAMS_NEPAL from "./data/dams_nepal.json";
 import DAMS_LAOS from "./data/dams_laos.json";
 import DAMS_VIETNAM from "./data/dams_vietnam.json";
 import SCRAPE_STATUS from "./data/scrape_status.json";
@@ -11,13 +12,14 @@ import DAM_STATIC_INFO from "./data/dam_static_info.json";
 import TRANSLATIONS from "./data/translations.json";
 
 const DAMS = DAMS_INDIA;
-const ALL_DAMS = [...DAMS_INDIA, ...DAMS_USA, ...DAMS_BRAZIL, ...DAMS_THAILAND, ...DAMS_LAOS, ...DAMS_VIETNAM];
+const ALL_DAMS = [...DAMS_INDIA, ...DAMS_USA, ...DAMS_BRAZIL, ...DAMS_THAILAND, ...DAMS_NEPAL, ...DAMS_LAOS, ...DAMS_VIETNAM];
 
 const COUNTRIES = [
   { code: "India", label: "India", name: "India", sub: "India" },
   { code: "USA", label: "USA", name: "USA", sub: "United States" },
   { code: "Brazil", label: "Brazil", name: "Brazil", sub: "Brazil" },
   { code: "Thailand", label: "Thailand", name: "Thailand", sub: "Thailand" },
+  { code: "Nepal", label: "Nepal", name: "Nepal", sub: "Nepal" },
   { code: "Laos", label: "Laos", name: "Laos", sub: "Laos" },
   { code: "Vietnam", label: "Vietnam", name: "Vietnam", sub: "Vietnam" }
 ];
@@ -27,6 +29,7 @@ const COUNTRY_ZONES = {
   "USA": ["All", "California", "Colorado River", "Columbia River", "Missouri River", "Tennessee River"],
   "Brazil": ["All", "Amazon", "São Francisco", "Paraná"],
   "Thailand": ["All", "Mekong Basin", "Northern Basin", "Western Basin", "Southern Basin"],
+  "Nepal": ["All", "Bagmati Basin", "Gandaki Basin", "Koshi Basin", "Mahakali Basin"],
   "Laos": ["All", "Mekong Mainstream", "Nam Ngum Basin", "Nam Theun Basin", "Nam Ou Cascade"],
   "Vietnam": ["All", "Sesan Basin (Mekong)", "Srepok Basin (Mekong)", "Northern Basin", "Southern Basin"]
 };
@@ -826,7 +829,9 @@ function useVisitorTracking() {
 }
 
 // ===================== ANALYTICS DASHBOARD =====================
-function AnalyticsDashboard({ navigate, setView, searchHistory }) {
+function AnalyticsDashboard({ navigate, setView, searchHistory, selectedCountry = "India", countryDams = DAMS_INDIA }) {
+  const activeDams = countryDams || DAMS;
+  const currentCountry = selectedCountry || "India";
   const [scrapeStatus, setScrapeStatus] = useState(SCRAPE_STATUS);
   const [isScraping, setIsScraping] = useState(false);
   const [scrapeOutput, setScrapeOutput] = useState(null);
@@ -888,9 +893,9 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   };
   const isFresh = checkFreshness();
 
-  const totalDams = DAMS.length;
-  const totalInflow = DAMS.reduce((sum, d) => sum + (d.inflow || 0), 0);
-  const totalOutflow = DAMS.reduce((sum, d) => sum + (d.outflow || 0), 0);
+  const totalDams = activeDams.length;
+  const totalInflow = activeDams.reduce((sum, d) => sum + (d.inflow || 0), 0);
+  const totalOutflow = activeDams.reduce((sum, d) => sum + (d.outflow || 0), 0);
 
   // IP-based visitor tracking
   const { visitorCount, todayCount, isNewVisitor } = useVisitorTracking();
@@ -950,7 +955,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
   }, []);
 
   const stats = [
-    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: selectedCountry === "USA" ? "Across 11 US states & basins" : selectedCountry === "Brazil" ? "Across 9 hydro basins" : selectedCountry === "Thailand" ? "Across 4 major river basins" : selectedCountry === "Laos" ? "Across Mekong tributaries & cascade" : selectedCountry === "Vietnam" ? "Across Sesan, Srepok & national basins" : "Across 21 Indian states & basins", positive: true, icon: "🌊" },
+    { label: "Monitored Reservoirs", value: totalDams, change: "Active", subtext: currentCountry === "USA" ? "Across 11 US states & basins" : currentCountry === "Brazil" ? "Across 9 hydro basins" : currentCountry === "Thailand" ? "Across 4 major river basins" : currentCountry === "Nepal" ? "Across Bagmati, Gandaki, Koshi & Mahakali basins" : currentCountry === "Laos" ? "Across Mekong tributaries & cascade" : currentCountry === "Vietnam" ? "Across Sesan, Srepok & national basins" : "Across 21 Indian states & basins", positive: true, icon: "🌊" },
     { label: "Live Visitors Today", value: todayCount !== null ? todayCount.toLocaleString() : "142", change: isNewVisitor ? "✓ You're counted" : "Active session", subtext: "Unique visits (6-hr window)", positive: true, icon: "👁" },
     { label: "Total Region Inflow", value: `${fmtK(totalInflow)}`, change: "cusecs", subtext: "Cumulative river inflows", positive: totalInflow >= totalOutflow, icon: "📥" },
     { label: "Total Region Outflow", value: `${fmtK(totalOutflow)}`, change: "cusecs", subtext: "Cumulative released flow", positive: true, icon: "📤" },
@@ -959,39 +964,69 @@ function AnalyticsDashboard({ navigate, setView, searchHistory }) {
 
   const scraperLogs = [
     { 
-      source: "Tungabhadra Board Feed", 
-      status: "Operational", 
+      source: "India: Tungabhadra Board", 
+      status: scrapeStatus.sources?.tungabhadra?.status || "Operational", 
       detail: `Scraped ${scrapeStatus.sources?.tungabhadra?.count || 1} live reservoir record (Tungabhadra Dam).`, 
-      ok: true 
+      ok: scrapeStatus.sources?.tungabhadra?.ok ?? true 
     },
     { 
-      source: "Tamil Nadu Agriculture Dept", 
-      status: "Operational", 
+      source: "India: Tamil Nadu Agriculture", 
+      status: scrapeStatus.sources?.tamil_nadu?.status || "Operational", 
       detail: `Scraped ${scrapeStatus.sources?.tamil_nadu?.count || 19} major reservoir records across Tamil Nadu.`, 
-      ok: true 
+      ok: scrapeStatus.sources?.tamil_nadu?.ok ?? true 
     },
     { 
-      source: "Krishna & Godavari Basin Feeds", 
-      status: "Operational", 
-      detail: `Telemetry monitoring for Telangana & Andhra Pradesh reservoirs (Nagarjunsagar, Srisailam, Gandikota).`, 
-      ok: true 
-    },
-    { 
-      source: "BBMB Hydro Systems", 
-      status: "Operational", 
+      source: "India: BBMB Hydro Systems", 
+      status: scrapeStatus.sources?.bbmb?.status || "Operational", 
       detail: `Scraped ${scrapeStatus.sources?.bbmb?.count || 2} reservoir records (Bhakra & Pong).`, 
-      ok: true 
+      ok: scrapeStatus.sources?.bbmb?.ok ?? true 
     },
     { 
-      source: selectedCountry === "USA" ? "USACE & CDEC Official Telemetry" : selectedCountry === "Brazil" ? "ONS Brazil Hydro Telemetry" : selectedCountry === "Thailand" ? "EGAT Water Intelligence Telemetry" : (selectedCountry === "Laos" || selectedCountry === "Vietnam") ? "Mekong River Commission Telemetry" : "Verified Government Telemetry", 
+      source: "India: National & Basin Feeds", 
+      status: scrapeStatus.sources?.pan_india?.status || "Operational", 
+      detail: `Telemetry monitoring across 21 Indian states (${scrapeStatus.sources?.pan_india?.count || 159} dams).`, 
+      ok: scrapeStatus.sources?.pan_india?.ok ?? true 
+    },
+    { 
+      source: "USA: USACE & CDEC California", 
+      status: scrapeStatus.sources?.usa?.status || "Operational", 
+      detail: `Scraped ${scrapeStatus.sources?.usa?.count || 13} federal & state reservoirs (Shasta, Oroville, Trinity).`, 
+      ok: scrapeStatus.sources?.usa?.ok ?? true 
+    },
+    { 
+      source: "Brazil: ONS Hydro Telemetry", 
+      status: scrapeStatus.sources?.brazil?.status || "Operational", 
+      detail: `Scraped ${scrapeStatus.sources?.brazil?.count || 32} major hydro basins (Itaipu, Belo Monte, Furnas).`, 
+      ok: scrapeStatus.sources?.brazil?.ok ?? true 
+    },
+    { 
+      source: "Thailand: EGAT Water Intelligence", 
+      status: scrapeStatus.sources?.thailand?.status || "Operational", 
+      detail: `Scraped ${scrapeStatus.sources?.thailand?.count || 12} river basins (Bhumibol, Sirikit, Srinagarind).`, 
+      ok: scrapeStatus.sources?.thailand?.ok ?? true 
+    },
+    { 
+      source: "Nepal: DHM & NEA Telemetry", 
+      status: scrapeStatus.sources?.nepal?.status || "Operational", 
+      detail: `Monitored ${scrapeStatus.sources?.nepal?.count || 10} hydro dams & barrages (Kulekhani, Tamakoshi, Kali Gandaki, Koshi).`, 
+      ok: scrapeStatus.sources?.nepal?.ok ?? true 
+    },
+    { 
+      source: "Laos: MRC & Mekong Cascade", 
       status: "Operational", 
-      detail: `Monitoring ${totalDams} major reservoirs with verified daily telemetry baselines.`, 
+      detail: `Monitoring 7 Mekong cascade & tributary storage reservoirs (Xayaburi, Nam Ngum, Nam Theun).`, 
       ok: true 
     },
     { 
-      source: "Daily Scheduled Scraper Engine", 
+      source: "Vietnam: EVN & National Basins", 
+      status: "Operational", 
+      detail: `Monitoring 6 major hydro reservoirs across Sesan, Srepok, Da & Dong Nai rivers (Son La, Hoa Binh, Tri An).`, 
+      ok: true 
+    },
+    { 
+      source: "Scheduled Scraper Engine", 
       status: "Active", 
-      detail: `Frequency: Daily via GitHub Actions automation. Last run duration: ${scrapeStatus.duration_seconds}s.`, 
+      detail: `Automated sync via GitHub Actions. Last run duration: ${scrapeStatus.duration_seconds}s.`, 
       ok: true 
     }
   ];
@@ -2606,7 +2641,7 @@ function HistoricalCharts({ dam, safeLevel }) {
 
 // ===================== DAM DETAIL PAGE =====================
 
-function DamDetailPage({ dam, navigate, setView, t, td, lang }) {
+function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = "India" }) {
   const [shareCopied, setShareCopied] = useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
   
@@ -4481,8 +4516,18 @@ export default function App() {
   const { path, navigate } = useRouter();
   const [view, setView] = useState("main");
   const [selectedDam, setSelectedDam] = useState(null);
-  const [isAdminVerified, setIsAdminVerified] = useState(false);
-  const isAdminVerifiedRef = useRef(false);
+  const [isAdminVerified, setIsAdminVerified] = useState(() => {
+    try {
+      return typeof sessionStorage !== "undefined" && sessionStorage.getItem("dam_admin_auth") === "true";
+    } catch (e) {
+      return false;
+    }
+  });
+  const isAdminVerifiedRef = useRef(isAdminVerified);
+  useEffect(() => {
+    isAdminVerifiedRef.current = isAdminVerified;
+  }, [isAdminVerified]);
+
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
@@ -4493,6 +4538,7 @@ export default function App() {
     if (selectedCountry === "USA") return DAMS_USA;
     if (selectedCountry === "Brazil") return DAMS_BRAZIL;
     if (selectedCountry === "Thailand") return DAMS_THAILAND;
+    if (selectedCountry === "Nepal") return DAMS_NEPAL;
     if (selectedCountry === "Laos") return DAMS_LAOS;
     if (selectedCountry === "Vietnam") return DAMS_VIETNAM;
     return DAMS_INDIA;
@@ -4781,16 +4827,18 @@ export default function App() {
       setMetaDescription(desc);
       setOpenGraphTags(title, desc, currentUrl);
       removeJsonLdSchema();
-    } else if (path === "/analytics") {
-      if (isAdminVerifiedRef.current) {
+    } else if (path === "/admin" || path === "/analytics") {
+      const isAuth = isAdminVerified || isAdminVerifiedRef.current || (typeof sessionStorage !== "undefined" && sessionStorage.getItem("dam_admin_auth") === "true");
+      if (isAuth) {
+        setIsAdminVerified(true);
+        isAdminVerifiedRef.current = true;
         setView("analytics");
         const title = "Analytics Dashboard - Damtoday Administrator Console";
         document.title = title;
         setCanonicalUrl(currentUrl);
         removeJsonLdSchema();
       } else {
-        // Not verified — redirect to home and show PIN modal
-        navigate("/");
+        // Not verified — show PIN modal
         setShowPinModal(true);
       }
     } else if (damMatch) {
@@ -5060,12 +5108,16 @@ export default function App() {
   const handlePinSubmit = (e) => {
     e.preventDefault();
     if (pinInput === "9197") {
+      try {
+        sessionStorage.setItem("dam_admin_auth", "true");
+      } catch (err) {}
       isAdminVerifiedRef.current = true;
       setIsAdminVerified(true);
       setShowPinModal(false);
       setPinInput("");
       setPinError(false);
-      navigate("/analytics");
+      setView("analytics");
+      navigate("/admin");
     } else {
       setPinError(true);
     }
@@ -5439,7 +5491,7 @@ export default function App() {
 
 
       {view === "analytics" ? (
-        <AnalyticsDashboard navigate={navigate} setView={setView} searchHistory={searchHistory} />
+        <AnalyticsDashboard navigate={navigate} setView={setView} searchHistory={searchHistory} selectedCountry={selectedCountry} countryDams={countryDams} />
       ) : (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
           {/* Global Sticky Navigation Header */}
@@ -5911,7 +5963,7 @@ export default function App() {
           {/* Main content body */}
           <div style={{ flexGrow: 1 }}>
             {view === "detail" && selectedDam ? (
-              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} t={t} td={td} lang={lang} />
+              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} t={t} td={td} lang={lang} selectedCountry={selectedCountry} />
             ) : view === "about" ? (
               <AboutUsPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : view === "contact" ? (
@@ -6209,7 +6261,17 @@ export default function App() {
             {t("privacy")}
           </a>
           <button
-            onClick={() => setShowPinModal(true)}
+            onClick={() => {
+              const isAuth = isAdminVerified || isAdminVerifiedRef.current || (typeof sessionStorage !== "undefined" && sessionStorage.getItem("dam_admin_auth") === "true");
+              if (isAuth) {
+                setIsAdminVerified(true);
+                isAdminVerifiedRef.current = true;
+                setView("analytics");
+                navigate("/admin");
+              } else {
+                setShowPinModal(true);
+              }
+            }}
             style={{
               background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
               fontSize: 11, padding: 0, transition:"color 0.2s"

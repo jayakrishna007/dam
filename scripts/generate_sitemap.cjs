@@ -36,6 +36,7 @@ function main() {
     'dams_usa.json',
     'dams_brazil.json',
     'dams_thailand.json',
+    'dams_nepal.json',
     'dams_laos.json',
     'dams_vietnam.json'
   ];
@@ -55,6 +56,7 @@ function main() {
     'USA': ['California', 'Colorado River', 'Columbia River', 'Missouri River', 'Tennessee River'],
     'Brazil': ['Amazon', 'São Francisco', 'Paraná', 'Northeast', 'Uruguay'],
     'Thailand': ['Mekong Basin', 'Northern Basin', 'Western Basin', 'Southern Basin'],
+    'Nepal': ['Bagmati Basin', 'Gandaki Basin', 'Koshi Basin', 'Mahakali Basin'],
     'Laos': ['Mekong Mainstream', 'Nam Ngum Basin', 'Nam Theun Basin', 'Nam Ou Cascade'],
     'Vietnam': ['Sesan Basin (Mekong)', 'Srepok Basin (Mekong)', 'Northern Basin', 'Southern Basin']
   };

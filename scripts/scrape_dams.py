@@ -407,6 +407,170 @@ def main():
     except Exception as e:
         print(f"  [ERROR] Brazil scraper: {e}")
 
+    # --- 7. Scrape Thailand (EGAT) ---
+    thailand_ok = False
+    thailand_count = 0
+    print("Scraping Thailand dams (EGAT)...")
+    try:
+        from scrape_thailand import scrape_thailand
+        thailand_data = scrape_thailand()
+        thailand_json_path = os.path.join(script_dir, "..", "src", "data", "dams_thailand.json")
+        old_thailand = []
+        if os.path.exists(thailand_json_path):
+            try:
+                with open(thailand_json_path, "r", encoding="utf-8") as f:
+                    old_thailand = json.load(f)
+            except Exception:
+                pass
+        if old_thailand and thailand_data:
+            scraped_th_by_name = {v["name"].lower(): v for v in thailand_data.values()}
+            for dam in old_thailand:
+                matched = scraped_th_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_mcm") is not None:
+                        dam["storage_mcm"] = matched["storage_mcm"]
+            final_thailand = old_thailand
+        elif thailand_data:
+            final_thailand = list(thailand_data.values())
+        else:
+            final_thailand = old_thailand
+        with open(thailand_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_thailand, f, indent=2)
+        thailand_count = len([v for v in thailand_data.values() if v.get("level") is not None])
+        thailand_ok = thailand_count > 0
+        print(f"  Thailand: {thailand_count} live readings merged into dams_thailand.json")
+    except Exception as e:
+        print(f"  [ERROR] Thailand scraper: {e}")
+
+    # --- 8. Scrape Nepal (DHM & NEA) ---
+    nepal_ok = False
+    nepal_count = 0
+    print("Scraping Nepal dams (DHM & NEA)...")
+    try:
+        from scrape_nepal import scrape_nepal
+        nepal_data = scrape_nepal()
+        nepal_json_path = os.path.join(script_dir, "..", "src", "data", "dams_nepal.json")
+        old_nepal = []
+        if os.path.exists(nepal_json_path):
+            try:
+                with open(nepal_json_path, "r", encoding="utf-8") as f:
+                    old_nepal = json.load(f)
+            except Exception:
+                pass
+        if old_nepal and nepal_data:
+            scraped_np_by_name = {v["name"].lower(): v for v in nepal_data.values()}
+            for dam in old_nepal:
+                matched = scraped_np_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_mcm") is not None:
+                        dam["storage_mcm"] = matched["storage_mcm"]
+            final_nepal = old_nepal
+        elif nepal_data:
+            final_nepal = list(nepal_data.values())
+        else:
+            final_nepal = old_nepal
+        with open(nepal_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_nepal, f, indent=2)
+        nepal_count = len([v for v in nepal_data.values() if v.get("level") is not None])
+        nepal_ok = nepal_count > 0
+        print(f"  Nepal: {nepal_count} live readings merged into dams_nepal.json")
+    except Exception as e:
+        print(f"  [ERROR] Nepal scraper: {e}")
+
+    # --- 9. Scrape Laos (MRC & Mekong Cascade) ---
+    laos_ok = False
+    laos_count = 0
+    print("Scraping Laos dams (MRC & Mekong Cascade)...")
+    try:
+        from scrape_laos import scrape_laos
+        laos_data = scrape_laos()
+        laos_json_path = os.path.join(script_dir, "..", "src", "data", "dams_laos.json")
+        old_laos = []
+        if os.path.exists(laos_json_path):
+            try:
+                with open(laos_json_path, "r", encoding="utf-8") as f:
+                    old_laos = json.load(f)
+            except Exception:
+                pass
+        if old_laos and laos_data:
+            scraped_la_by_name = {v["name"].lower(): v for v in laos_data.values()}
+            for dam in old_laos:
+                matched = scraped_la_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_mcm") is not None:
+                        dam["storage_mcm"] = matched["storage_mcm"]
+            final_laos = old_laos
+        elif laos_data:
+            final_laos = list(laos_data.values())
+        else:
+            final_laos = old_laos
+        with open(laos_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_laos, f, indent=2)
+        laos_count = len([v for v in laos_data.values() if v.get("level") is not None])
+        laos_ok = laos_count > 0
+        print(f"  Laos: {laos_count} live readings merged into dams_laos.json")
+    except Exception as e:
+        print(f"  [ERROR] Laos scraper: {e}")
+
+    # --- 10. Scrape Vietnam (EVN & NCHMF) ---
+    vietnam_ok = False
+    vietnam_count = 0
+    print("Scraping Vietnam dams (EVN & NCHMF)...")
+    try:
+        from scrape_vietnam import scrape_vietnam
+        vietnam_data = scrape_vietnam()
+        vietnam_json_path = os.path.join(script_dir, "..", "src", "data", "dams_vietnam.json")
+        old_vietnam = []
+        if os.path.exists(vietnam_json_path):
+            try:
+                with open(vietnam_json_path, "r", encoding="utf-8") as f:
+                    old_vietnam = json.load(f)
+            except Exception:
+                pass
+        if old_vietnam and vietnam_data:
+            scraped_vn_by_name = {v["name"].lower(): v for v in vietnam_data.values()}
+            for dam in old_vietnam:
+                matched = scraped_vn_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_mcm") is not None:
+                        dam["storage_mcm"] = matched["storage_mcm"]
+            final_vietnam = old_vietnam
+        elif vietnam_data:
+            final_vietnam = list(vietnam_data.values())
+        else:
+            final_vietnam = old_vietnam
+        with open(vietnam_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_vietnam, f, indent=2)
+        vietnam_count = len([v for v in vietnam_data.values() if v.get("level") is not None])
+        vietnam_ok = vietnam_count > 0
+        print(f"  Vietnam: {vietnam_count} live readings merged into dams_vietnam.json")
+    except Exception as e:
+        print(f"  [ERROR] Vietnam scraper: {e}")
+
     # Post historical readings to MongoDB via serverless API
     try:
         import datetime
@@ -430,40 +594,24 @@ def main():
                     "timestamp": now_iso
                 })
             
-            # Also include USA and Brazil dams in history
-            try:
-                usa_p = os.path.join(DATA_DIR, "dams_usa.json")
-                if os.path.exists(usa_p):
-                    with open(usa_p, "r", encoding="utf-8") as f:
-                        for d in json.load(f):
-                            all_readings.append({
-                                "dam_id": d.get("id"),
-                                "name": d.get("name"),
-                                "level": d.get("level"),
-                                "capacity": d.get("capacity"),
-                                "inflow": d.get("inflow"),
-                                "outflow": d.get("outflow"),
-                                "timestamp": now_iso
-                            })
-            except Exception as ex:
-                print(f"  Warning adding USA dams to history: {ex}")
-
-            try:
-                br_p = os.path.join(DATA_DIR, "dams_brazil.json")
-                if os.path.exists(br_p):
-                    with open(br_p, "r", encoding="utf-8") as f:
-                        for d in json.load(f):
-                            all_readings.append({
-                                "dam_id": d.get("id"),
-                                "name": d.get("name"),
-                                "level": d.get("level"),
-                                "capacity": d.get("capacity"),
-                                "inflow": d.get("inflow"),
-                                "outflow": d.get("outflow"),
-                                "timestamp": now_iso
-                            })
-            except Exception as ex:
-                print(f"  Warning adding Brazil dams to history: {ex}")
+            # Also include all international dams in history
+            for global_file in ["dams_usa.json", "dams_brazil.json", "dams_thailand.json", "dams_nepal.json", "dams_laos.json", "dams_vietnam.json"]:
+                try:
+                    p = os.path.join(DATA_DIR, global_file)
+                    if os.path.exists(p):
+                        with open(p, "r", encoding="utf-8") as f:
+                            for d in json.load(f):
+                                all_readings.append({
+                                    "dam_id": d.get("id"),
+                                    "name": d.get("name"),
+                                    "level": d.get("level"),
+                                    "capacity": d.get("capacity"),
+                                    "inflow": d.get("inflow"),
+                                    "outflow": d.get("outflow"),
+                                    "timestamp": now_iso
+                                })
+                except Exception as ex:
+                    print(f"  Warning adding {global_file} to history: {ex}")
 
             payload = json.dumps({"readings": all_readings}).encode("utf-8")
             req = urllib.request.Request(
@@ -547,7 +695,10 @@ def main():
             "pan_india": { "status": "Operational", "ok": True, "count": len(final_dams) },
             "usa": { "status": "Operational" if usa_ok else "Down", "ok": usa_ok, "count": usa_count },
             "brazil": { "status": "Operational" if brazil_ok else "Down", "ok": brazil_ok, "count": brazil_count },
-            "thailand": { "status": "Operational" if thailand_ok else "Down", "ok": thailand_ok, "count": thailand_count }
+            "thailand": { "status": "Operational" if thailand_ok else "Down", "ok": thailand_ok, "count": thailand_count },
+            "nepal": { "status": "Operational" if nepal_ok else "Down", "ok": nepal_ok, "count": nepal_count },
+            "laos": { "status": "Operational" if laos_ok else "Down", "ok": laos_ok, "count": laos_count },
+            "vietnam": { "status": "Operational" if vietnam_ok else "Down", "ok": vietnam_ok, "count": vietnam_count }
         },
         "metrics": {
             "dams_changed": dams_changed,
