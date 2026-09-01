@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "vn_1",
     "name": "Yali Falls Dam",
     "river": "Sesan (Mekong)",
     "state": "Gia Lai",
@@ -13,10 +13,14 @@
     "inflow": 12500,
     "outflow": 11800,
     "unit": "cfs",
-    "image": "/images/dams/yalifalls.jpg"
+    "image": "/images/dams/yalifalls.jpg",
+    "data_source": "EVN / NCHMF Vietnam",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 2,
+    "id": "vn_2",
     "name": "Plei Kr\u00f4ng Dam",
     "river": "Kr\u00f4ng P\u00f4 K\u00f4 (Mekong)",
     "state": "Kon Tum",
@@ -29,10 +33,14 @@
     "inflow": 8900,
     "outflow": 7800,
     "unit": "cfs",
-    "image": "/images/dams/pleikrong.jpg"
+    "image": "/images/dams/pleikrong.jpg",
+    "data_source": "EVN / NCHMF Vietnam",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 3,
+    "id": "vn_3",
     "name": "Buon Kuop Dam",
     "river": "Srepok (Mekong)",
     "state": "Dak Lak",
@@ -45,10 +53,14 @@
     "inflow": 6400,
     "outflow": 6200,
     "unit": "cfs",
-    "image": "/images/dams/buonkuop.jpg"
+    "image": "/images/dams/buonkuop.jpg",
+    "data_source": "EVN / NCHMF Vietnam",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 4,
+    "id": "vn_4",
     "name": "Son La Dam",
     "river": "Da River",
     "state": "Son La",
@@ -61,10 +73,14 @@
     "inflow": 38500,
     "outflow": 32000,
     "unit": "cfs",
-    "image": "/images/dams/sonla.jpg"
+    "image": "/images/dams/sonla.jpg",
+    "data_source": "EVN / NCHMF Vietnam",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 5,
+    "id": "vn_5",
     "name": "Hoa Binh Dam",
     "river": "Da River",
     "state": "Hoa Binh",
@@ -77,10 +93,14 @@
     "inflow": 34200,
     "outflow": 31000,
     "unit": "cfs",
-    "image": "/images/dams/hoabinh.jpg"
+    "image": "/images/dams/hoabinh.jpg",
+    "data_source": "EVN / NCHMF Vietnam",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 6,
+    "id": "vn_6",
     "name": "Tri An Dam",
     "river": "Dong Nai River",
     "state": "Dong Nai",
@@ -93,6 +113,10 @@
     "inflow": 14500,
     "outflow": 12000,
     "unit": "cfs",
-    "image": "/images/dams/trian.jpg"
+    "image": "/images/dams/trian.jpg",
+    "data_source": "EVN / NCHMF Vietnam",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   }
 ]

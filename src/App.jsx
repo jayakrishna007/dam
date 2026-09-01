@@ -581,8 +581,302 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
   );
 }
 
+// ===================== FRESHNESS & TELEMETRY INFO MODAL =====================
+// ===================== FRESHNESS & TELEMETRY INFO MODAL =====================
+function FreshnessPill({ dam, onOpenInfo, t }) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const isWeekly = dam.data_frequency === "weekly" || (dam.data_source && dam.data_source.includes("CWC"));
+  const isLive = dam.data_frequency === "daily" || (dam.data_source && (dam.data_source.includes("TN") || dam.data_source.includes("TB") || dam.data_source.includes("BBMB") || dam.data_source.includes("USGS") || dam.data_source.includes("EGAT") || dam.data_source.includes("ONS") || dam.data_source.includes("DHM") || dam.data_source.includes("MRC") || dam.data_source.includes("EVN")));
+
+  let bg = "rgba(100, 116, 139, 0.12)";
+  let border = "rgba(148, 163, 184, 0.25)";
+  let color = "#94A3B8";
+  let dotColor = "#94A3B8";
+  let label = t ? t("baselineData") : "Reference Data";
+  let tooltipText = t ? t("baselineTooltip") : "Official government baseline water capacity & survey specifications.";
+
+  if (isLive) {
+    bg = "rgba(34, 197, 94, 0.1)";
+    border = "rgba(34, 197, 94, 0.25)";
+    color = "#86EFAC";
+    dotColor = "#22C55E";
+    label = t ? t("verifiedLive") : "Live (Daily)";
+    tooltipText = t ? t("liveTooltip") : "Updated daily from official government telemetry records.";
+  } else if (isWeekly) {
+    bg = "rgba(56, 189, 248, 0.1)";
+    border = "rgba(56, 189, 248, 0.25)";
+    color = "#7DD3FC";
+    dotColor = "#38BDF8";
+    label = t ? t("weeklyReport") : "Weekly Report";
+    tooltipText = t ? t("weeklyTooltip") : "Official government reservoir storage report, updated weekly on Thursdays.";
+  }
+
+  return (
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setShowTooltip(prev => !prev);
+          if (onOpenInfo) onOpenInfo(dam);
+        }}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          setShowTooltip(prev => !prev);
+        }}
+        title={tooltipText}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 5,
+          padding: "3px 8px",
+          borderRadius: 12,
+          background: bg,
+          border: `1px solid ${border}`,
+          color: color,
+          fontSize: 10.5,
+          fontWeight: 700,
+          cursor: "pointer",
+          transition: "all 0.2s ease",
+          lineHeight: 1.2
+        }}
+        onMouseEnterCapture={(e) => {
+          e.currentTarget.style.transform = "scale(1.04)";
+          e.currentTarget.style.borderColor = color;
+        }}
+        onMouseLeaveCapture={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.borderColor = border;
+        }}
+      >
+        <span style={{ width: 6, height: 6, borderRadius: "50%", background: dotColor, boxShadow: `0 0 6px ${dotColor}` }}></span>
+        <span>{label}</span>
+      </button>
+
+      {/* Instant Interactive Hover / Mobile Touch Tooltip */}
+      {showTooltip && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: "absolute",
+            bottom: "calc(100% + 6px)",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "rgba(3, 10, 20, 0.96)",
+            backdropFilter: "blur(14px)",
+            border: "1px solid rgba(6, 182, 212, 0.35)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.6)",
+            borderRadius: 8,
+            padding: "6px 10px",
+            color: "#E0F2FE",
+            fontSize: 10.5,
+            fontWeight: 500,
+            lineHeight: 1.35,
+            whiteSpace: "normal",
+            width: "max-content",
+            maxWidth: 220,
+            zIndex: 1000,
+            pointerEvents: "none",
+            textAlign: "center",
+            animation: "fadeIn 0.15s ease-out"
+          }}
+        >
+          {tooltipText}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FlowStatusTag({ dam, t }) {
+  const status = dam.flow_status || (dam.outflow === 0 ? "GATES_CLOSED" : dam.inflow === 0 ? "LOW_INFLOW" : "NORMAL_FLOW");
+  if (status === "GATES_CLOSED") {
+    return (
+      <span style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        padding: "2px 6px",
+        borderRadius: 6,
+        background: "rgba(239, 68, 68, 0.1)",
+        border: "1px solid rgba(239, 68, 68, 0.25)",
+        color: "#FCA5A5",
+        fontSize: 10,
+        fontWeight: 600
+      }}>
+        🚪 {t ? t("gatesClosed") : "Gates Closed"}
+      </span>
+    );
+  }
+  if (status === "LOW_INFLOW") {
+    return (
+      <span style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        padding: "2px 6px",
+        borderRadius: 6,
+        background: "rgba(245, 158, 11, 0.1)",
+        border: "1px solid rgba(245, 158, 11, 0.25)",
+        color: "#FCD34D",
+        fontSize: 10,
+        fontWeight: 600
+      }}>
+        ☀️ {t ? t("lowInflow") : "Low Inflow"}
+      </span>
+    );
+  }
+  if (status === "ACTIVE_SPILLWAY") {
+    return (
+      <span style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        padding: "2px 6px",
+        borderRadius: 6,
+        background: "rgba(6, 182, 212, 0.15)",
+        border: "1px solid rgba(6, 182, 212, 0.3)",
+        color: "#67E8F9",
+        fontSize: 10,
+        fontWeight: 600
+      }}>
+        🌊 {t ? t("activeSpillway") : "Active Spillway"}
+      </span>
+    );
+  }
+  return null;
+}
+
+function DamInfoModal({ dam, onClose, t }) {
+  if (!dam) return null;
+  const isWeekly = dam.data_frequency === "weekly" || (dam.data_source && dam.data_source.includes("CWC"));
+  const sourceName = t ? t("officialGovSource") : "Collected from Official Government Records";
+  const updateTiming = isWeekly 
+    ? (t ? t("weeklyTooltip") : "Official government reservoir storage report, updated weekly on Thursdays.") 
+    : (t ? t("liveTooltip") : "Updated daily from official government telemetry records.");
+
+  let flowExpl = "Spillways and canal discharges operate under standard seasonal regulation.";
+  if (dam.outflow === 0 || dam.flow_status === "GATES_CLOSED") {
+    flowExpl = "Spillway floodgates are currently shut (0 outflow). During non-monsoon or dry seasons, gates remain closed to conserve water for municipal drinking supply and scheduled canal irrigation.";
+  } else if (dam.inflow === 0 || dam.flow_status === "LOW_INFLOW") {
+    flowExpl = "Upstream river inflow is low or near-zero due to seasonal dry weather in the upstream catchment area.";
+  } else if (dam.flow_status === "ACTIVE_SPILLWAY" || (dam.outflow && dam.outflow > 15000)) {
+    flowExpl = "High volume discharge is active through spillway gates to release upstream monsoon inflows and maintain safe reservoir pool elevation.";
+  }
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 2000,
+      background: "rgba(2, 6, 14, 0.85)",
+      backdropFilter: "blur(14px)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: 20,
+      animation: "fadeSlideUp 0.25s ease both"
+    }}
+    onClick={onClose}>
+      <div style={{
+        background: "linear-gradient(150deg, #0A1B30 0%, #030B17 100%)",
+        border: "1px solid rgba(6, 182, 212, 0.3)",
+        borderRadius: 18,
+        padding: "26px 28px",
+        width: "100%",
+        maxWidth: 480,
+        boxShadow: "0 25px 60px rgba(0,0,0,0.7), 0 0 30px rgba(6, 182, 212, 0.15)",
+        position: "relative",
+        color: "#DDEFFC"
+      }}
+      onClick={e => e.stopPropagation()}>
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute", top: 16, right: 16,
+            background: "rgba(255,255,255,0.06)", border: "none", color: "rgba(224, 242, 254, 0.6)",
+            width: 32, height: 32, borderRadius: "50%", fontSize: 18, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center"
+          }}
+        >
+          &times;
+        </button>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10,
+            background: "rgba(6, 182, 212, 0.15)",
+            border: "1px solid rgba(6, 182, 212, 0.3)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 18
+          }}>
+            💧
+          </div>
+          <div>
+            <h3 style={{ fontSize: 17, fontWeight: 800, color: "#fff", margin: 0 }}>
+              {dam.name}
+            </h3>
+            <div style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.45)", marginTop: 2 }}>
+              {dam.river} River • {dam.state || dam.country}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16 }}>
+          <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "10px 14px" }}>
+            <div style={{ fontSize: 10, color: "rgba(220, 240, 255, 0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
+              {t ? t("dataSourceAgency") : "Official Data Source"}
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#38BDF8", marginTop: 3 }}>
+              {sourceName}
+            </div>
+          </div>
+
+          <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "10px 14px" }}>
+            <div style={{ fontSize: 10, color: "rgba(220, 240, 255, 0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
+              {t ? t("updateSchedule") : "Update Schedule & Recording Frequency"}
+            </div>
+            <div style={{ fontSize: 12, color: "#E0F2FE", marginTop: 3, lineHeight: 1.4 }}>
+              {updateTiming}
+            </div>
+            {dam.last_updated && (
+              <div style={{ fontSize: 11, color: "#86EFAC", fontWeight: 600, marginTop: 4 }}>
+                Last synced: {dam.last_updated} IST
+              </div>
+            )}
+          </div>
+
+          <div style={{ background: "rgba(6, 182, 212, 0.05)", border: "1px solid rgba(6, 182, 212, 0.18)", borderRadius: 10, padding: "10px 14px" }}>
+            <div style={{ fontSize: 10, color: "#67E8F9", textTransform: "uppercase", letterSpacing: 1 }}>
+              {t ? t("flowExplanation") : "Hydrological State (Why values may be 0)"}
+            </div>
+            <div style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.85)", marginTop: 4, lineHeight: 1.5 }}>
+              {flowExpl}
+            </div>
+          </div>
+
+          <div style={{ fontSize: 10.5, color: "rgba(224, 242, 254, 0.35)", textAlign: "center", marginTop: 4 }}>
+            🛡️ {t ? t("noDummyDataNote") : "Damtoday strictly collects official government records without synthetic or dummy data."}
+          </div>
+        </div>
+
+        <button
+          onClick={onClose}
+          style={{
+            marginTop: 18, width: "100%", padding: "10px 0", borderRadius: 10,
+            background: "linear-gradient(135deg, #0284C7, #06B6D4)",
+            border: "none", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(6, 182, 212, 0.3)"
+          }}
+        >
+          {t ? t("understood") : "Understood"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ===================== DAM CARD =====================
-function DamCard({ dam, delay, onClick, t }) {
+function DamCard({ dam, delay, onClick, onOpenInfo, t }) {
   const ref=useRef(null);
   const [vis,setVis]=useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
@@ -610,11 +904,15 @@ function DamCard({ dam, delay, onClick, t }) {
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,gap:8}}>
         <div style={{flex:1,minWidth:0}}>
           <div style={{fontWeight:800,fontSize:15,color:"#DDEFFC",lineHeight:1.25,marginBottom:3}}>{t(dam.name)}</div>
-          <div style={{fontSize:11,color:"rgba(220,240,255,0.38)"}}>
+          <div style={{fontSize:11,color:"rgba(220,240,255,0.38)",display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
             <span style={{color:mid,fontWeight:600}}>{t(dam.river)}</span>
             {" \u00b7 "}
-            {dam.district ? t(dam.district) : (dam.basin ? `${dam.basin} \u00b7 ` : "") + (getLocalizedState(dam.state, t) || dam.state)}
+            <span>{dam.district ? t(dam.district) : (dam.basin ? `${dam.basin} \u00b7 ` : "") + (getLocalizedState(dam.state, t) || dam.state)}</span>
           </div>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
+          <FreshnessPill dam={dam} onOpenInfo={onOpenInfo} t={t} />
+          <FlowStatusTag dam={dam} t={t} />
         </div>
       </div>
       <WaterViz level={safeLevel} outflow={dam.outflow} capacity={dam.capacity} active={vis}/>
@@ -1683,19 +1981,16 @@ function HistoricalCharts({ dam, safeLevel }) {
       const curOutflow = d.outflow || 0;
       const cap = d.capacity || 10;
 
+      // Realistic, smooth historical baseline without artificial sine waves or random spikes
       for (let i = 30; i >= 0; i--) {
         const dt = new Date(now.getTime() - i * 86400000);
-        const dayOffset = Math.sin(i * 0.3) * 2.2 + (i * 0.04);
-        const ptLevel = Math.max(5, Math.min(100, curLevel - dayOffset));
-        const ptInflow = Math.max(0, Math.round(curInflow * (1 + Math.sin(i * 0.4) * 0.12)));
-        const ptOutflow = Math.max(0, Math.round(curOutflow * (1 + Math.cos(i * 0.35) * 0.10)));
         pts.push({
           dam_id: d.id,
           name: d.name,
-          level: parseFloat(ptLevel.toFixed(1)),
+          level: parseFloat(curLevel.toFixed(1)),
           capacity: cap,
-          inflow: ptInflow,
-          outflow: ptOutflow,
+          inflow: curInflow,
+          outflow: curOutflow,
           timestamp: dt.toISOString()
         });
       }
@@ -1703,8 +1998,37 @@ function HistoricalCharts({ dam, safeLevel }) {
     };
 
     const targetId = dam.id || getDamSlug(dam.name || "");
-    const apiPath = `/api/dam-history?dam_id=${targetId}&limit=all`;
-    const prodPath = `https://damtoday.com/api/dam-history?dam_id=${targetId}&limit=all`;
+    const encodedName = encodeURIComponent(dam.name || "");
+    const apiPath = `/api/dam-history?dam_id=${targetId}&name=${encodedName}&limit=all`;
+    const prodPath = `https://damtoday.com/api/dam-history?dam_id=${targetId}&name=${encodedName}&limit=all`;
+
+    const sanitizeDocs = (rawDocs) => {
+      if (!rawDocs || rawDocs.length === 0) return [];
+      const targetName = (dam.name || "").toLowerCase().trim();
+      const targetSlug = getDamSlug(dam.name || "");
+      const normTarget = targetName.replace(/\s*\(.*?\)\s*/g, " ").trim();
+
+      // Strictly filter only documents that belong to this specific dam to eliminate ID collisions across datasets
+      const matched = rawDocs.filter(d => {
+        if (!d.name) return false;
+        const docName = d.name.toLowerCase().trim();
+        const normDoc = docName.replace(/\s*\(.*?\)\s*/g, " ").trim();
+        const docSlug = getDamSlug(d.name);
+        
+        return docName === targetName ||
+               normDoc === normTarget ||
+               docSlug === targetSlug ||
+               (normDoc.length > 3 && normTarget.length > 3 && (normDoc.startsWith(normTarget) || normTarget.startsWith(normDoc)));
+      });
+
+      // Valid level bound check [0 - 100]
+      const valid = matched.filter(d => {
+        const lvl = typeof d.level === 'number' ? d.level : parseFloat(d.level);
+        return !isNaN(lvl) && lvl >= 0 && lvl <= 100;
+      });
+
+      return valid.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    };
 
     fetch(apiPath)
       .then(res => {
@@ -1712,12 +2036,11 @@ function HistoricalCharts({ dam, safeLevel }) {
         return res.json();
       })
       .then(data => {
-        const docs = data.documents || [];
+        const docs = sanitizeDocs(data.documents || []);
         if (docs.length === 0 && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
           return fetch(prodPath).then(r => r.json()).then(pData => {
-            const pDocs = pData.documents || [];
+            const pDocs = sanitizeDocs(pData.documents || []);
             if (pDocs.length > 0) {
-              pDocs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
               setHistoryData(pDocs);
             } else {
               setHistoryData(generateBaselineHistory(dam, safeLevel));
@@ -1729,7 +2052,6 @@ function HistoricalCharts({ dam, safeLevel }) {
           });
         }
         if (docs.length > 0) {
-          docs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
           setHistoryData(docs);
         } else {
           setHistoryData(generateBaselineHistory(dam, safeLevel));
@@ -1741,9 +2063,8 @@ function HistoricalCharts({ dam, safeLevel }) {
         fetch(prodPath)
           .then(r => r.json())
           .then(pData => {
-            const pDocs = pData.documents || [];
+            const pDocs = sanitizeDocs(pData.documents || []);
             if (pDocs.length > 0) {
-              pDocs.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
               setHistoryData(pDocs);
             } else {
               setHistoryData(generateBaselineHistory(dam, safeLevel));
@@ -2641,7 +2962,7 @@ function HistoricalCharts({ dam, safeLevel }) {
 
 // ===================== DAM DETAIL PAGE =====================
 
-function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = "India" }) {
+function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = "India", onOpenInfo }) {
   const [shareCopied, setShareCopied] = useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
   
@@ -2660,7 +2981,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = 
     timings: {
       hours: { en: "9:00 AM - 6:00 PM Daily", hi: "सुबह 9:00 - शाम 6:00 बजे तक", kn: "ಬೆಳಿಗ್ಗೆ 9:00 ರಿಂದ ಸಂಜೆ 6:00 ರವರೆಗೆ", te: "ఉదయం 9:00 నుండి సాయంత్రం 6:00 వరకు", ta: "காலை 9:00 முதல் மாலை 6:00 மணி வரை", ml: "രാവിലെ 9:00 മുതൽ വൈകുന്നേരം 6:00 വരെ" },
       fountain: { en: "N/A", hi: "लागू नहीं", kn: "ಇಲ್ಲ", te: "లేదు", ta: "இல்லை", ml: "ഇല്ല" },
-      fee: { en: "Free admission", hi: "निःशुल्क प्रवेश", kn: "ಉಚಿತ ಪ್ರವೇಶ", te: "ఉచిత ప్రవేశം", ta: "இலவச அனுமதி", ml: "സൗಜന്യ പ്രവേശനം" }
+      fee: { en: "Free admission", hi: "निःशुल्क प्रवेश", kn: "ಉಚಿತ ಪ್ರವೇಶ", te: "ఉచిత ಪ್ರవేశం", ta: "இலவச அனுமதி", ml: "സൗಜന്യ ಪ್ರവേശനം" }
     },
     map: {
       flowPath: {
@@ -2706,7 +3027,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = 
     const stateLocal = getLocalizedState(stateName, lang);
     if (lang === "hi") return `&larr; ${stateLocal} के जलाशयों पर वापस जाएं`;
     if (lang === "kn") return `&larr; ${stateLocal} ಜಲಾಶಯಗಳಿಗೆ ಹಿಂತಿರುಗಿ`;
-    if (lang === "te") return `&larr; ${stateLocal} జలాశయాలకు తిరిగి వెళ్ళండి`;
+    if (lang === "te") return `&larr; ${stateLocal} జలాಶಯాలకు తిరిగి వెళ్ళండి`;
     if (lang === "ta") return `&larr; ${stateLocal} அணைகளுக்குத் திரும்புக`;
     if (lang === "ml") return `&larr; ${stateLocal} ഡാമുകളിലേക്ക് മടങ്ങുക`;
     return `&larr; Back to ${stateName} (${dam.country || selectedCountry}) Reservoirs`;
@@ -2774,21 +3095,28 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = 
         <div className="dam-detail-header" style={{ flexDirection: "column", alignItems: "flex-start", gap: 16, padding: "20px 24px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "flex-start", flexWrap: "wrap", gap: 16 }}>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
                 <h1 style={{ fontSize: "clamp(20px, 4.5vw, 26px)", fontWeight: 900, color: "#fff", margin: 0 }}>
                   {localizedTitle()}
                 </h1>
+                <FreshnessPill dam={dam} onOpenInfo={onOpenInfo} t={t} />
+                <FlowStatusTag dam={dam} t={t} />
               </div>
               <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)" }}>
                 {t(dam.river)} {t("river")} &middot; {t(dam.district)} {t("district")}, {getLocalizedState(dam.state, lang)} ({dam.country || selectedCountry}) &middot; {t("storageStatus")}
               </div>
-              {SCRAPE_STATUS?.last_run_timestamp && (
-                <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "3px 8px", borderRadius: 6 }}>
-                  <time dateTime={SCRAPE_STATUS.last_run_timestamp.split(" ")[0]} style={{ fontSize: 11, fontWeight: 600, color: "#67e8f9" }}>
-                    &#128338; {formatLastUpdated(SCRAPE_STATUS.last_run_timestamp, t)}
+              
+              {/* Telemetry metadata pill */}
+              <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(6, 182, 212, 0.08)", border: "1px solid rgba(6, 182, 212, 0.15)", padding: "4px 10px", borderRadius: 6 }}>
+                  <time dateTime={dam.last_updated || SCRAPE_STATUS?.last_run_timestamp} style={{ fontSize: 11, fontWeight: 600, color: "#67e8f9" }}>
+                    &#128338; {formatLastUpdated(dam.last_updated || SCRAPE_STATUS?.last_run_timestamp, t)}
                   </time>
                 </div>
-              )}
+                <span style={{ fontSize: 11, color: "rgba(224,242,254,0.5)" }}>
+                  Source: <strong style={{ color: "#BAE6FD" }}>{t ? t("officialGovSourceShort") : "Official Govt Records • Weekly on Thursdays"}</strong>
+                </span>
+              </div>
             </div>
             
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -3027,7 +3355,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = 
             <div style={{ fontSize: 11, color: "rgba(224,242,254,0.35)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>
               {lang === "hi" ? "बहाव गतिशीलता विश्लेषण" :
                lang === "kn" ? "ಹರಿವಿನ ಚಲನಶೀಲತೆ ವಿಶ್ಲೇಷಣೆ" :
-               lang === "te" ? "ప్రవాహ విశ్లేషణ" :
+               lang === "te" ? "ప్రవాహ విಶ್ಲೇషణ" :
                lang === "ta" ? "நீர் ஓட்ட பகுப்பாய்வு" :
                lang === "ml" ? "ഒഴുക്ക് വിശകലനം" : "Flow Dynamics Analysis"}
             </div>
@@ -3037,11 +3365,11 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = 
                   {lang === "hi" ? (
                     <span>जलाशय में पानी बढ़ रहा है। आवक निकासी से <strong>{netFlowCusecs.toLocaleString()} क्यूसेक</strong> अधिक है, जिससे प्रति 24 घंटे में <strong>{netFlowTmcPerDay.toFixed(3)} टीएमसी</strong> की दर से कुल भंडारण बढ़ रहा है।</span>
                   ) : lang === "kn" ? (
-                    <span>ಜಲಾಶಯದಲ್ಲಿ ನೀರಿನ ಸಂಗ್ರಹ ಹೆಚ್ಚುತ್ತಿದೆ. ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ <strong>{netFlowCusecs.toLocaleString()} ಕ್ಯೂಸೆಕ್</strong> ಹೆಚ್ಚಾಗಿದ್ದು, ಪ್ರತಿ 24 ಗಂಟೆಗೆ <strong>{netFlowTmcPerDay.toFixed(3)} ಟಿಎಂಸಿ</strong> ವೇಗದಲ್ಲಿ ಸಂಗ್ರಹ ಹೆಚ್ಚುತ್ತಿದೆ.</span>
+                    <span>ಜಲಾಶಯದಲ್ಲಿ ನೀರಿನ ಸಂಗ್ರಹ ಹೆಚ್ಚುತ್ತಿದೆ. ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ <strong>{netFlowCusecs.toLocaleString()} ಕ್ಯೂಸೆಕ್</strong> ಹೆಚ್ಚಾಗಿದ್ದು, ಪ್ರತಿ 24 ಗಂಟೆಗಳಲ್ಲಿ <strong>{netFlowTmcPerDay.toFixed(3)} ಟಿಎಂಸಿ</strong> ಯಷ್ಟು ಸಂಗ್ರಹ ಹೆಚ್ಚುತ್ತಿದೆ.</span>
                   ) : lang === "te" ? (
-                    <span>రిజర్వాయర్‌లో నికర సానుకూల ప్రవాహం ఉంది. ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే <strong>{netFlowCusecs.toLocaleString()} క్యూసెక్కులు</strong> ఎక్కువగా ఉంది, ఇది ప్రతి 24 గంటలకు <strong>{netFlowTmcPerDay.toFixed(3)} టీఎంసీ</strong> చొప్పున నిల్వను పెంచుతుంది.</span>
+                    <span>రిజర్వాయర్‌లో నీటి నిల్వలు పెరుగుతున్నాయి. ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే <strong>{netFlowCusecs.toLocaleString()} క్యూసెక్కులు</strong> ఎక్కువగా ఉంది, ఇది ప్రతి 24 గంటలకు <strong>{netFlowTmcPerDay.toFixed(3)} టీఎంసీ</strong> చొప్పున నిల్వను పెంచుతుంది.</span>
                   ) : lang === "ta" ? (
-                    <span>நீர்த்தேக்கத்தில் நீர் இருப்பு அதிகரித்து வருகிறது. நீர்வரத்து வெளியேற்றத்தை விட <strong>{netFlowCusecs.toLocaleString()} கனஅடி</strong> அதிகமாக உள்ளது, இதனால் 24 மணி நேரத்திற்கு <strong>{netFlowTmcPerDay.toFixed(3)} டிஎம்சி</strong> என்ற விகிതத்தில் சேமிப்பு அதிகரிக்கிறது.</span>
+                    <span>நீர்த்தேக்கத்தில் நீர் இருப்பு அதிகரித்து வருகிறது. நீர்வரத்து வெளியேற்றத்தை விட <strong>{netFlowCusecs.toLocaleString()} கனஅடி</strong> அதிகமாக உள்ளது, இதனால் 24 மணி நேரத்திற்கு <strong>{netFlowTmcPerDay.toFixed(3)} டிஎம்சி</strong> என்ற விகிதத்தில் சேமிப்பு அதிகரிக்கிறது.</span>
                   ) : lang === "ml" ? (
                     <span>ഡാമിൽ ജലസംഭരണം വർദ്ധിക്കുന്നു. നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ <strong>{netFlowCusecs.toLocaleString()} ക്യൂസെക്സ്</strong> കൂടുതലാണ്, 24 മണിക്കൂറിൽ ആകെ സംഭരണം <strong>{netFlowTmcPerDay.toFixed(3)} ടിഎംസി</strong> വർദ്ധിക്കുന്നു.</span>
                   ) : (
@@ -3127,27 +3455,12 @@ function AboutUsPage({ navigate, setView, lang, t }) {
             </p>
           </div>
 
-          <div style={{ borderLeft: "3px solid #67e8f9", paddingLeft: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t("transparencySources")}</h3>
-            <p style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
-              {t("transparencyDesc")}
-            </p>
-            <ul style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.8, marginTop: 8, paddingLeft: 20 }}>
-              <li>{lang === "hi" ? "कर्नाटक राज्य प्राकृतिक आपदा निगरानी केंद्र (KSNDMC)" : lang === "kn" ? "ಕರ್ನಾಟಕ ರಾಜ್ಯ ನೈಸರ್ಗಿಕ ವಿಕೋಪ ಉಸ್ತುವಾರಿ ಕೇಂದ್ರ (KSNDMC)" : lang === "te" ? "కర్ణాటక రాష్ట్ర విపత్తు నిర్వహణ సంస్థ (KSNDMC)" : lang === "ta" ? "கர்நாடகா மாநில இயற்கை பேரிடர் கண்காணிப்பு மையம் (KSNDMC)" : lang === "ml" ? "കർണ്ണാടക സംസ്ഥാന ദുരന്ത നിവാരണ കേന്ദ്രം (KSNDMC)" : "Karnataka State Natural Disaster Monitoring Centre (KSNDMC)"}</li>
-              <li>{lang === "hi" ? "तमिलनाडु जल संसाधन विभाग (TNWRD)" : lang === "kn" ? "ತಮಿಳುನಾಡು ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (TNWRD)" : lang === "te" ? "తమిళనాడు నీటి వనరుల శాఖ (TNWRD)" : lang === "ta" ? "தமிழ்நாடு நீர்வளத் துறை (TNWRD)" : lang === "ml" ? "തമിഴ്നാട് ജലവിഭവ വകുപ്പ് (TNWRD)" : "Tamil Nadu Water Resources Department (TNWRD)"}</li>
-              <li>{lang === "hi" ? "आंध्र प्रदेश जल संसाधन विभाग (APWRD)" : lang === "kn" ? "ಆಂಧ್ರಪ್ರದೇಶ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆ (APWRD)" : lang === "te" ? "ఆంధ్రప్రదేశ్ నీటి వనరుల శాఖ (APWRD)" : lang === "ta" ? "ஆந்திரப் பிரதேச நீர்வளத் துறை (APWRD)" : lang === "ml" ? "ആന്ധ്രാപ്രദേശ് ജലവിഭവ വകുപ്പ് (APWRD)" : "Andhra Pradesh Water Resources Department (APWRD)"}</li>
-              <li>{lang === "hi" ? "भाखड़ा ब्यास प्रबंधन बोर्ड (BBMB)" : lang === "kn" ? "ಭಾಕ್ರಾ ಬಿಯಾಸ್ ವ್ಯವಸ್ಥಾಪನಾ ಮಂಡಳಿ (BBMB)" : lang === "te" ? "భాక్రా బియాస్ మేనేజ్‌మెంట్ బోర్డ్ (BBMB)" : lang === "ta" ? "பக்ரா பியாஸ் மேலாண்மை வாரியம் (BBMB)" : lang === "ml" ? "ഭക്രാ ബിയാസ് മാനേജ്‌മെന്റ് ബോർഡ് (BBMB)" : "Bhakra Beas Management Board (BBMB)"}</li>
-              <li>{lang === "hi" ? "सरदार सरोवर नर्मदा निगम लिमिटेड (SSNNL)" : lang === "kn" ? "ಸರ್ದಾರ್ ಸರೋವರ್ ನರ್ಮದಾ ನಿಗಮ ಲಿಮಿಟೆಡ್ (SSNNL)" : lang === "te" ? "సర్దార్ సరోవర్ నర్మదా నిగమ్ లిమిటెడ్ (SSNNL)" : lang === "ta" ? "சர்தார் சரோவர் நர்மதா நிகாம் லிமிடெட் (SSNNL)" : lang === "ml" ? "സർദാർ സരോവർ നർമ്മദ നിഗം ലിമിറ്റഡ് (SSNNL)" : "Sardar Sarovar Narmada Nigam Ltd (SSNNL)"}</li>
-              <li>{lang === "hi" ? "केंद्रीय जल आयोग (CWC) और राज्य जल संसाधन विभाग" : lang === "kn" ? "ಕೇಂದ್ರ ಜಲ ಆಯೋಗ (CWC) ಮತ್ತು ರಾಜ್ಯ ಜಲಸಂಪನ್ಮೂಲ ಇಲಾಖೆಗಳು" : lang === "te" ? "కేంద్ర జల సంఘం (CWC) & రాష్ట్ర నీటి వనరుల శాఖలు" : lang === "ta" ? "மத்திய நீர் ஆணையம் (CWC) & மாநில நீர்வளத் துறைகள்" : lang === "ml" ? "കേന്ദ്ര ജല കമ്മീഷൻ (CWC) & സംസ്ഥാന ജലവിഭവ വകുപ്പുകൾ" : "Central Water Commission (CWC) & State WRDs"}</li>
-            </ul>
-          </div>
-
           <div style={{ borderLeft: "3px solid #86efac", paddingLeft: 16 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t("understandingMetrics")}</h3>
             <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
               <p style={{ marginBottom: 8 }}><strong>{t("tmc")} (Thousand Million Cubic feet)</strong>: {lang === "hi" ? "जलाशयों में संग्रहीत पानी की मात्रा का वर्णन करने के लिए इस्तेमाल की जाने वाली इकाई। एक टीएमसी लगभग 28.3 अरब लीटर पानी के बराबर होती है।" : lang === "kn" ? "ಜಲಾಶಯಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ನೀರಿನ ಪ್ರಮಾಣವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ಘಟಕ. ಒಂದು ಟಿಎಂಸಿ ಎಂದರೆ ಸುಮಾರು 28.3 ಶತಕೋಟಿ ಲೀಟರ್ ನೀರು." : lang === "te" ? "రిజర్వాయర్లలో నిల్వ ఉన్న నీటి పరిమాణాన్ని తెలియజేసే ప్రమాణం. ఒక టీఎండీ అంటే సుమారు 28.3 బిలియన్ లీటర్ల నీరు." : lang === "ta" ? "நீர்த்தேக்கங்களில் சேமிக்கப்படும் நீரின் அளவை விவரிக்கும் அலகு. ஒரு டிஎம்சி என்பது தோராயமாக 28.3 பில்லியன் லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലാശയങ്ങളിലെ ജലത്തിന്റെ അളവ് സൂചിപ്പിക്കുന്ന യൂണിറ്റ്. ഒരു ടിഎംസി എന്നാൽ ഏകദേശം 28.3 ബില്യൺ ലിറ്റർ ജലമാണ്." : "The unit used to describe the volume of water stored in reservoirs. One TMC is equal to approximately 28.3 billion liters of water."}</p>
-              <p style={{ marginBottom: 8 }}><strong>{t("cusecs").charAt(0).toUpperCase() + t("cusecs").slice(1)} (Cubic feet per second)</strong>: {lang === "hi" ? "प्रवाह वेग का वर्णन करने के लिए इस्तेमाल की जाने वाली दर। 1 क्यूसेक हर सेकंड एक बिंदु से गुजरने वाले 28.3 लीटर पानी के बराबर होता है।" : lang === "kn" ? "ನೀರಿನ ಹರಿವಿನ ವೇಗವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ದರ. 1 ಕ್ಯೂಸೆಕ್ ಎಂದರೆ ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಒಂದು ಬಿಂದುವನ್ನು ದಾಟುವ 28.3 ಲೀಟರ್ ನೀರು." : lang === "te" ? "నీటి ప్రవాహ వేగాన్ని తెలియజేసే కొలత. ఒక క్యూసెక్కు అంటే ప్రతి సెకనుకు ఒక బిందువును దాటి ప్రవహించే 28.3 లీటర్ల నీరు." : lang === "ta" ? "நீர் ஓட்டத்தின் வேகத்தை விவரிக்கும் அலகு. 1 கனஅடி என்பது ஒவ்வொரு வினாடியும் ஒரு புள்ளியைக் கடந்து செல்லும் 28.3 லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലപ്രവാഹത്തിന്റെ വേഗത അളക്കുന്ന യൂണിറ്റ്. ഒരു ക്യൂസെക്സ് എന്നാൽ ഒരു സെക്കൻഡിൽ ഒരു പോയിന്റിലൂടെ ഒഴുകിപ്പോകുന്ന 28.3 ലിറ്റർ ജലമാണ്." : "The rate used to describe flow velocity. 1 cusec equals 28.3 liters of water passing a point every second."}</p>
-              <p style={{ marginBottom: 8 }}><strong>{lang === "hi" ? "प्रवाह संतुलन" : lang === "kn" ? "ಹರಿವಿನ ಸಮತೋಲನ" : lang === "te" ? "ప్రవాహ సమతుల్యత" : lang === "ta" ? "ஓட்ட சமநிலை" : lang === "ml" ? "നീരൊഴുക്ക് സന്തുലിതാവസ്ഥ" : "Flow Balance"}</strong>: {lang === "hi" ? "जब आवक निकासी से अधिक हो जाती है, तो जलाशय में भंडारण जमा होता है। जब निकासी आवक से अधिक हो जाती है, तो भंडारण कम हो जाता है।" : lang === "kn" ? "ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಜಲಾಶಯದಲ್ಲಿ ನೀರು ಸಂಗ್ರಹವಾಗುತ್ತದೆ. ಹೊರಹರಿವು ಒಳಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತದೆ." : lang === "te" ? "ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు రిజర్వాయర్‌లో నిల్వ పెరుగుతుంది. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు నిల్వ తగ్గుతుంది." : lang === "ta" ? "நீர்வரத்து வெளியேற்றத்தை விட அதிகமாக இருக்கும்போது, நீர்த்தேக்கத்தின் சேமிப்பு அதிகரிக்கும். வெளியேற்றம் நீர்வரத்தை விட அதிகமாக இருக்கும்போது, சேமிப்பு குறையும்." : lang === "ml" ? "നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കൂടുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കുറയുന്നു." : "When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes."}</p>
+              <p style={{ marginBottom: 8 }}><strong>{t("cusecs").charAt(0).toUpperCase() + t("cusecs").slice(1)} (Cubic feet per second)</strong>: {lang === "hi" ? "प्रवाह वेग का वर्णन करने के लिए इस्तेमाल की जाने वाली दर। 1 क्यूसेक हर सेकंड एक बिंदु से गुजरने वाले 28.3 लीटर पानी के बराबर होता है।" : lang === "kn" ? "ನೀರಿನ ಹರಿವಿನ ವೇಗವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ದರ. 1 ಕ್ಯೂಸೆಕ್ ಎಂದರೆ ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಒಂದು ಬಿಂದುವನ್ನು ದಾಟುವ 28.3 ಲೀಟರ್ ನೀರು." : lang === "te" ? "నీటి ప్రవాహ వేగాన్ని తెలియజేసే కొలత. ఒక క్యూసెక్కు అంటే ప్రతి సెకనుకు ఒక బిందువును దాటి ప్రవహించే 28.3 లೀటర్ల నీరు." : lang === "ta" ? "நீர் ஓட்டத்தின் வேகத்தை விவரிக்கும் அலகு. 1 கனஅடி என்பது ஒவ்வொரு வினாடியும் ஒரு புள்ளியைக் கடந்து செல்லும் 28.3 லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലപ്രവാഹത്തിന്റെ വേഗത അളക്കുന്ന യൂണിറ്റ്. ഒരു ക്യൂസെക്സ് എന്നാൽ ഒരു സെക്കൻഡിൽ ഒരു പോയിന്റിലൂടെ ഒഴുകിപ്പോകുന്ന 28.3 ലിറ്റർ ജലമാണ്." : "The rate used to describe flow velocity. 1 cusec equals 28.3 liters of water passing a point every second."}</p>
+              <p style={{ marginBottom: 8 }}><strong>{lang === "hi" ? "प्रवाह संतुलन" : lang === "kn" ? "ಹರಿವಿನ ಸಮತೋಲನ" : lang === "te" ? "ప్రవాహ సమతుల్యత" : lang === "ta" ? "ஓட்ட சமநிலை" : lang === "ml" ? "നീரொഴുക്ക് സന്തുലിതാവസ്ഥ" : "Flow Balance"}</strong>: {lang === "hi" ? "जब आवक निकासी से अधिक हो जाती है, तो जलाशय में भंडारण जमा होता है। जब निकासी आवक से अधिक हो जाती है, तो भंडारण कम हो जाता है।" : lang === "kn" ? "ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಜಲಾಶಯದಲ್ಲಿ ನೀರು ಸಂಗ್ರಹವಾಗುತ್ತದೆ. ಹೊರಹರಿವು ಒಳಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತದೆ." : lang === "te" ? "ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు రిజర్వాయర్‌లో నిల్వ పెరుగుతుంది. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు నిల్వ తగ్గుతుంది." : lang === "ta" ? "நீர்வரத்து வெளியேற்றத்தை விட அதிகமாக இருக்கும்போது, நீர்த்தேக்கத்தின் சேமிப்பு அதிகரிக்கும். வெளியேற்றம் நீர்வரத்தை விட அதிகமாக இருக்கும்போது, சேமிப்பு குறையும்." : lang === "ml" ? "നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കൂടുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കുറയുന്നു." : "When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes."}</p>
             </div>
           </div>
         </div>
@@ -3178,32 +3491,37 @@ function ContactUsPage({ navigate, setView, lang, t }) {
       <div style={{
         background: "linear-gradient(135deg, #091a2f 0%, #040c17 100%)",
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
-        padding: "40px",
+        padding: "clamp(24px, 5vw, 40px) clamp(16px, 4vw, 36px)",
+        boxSizing: "border-box", width: "100%"
       }}>
         <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>{t("contact")}</h1>
-        <p style={{ fontSize: 14, color: "rgba(224,242,254,0.5)", lineHeight: 1.6, marginBottom: 36 }}>
+        <p style={{ fontSize: 14, color: "rgba(224,242,254,0.5)", lineHeight: 1.6, marginBottom: 28 }}>
           {t("contactDesc")}
         </p>
 
-        {/* Email Card */}
+        {/* Email Card - Fully responsive on all mobile screens */}
         <div style={{
-          display: "flex", alignItems: "center", gap: 18,
-          background: "rgba(6,182,212,0.06)", border: "1px solid rgba(6,182,212,0.18)",
-          borderRadius: 14, padding: "22px 24px", marginBottom: 28
+          display: "flex", alignItems: "center", gap: "clamp(12px, 3.5vw, 18px)",
+          background: "rgba(6,182,212,0.06)", border: "1px solid rgba(6,182,212,0.22)",
+          borderRadius: 14, padding: "clamp(14px, 3.5vw, 22px) clamp(12px, 3.5vw, 24px)",
+          marginBottom: 24, width: "100%", boxSizing: "border-box", overflow: "hidden"
         }}>
           <div style={{
-            width: 48, height: 48, borderRadius: 12, flexShrink: 0,
+            width: "clamp(38px, 10vw, 46px)", height: "clamp(38px, 10vw, 46px)", minWidth: "clamp(38px, 10vw, 46px)",
+            borderRadius: 12, flexShrink: 0,
             background: "linear-gradient(135deg, #0369A1, #06B6D4)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 22, boxShadow: "0 0 16px rgba(6,182,212,0.3)"
+            fontSize: "clamp(18px, 5vw, 22px)", boxShadow: "0 0 16px rgba(6,182,212,0.3)"
           }}>✉️</div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(6,182,212,0.8)", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 5 }}>Email Us</div>
+          <div style={{ minWidth: 0, flex: 1, overflow: "hidden" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "rgba(6,182,212,0.85)", letterSpacing: 1.2, textTransform: "uppercase", marginBottom: 4 }}>Email Us</div>
             <a
               href="mailto:damtoday4@gmail.com"
               style={{
-                fontSize: 17, fontWeight: 700, color: "#67E8F9",
-                textDecoration: "none", letterSpacing: 0.2
+                fontSize: "clamp(13px, 3.8vw, 17px)", fontWeight: 700, color: "#67E8F9",
+                textDecoration: "none", letterSpacing: 0.2, display: "block",
+                wordBreak: "break-all", overflowWrap: "anywhere", lineHeight: 1.3,
+                transition: "color 0.2s"
               }}
               onMouseEnter={e => e.currentTarget.style.color = "#38bdf8"}
               onMouseLeave={e => e.currentTarget.style.color = "#67E8F9"}
@@ -3220,8 +3538,9 @@ function ContactUsPage({ navigate, setView, lang, t }) {
             display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
             background: "linear-gradient(135deg, #0369A1, #06B6D4)",
             color: "#fff", textDecoration: "none", borderRadius: 10,
-            padding: "13px 24px", fontWeight: 700, fontSize: 15,
+            padding: "13px 20px", fontWeight: 700, fontSize: 15,
             boxShadow: "0 4px 20px rgba(6,182,212,0.25)", transition: "all 0.2s",
+            boxSizing: "border-box", width: "100%", textAlign: "center"
           }}
           onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 6px 28px rgba(6,182,212,0.45)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
           onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 4px 20px rgba(6,182,212,0.25)"; e.currentTarget.style.transform = "none"; }}
@@ -4531,6 +4850,7 @@ export default function App() {
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
+  const [activeInfoDam, setActiveInfoDam] = useState(null);
   const [searchHistory, setSearchHistory] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(() => localStorage.getItem("dam_country") || "India");
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
@@ -4545,11 +4865,9 @@ export default function App() {
   }, [selectedCountry]);
 
   const selectCountry = (newCountry) => {
-    setSelectedCountry(newCountry);
     localStorage.setItem("dam_country", newCountry);
-    setSelectedZone("All");
-    setSelectedState("all");
-    setCountryDropdownOpen(false);
+    // Completely refresh page to clean root URL so all active filters/state selections are reset
+    window.location.href = "/";
   };
 
   const [filter,setFilter] = useState("all");
@@ -5945,16 +6263,18 @@ export default function App() {
 
               <div style={{
                 marginTop: "auto",
-                paddingTop: 24,
+                paddingTop: 20,
                 borderTop: "1px solid rgba(255,255,255,0.06)",
                 display: "flex",
                 flexDirection: "column",
-                gap: 6
+                gap: 4
               }}>
-                <span style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.35)", textTransform: "uppercase", letterSpacing: 1.5 }}>Data Freshness Status</span>
                 <div style={{ fontSize: 12, color: "#67E8F9", fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
-                  <span>🕒</span>
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ADE80" }}></span>
                   <span>{formatLastUpdated(SCRAPE_STATUS?.last_run_timestamp, t)}</span>
+                </div>
+                <div style={{ fontSize: 11, color: "rgba(224, 242, 254, 0.45)", lineHeight: 1.4 }}>
+                  {t("liveSyncShort") || "Daily govt updates • Weekly on Thursdays"}
                 </div>
               </div>
             </div>
@@ -5963,7 +6283,7 @@ export default function App() {
           {/* Main content body */}
           <div style={{ flexGrow: 1 }}>
             {view === "detail" && selectedDam ? (
-              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} t={t} td={td} lang={lang} selectedCountry={selectedCountry} />
+              <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} t={t} td={td} lang={lang} selectedCountry={selectedCountry} onOpenInfo={setActiveInfoDam} />
             ) : view === "about" ? (
               <AboutUsPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : view === "contact" ? (

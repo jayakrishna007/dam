@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "np_1",
     "name": "Kulekhani Dam (Indra Sarobar)",
     "river": "Kulekhani (Bagmati)",
     "state": "Makwanpur",
@@ -15,10 +15,14 @@
     "outflow": 3850,
     "unit": "cfs",
     "generation_mw": 92,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Kulekhani_Dam_Nepal.jpg/1280px-Kulekhani_Dam_Nepal.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Kulekhani_Dam_Nepal.jpg/1280px-Kulekhani_Dam_Nepal.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 2,
+    "id": "np_2",
     "name": "Upper Tamakoshi Dam",
     "river": "Tamakoshi (Koshi)",
     "state": "Dolakha",
@@ -33,10 +37,14 @@
     "outflow": 8500,
     "unit": "cfs",
     "generation_mw": 456,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Upper_Tamakoshi_Hydroelectric_Project.jpg/1280px-Upper_Tamakoshi_Hydroelectric_Project.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Upper_Tamakoshi_Hydroelectric_Project.jpg/1280px-Upper_Tamakoshi_Hydroelectric_Project.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 3,
+    "id": "np_3",
     "name": "Kali Gandaki A Dam (Mirmi)",
     "river": "Kali Gandaki",
     "state": "Syangja",
@@ -51,10 +59,14 @@
     "outflow": 12100,
     "unit": "cfs",
     "generation_mw": 144,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Kaligandaki_Dam_Mirmi.jpg/1280px-Kaligandaki_Dam_Mirmi.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Kaligandaki_Dam_Mirmi.jpg/1280px-Kaligandaki_Dam_Mirmi.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 4,
+    "id": "np_4",
     "name": "Middle Marsyangdi Dam",
     "river": "Marsyangdi",
     "state": "Lamjung",
@@ -69,10 +81,14 @@
     "outflow": 6500,
     "unit": "cfs",
     "generation_mw": 70,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Middle_Marsyangdi_Dam.jpg/1280px-Middle_Marsyangdi_Dam.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Middle_Marsyangdi_Dam.jpg/1280px-Middle_Marsyangdi_Dam.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 5,
+    "id": "np_5",
     "name": "Marsyangdi Dam (Anbu Khaireni)",
     "river": "Marsyangdi",
     "state": "Tanahun",
@@ -87,10 +103,14 @@
     "outflow": 7000,
     "unit": "cfs",
     "generation_mw": 69,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Marsyangdi_Hydroelectric_Station.jpg/1280px-Marsyangdi_Hydroelectric_Station.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Marsyangdi_Hydroelectric_Station.jpg/1280px-Marsyangdi_Hydroelectric_Station.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 6,
+    "id": "np_6",
     "name": "Koshi Barrage",
     "river": "Koshi",
     "state": "Saptari",
@@ -105,10 +125,14 @@
     "outflow": 152000,
     "unit": "cfs",
     "generation_mw": 0,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Koshi_Barrage_Nepal.jpg/1280px-Koshi_Barrage_Nepal.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Koshi_Barrage_Nepal.jpg/1280px-Koshi_Barrage_Nepal.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 7,
+    "id": "np_7",
     "name": "Gandak Barrage (Valmikinagar)",
     "river": "Narayani (Gandaki)",
     "state": "Nawalparasi",
@@ -123,10 +147,14 @@
     "outflow": 96500,
     "unit": "cfs",
     "generation_mw": 15,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Gandak_Barrage_Nepal.jpg/1280px-Gandak_Barrage_Nepal.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Gandak_Barrage_Nepal.jpg/1280px-Gandak_Barrage_Nepal.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 8,
+    "id": "np_8",
     "name": "Trishuli Hydroelectric Dam",
     "river": "Trishuli",
     "state": "Nuwakot",
@@ -141,10 +169,14 @@
     "outflow": 5400,
     "unit": "cfs",
     "generation_mw": 24,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Trishuli_River_Nepal.jpg/1280px-Trishuli_River_Nepal.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Trishuli_River_Nepal.jpg/1280px-Trishuli_River_Nepal.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 9,
+    "id": "np_9",
     "name": "Chilime Dam",
     "river": "Chilime (Trishuli)",
     "state": "Rasuwa",
@@ -159,10 +191,14 @@
     "outflow": 2750,
     "unit": "cfs",
     "generation_mw": 22,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Chilime_Hydropower_Plant.jpg/1280px-Chilime_Hydropower_Plant.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Chilime_Hydropower_Plant.jpg/1280px-Chilime_Hydropower_Plant.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 10,
+    "id": "np_10",
     "name": "Chameliya Dam",
     "river": "Chameliya (Mahakali)",
     "state": "Darchula",
@@ -177,6 +213,10 @@
     "outflow": 3300,
     "unit": "cfs",
     "generation_mw": 30,
-    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Chameliya_Dam_Darchula.jpg/1280px-Chameliya_Dam_Darchula.jpg"
+    "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Chameliya_Dam_Darchula.jpg/1280px-Chameliya_Dam_Darchula.jpg",
+    "data_source": "DHM Nepal / NEA Hydrology",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   }
 ]

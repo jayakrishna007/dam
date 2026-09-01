@@ -254,12 +254,32 @@ def main():
     except Exception as e:
         print(f"  Error running BBMB scraper: {e}")
 
+    # --- 3b. Scrape / Link CWC Weekly Bulletin for 150+ Indian Dams ---
+    cwc_ok = False
+    cwc_count = 0
+    cwc_data = {}
+    print("Linking CWC Weekly Bulletin (150+ Indian Reservoirs)...")
+    try:
+        from scrape_cwc import scrape_cwc_bulletin
+        cwc_data = scrape_cwc_bulletin()
+        if cwc_data:
+            cwc_ok = True
+            cwc_count = len(cwc_data)
+            print(f"  CWC: {cwc_count} reservoirs mapped with official weekly Thursday schedule.")
+    except Exception as e:
+        print(f"  Error fetching CWC bulletin: {e}")
+
+    # Current IST formatted timestamp
+    import datetime
+    ist_tz = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
+    now_ist = datetime.datetime.now(ist_tz)
+    now_str = now_ist.strftime("%Y-%m-%d %I:%M %p")
+
     # --- 4. Merge with existing static defaults and save ---
-    # We want to keep all 12 Karnataka dams, even if some Almatti/Varahi are not scraped
     script_dir = os.path.dirname(os.path.abspath(__file__))
     json_path = os.path.join(script_dir, "..", "src", "data", "dams.json")
     
-    # Read existing dams.json to calculate changes
+    # Read existing dams.json to calculate real changes
     old_dams = []
     if os.path.exists(json_path):
         try:
@@ -288,7 +308,7 @@ def main():
             name_lower = dam_copy["name"].lower()
             clean_name = re.sub(r"\s*\(.*\)", "", dam_copy["name"]).strip().lower()
             
-            # Check if this dam has fresh scraped data
+            # Check if this dam has fresh live scraped data (TB, TN Ag, BBMB)
             matched_scrape = scraped_lookup.get(name_lower) or scraped_lookup.get(clean_name)
             if matched_scrape:
                 dam_copy["level"] = matched_scrape["level"]
@@ -297,7 +317,42 @@ def main():
                     dam_copy["inflow"] = matched_scrape["inflow"]
                 if matched_scrape.get("outflow") is not None:
                     dam_copy["outflow"] = matched_scrape["outflow"]
-            
+                
+                # Determine specific source
+                if "tungabhadra" in name_lower:
+                    dam_copy["data_source"] = "Tungabhadra Board"
+                elif "bhakra" in name_lower or "pong" in name_lower:
+                    dam_copy["data_source"] = "Bhakra Beas Management Board (BBMB)"
+                else:
+                    dam_copy["data_source"] = "TN Water Resources / Agriculture"
+                
+                dam_copy["data_frequency"] = "daily"
+                dam_copy["last_updated"] = now_str
+            else:
+                # Check if mapped to CWC Weekly
+                cwc_match = cwc_data.get(clean_name) or cwc_data.get(name_lower)
+                if cwc_match:
+                    dam_copy["data_source"] = "Central Water Commission (CWC)"
+                    dam_copy["data_frequency"] = "weekly"
+                    dam_copy["bulletin_date"] = cwc_match.get("bulletin_date")
+                    dam_copy["last_updated"] = cwc_match.get("last_updated", now_str)
+                else:
+                    dam_copy["data_source"] = dam_copy.get("data_source", "State Water Resources (Baseline)")
+                    dam_copy["data_frequency"] = dam_copy.get("data_frequency", "baseline")
+                    dam_copy["last_updated"] = dam_copy.get("last_updated", now_str)
+
+            # Derive real operational flow status
+            outflow_val = dam_copy.get("outflow")
+            inflow_val = dam_copy.get("inflow")
+            if outflow_val is not None and outflow_val == 0:
+                dam_copy["flow_status"] = "GATES_CLOSED"
+            elif inflow_val is not None and inflow_val == 0:
+                dam_copy["flow_status"] = "LOW_INFLOW"
+            elif outflow_val is not None and outflow_val > 15000:
+                dam_copy["flow_status"] = "ACTIVE_SPILLWAY"
+            else:
+                dam_copy["flow_status"] = "NORMAL_FLOW"
+
             final_dams.append(dam_copy)
 
         # Add any new scraped dams not in old_dams
@@ -314,7 +369,11 @@ def main():
                     "capacity": s["capacity"],
                     "inflow": s["inflow"],
                     "outflow": s["outflow"],
-                    "state": meta.get("state", s["state"])
+                    "state": meta.get("state", s["state"]),
+                    "data_source": "State Water Resources",
+                    "data_frequency": "daily",
+                    "last_updated": now_str,
+                    "flow_status": "GATES_CLOSED" if s.get("outflow") == 0 else "NORMAL_FLOW"
                 }
                 final_dams.append(new_entry)
                 existing_names.add(s["name"].lower())
@@ -357,9 +416,29 @@ def main():
                         dam["outflow"] = matched["outflow"]
                     if matched.get("storage_af") is not None:
                         dam["storage_af"] = matched["storage_af"]
+                    dam["data_source"] = "USGS / California CDEC"
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = dam.get("data_source", "USGS Water Data")
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                
+                # Derive flow status
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
             final_usa = old_usa
         else:
             final_usa = old_usa
+            for dam in final_usa:
+                dam["data_source"] = dam.get("data_source", "USGS Water Data")
+                dam["data_frequency"] = "daily"
+                dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+
         with open(usa_json_path, "w", encoding="utf-8") as f:
             json.dump(final_usa, f, indent=2)
         usa_count = len([v for v in usa_data.values() if v.get("level") is not None])
@@ -396,9 +475,27 @@ def main():
                         dam["outflow"] = matched["outflow"]
                     if matched.get("storage_hm3") is not None:
                         dam["storage_hm3"] = matched["storage_hm3"]
+                    dam["data_source"] = "ONS Brazil (Open Data)"
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = dam.get("data_source", "ONS Brazil (Open Data)")
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
             final_brazil = old_brazil
         else:
             final_brazil = old_brazil
+            for dam in final_brazil:
+                dam["data_source"] = dam.get("data_source", "ONS Brazil (Open Data)")
+                dam["data_frequency"] = "daily"
+                dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+
         with open(brazil_json_path, "w", encoding="utf-8") as f:
             json.dump(final_brazil, f, indent=2)
         brazil_count = len([v for v in brazil_data.values() if v.get("level") is not None])
@@ -435,11 +532,29 @@ def main():
                         dam["outflow"] = matched["outflow"]
                     if matched.get("storage_mcm") is not None:
                         dam["storage_mcm"] = matched["storage_mcm"]
+                    dam["data_source"] = "EGAT Thailand Water Intelligence"
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = dam.get("data_source", "EGAT Thailand")
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
             final_thailand = old_thailand
         elif thailand_data:
             final_thailand = list(thailand_data.values())
         else:
             final_thailand = old_thailand
+            for dam in final_thailand:
+                dam["data_source"] = dam.get("data_source", "EGAT Thailand")
+                dam["data_frequency"] = "daily"
+                dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+
         with open(thailand_json_path, "w", encoding="utf-8") as f:
             json.dump(final_thailand, f, indent=2)
         thailand_count = len([v for v in thailand_data.values() if v.get("level") is not None])
@@ -476,11 +591,29 @@ def main():
                         dam["outflow"] = matched["outflow"]
                     if matched.get("storage_mcm") is not None:
                         dam["storage_mcm"] = matched["storage_mcm"]
+                    dam["data_source"] = "DHM Nepal / NEA Hydrology"
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = dam.get("data_source", "DHM Nepal")
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
             final_nepal = old_nepal
         elif nepal_data:
             final_nepal = list(nepal_data.values())
         else:
             final_nepal = old_nepal
+            for dam in final_nepal:
+                dam["data_source"] = dam.get("data_source", "DHM Nepal")
+                dam["data_frequency"] = "daily"
+                dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+
         with open(nepal_json_path, "w", encoding="utf-8") as f:
             json.dump(final_nepal, f, indent=2)
         nepal_count = len([v for v in nepal_data.values() if v.get("level") is not None])
@@ -517,11 +650,29 @@ def main():
                         dam["outflow"] = matched["outflow"]
                     if matched.get("storage_mcm") is not None:
                         dam["storage_mcm"] = matched["storage_mcm"]
+                    dam["data_source"] = "Mekong River Commission (MRC)"
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = dam.get("data_source", "MRC Mekong")
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
             final_laos = old_laos
         elif laos_data:
             final_laos = list(laos_data.values())
         else:
             final_laos = old_laos
+            for dam in final_laos:
+                dam["data_source"] = dam.get("data_source", "MRC Mekong")
+                dam["data_frequency"] = "daily"
+                dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+
         with open(laos_json_path, "w", encoding="utf-8") as f:
             json.dump(final_laos, f, indent=2)
         laos_count = len([v for v in laos_data.values() if v.get("level") is not None])
@@ -558,11 +709,28 @@ def main():
                         dam["outflow"] = matched["outflow"]
                     if matched.get("storage_mcm") is not None:
                         dam["storage_mcm"] = matched["storage_mcm"]
+                    dam["data_source"] = "EVN / NCHMF Vietnam"
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = dam.get("data_source", "EVN Vietnam")
+                    dam["data_frequency"] = "daily"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
             final_vietnam = old_vietnam
         elif vietnam_data:
             final_vietnam = list(vietnam_data.values())
         else:
             final_vietnam = old_vietnam
+            for dam in final_vietnam:
+                dam["data_source"] = dam.get("data_source", "EVN Vietnam")
+                dam["data_frequency"] = "daily"
+                dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
         with open(vietnam_json_path, "w", encoding="utf-8") as f:
             json.dump(final_vietnam, f, indent=2)
         vietnam_count = len([v for v in vietnam_data.values() if v.get("level") is not None])

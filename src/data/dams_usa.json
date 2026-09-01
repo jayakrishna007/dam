@@ -1,6 +1,6 @@
 [
   {
-    "id": "us_001",
+    "id": "usa_us_001",
     "name": "Shasta Lake",
     "river": "Sacramento",
     "state": "California",
@@ -13,10 +13,14 @@
     "inflow": 3078,
     "outflow": 7321,
     "unit": "cfs",
-    "image": "/images/dams/shasta_dam.jpg"
+    "image": "/images/dams/shasta_dam.jpg",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_002",
+    "id": "usa_us_002",
     "name": "Lake Oroville",
     "river": "Feather",
     "state": "California",
@@ -29,10 +33,14 @@
     "inflow": 956,
     "outflow": 10113,
     "unit": "cfs",
-    "image": "/images/dams/oroville_dam.jpg"
+    "image": "/images/dams/oroville_dam.jpg",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_003",
+    "id": "usa_us_003",
     "name": "Trinity Lake",
     "river": "Trinity",
     "state": "California",
@@ -44,10 +52,14 @@
     "storage_af": 1772827,
     "inflow": -135,
     "outflow": 1716,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_004",
+    "id": "usa_us_004",
     "name": "Folsom Lake",
     "river": "American",
     "state": "California",
@@ -59,10 +71,14 @@
     "storage_af": 463189,
     "inflow": 1636,
     "outflow": 2905,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_005",
+    "id": "usa_us_005",
     "name": "New Melones Lake",
     "river": "Stanislaus",
     "state": "California",
@@ -74,10 +90,14 @@
     "storage_af": 1562009,
     "inflow": 544,
     "outflow": 1079,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_006",
+    "id": "usa_us_006",
     "name": "San Luis Reservoir",
     "river": "San Luis Creek",
     "state": "California",
@@ -89,10 +109,14 @@
     "storage_af": 1287386,
     "inflow": null,
     "outflow": null,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_007",
+    "id": "usa_us_007",
     "name": "Don Pedro Reservoir",
     "river": "Tuolumne",
     "state": "California",
@@ -104,10 +128,14 @@
     "storage_af": 7717,
     "inflow": 500,
     "outflow": 900,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_008",
+    "id": "usa_us_008",
     "name": "Hoover Dam (Lake Mead)",
     "river": "Colorado",
     "state": "Nevada",
@@ -120,10 +148,14 @@
     "inflow": 5200,
     "outflow": 8700,
     "unit": "cfs",
-    "image": "/images/dams/hoover_dam.jpg"
+    "image": "/images/dams/hoover_dam.jpg",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_009",
+    "id": "usa_us_009",
     "name": "Glen Canyon Dam (Lake Powell)",
     "river": "Colorado",
     "state": "Utah",
@@ -136,10 +168,14 @@
     "inflow": 4800,
     "outflow": 7200,
     "unit": "cfs",
-    "image": "/images/dams/glen_canyon_dam.jpg"
+    "image": "/images/dams/glen_canyon_dam.jpg",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_010",
+    "id": "usa_us_010",
     "name": "Grand Coulee Dam",
     "river": "Columbia",
     "state": "Washington",
@@ -152,10 +188,14 @@
     "inflow": 85000,
     "outflow": 75000,
     "unit": "cfs",
-    "image": "/images/dams/grand_coulee_dam.jpg"
+    "image": "/images/dams/grand_coulee_dam.jpg",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_011",
+    "id": "usa_us_011",
     "name": "Bonneville Dam",
     "river": "Columbia",
     "state": "Oregon",
@@ -167,10 +207,14 @@
     "storage_af": 494040,
     "inflow": 120000,
     "outflow": 115000,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS Water Data",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_012",
+    "id": "usa_us_012",
     "name": "Fort Peck Dam",
     "river": "Missouri",
     "state": "Montana",
@@ -183,10 +227,14 @@
     "inflow": 12000,
     "outflow": 11000,
     "unit": "cfs",
-    "image": "/images/dams/fort_peck_dam.jpg"
+    "image": "/images/dams/fort_peck_dam.jpg",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_013",
+    "id": "usa_us_013",
     "name": "Garrison Dam (Lake Sakakawea)",
     "river": "Missouri",
     "state": "North Dakota",
@@ -199,10 +247,14 @@
     "inflow": 28000,
     "outflow": 26000,
     "unit": "cfs",
-    "image": "/images/dams/garrison_dam.jpg"
+    "image": "/images/dams/garrison_dam.jpg",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_014",
+    "id": "usa_us_014",
     "name": "Oahe Dam (Lake Oahe)",
     "river": "Missouri",
     "state": "South Dakota",
@@ -214,10 +266,14 @@
     "storage_af": 12493980,
     "inflow": 31000,
     "outflow": 28000,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_015",
+    "id": "usa_us_015",
     "name": "Kentucky Dam",
     "river": "Tennessee",
     "state": "Kentucky",
@@ -229,10 +285,14 @@
     "storage_af": 5025780,
     "inflow": 42000,
     "outflow": 38000,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_016",
+    "id": "usa_us_016",
     "name": "Norris Dam",
     "river": "Clinch",
     "state": "Tennessee",
@@ -244,10 +304,14 @@
     "storage_af": 1719890,
     "inflow": 2800,
     "outflow": 3200,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_017",
+    "id": "usa_us_017",
     "name": "Barkley Dam",
     "river": "Cumberland",
     "state": "Kentucky",
@@ -259,10 +323,14 @@
     "storage_af": 3127020,
     "inflow": 18000,
     "outflow": 16000,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_018",
+    "id": "usa_us_018",
     "name": "Wolf Creek Dam (Lake Cumberland)",
     "river": "Cumberland",
     "state": "Kentucky",
@@ -274,10 +342,14 @@
     "storage_af": 4323190,
     "inflow": 7500,
     "outflow": 6800,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS / California CDEC",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_019",
+    "id": "usa_us_019",
     "name": "Lake Sakakawea",
     "river": "Missouri",
     "state": "North Dakota",
@@ -289,10 +361,14 @@
     "storage_af": 14292600,
     "inflow": 26000,
     "outflow": 24000,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS Water Data",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": "us_020",
+    "id": "usa_us_020",
     "name": "Lake Mead",
     "river": "Colorado",
     "state": "Arizona",
@@ -304,6 +380,10 @@
     "storage_af": 9664400,
     "inflow": 5100,
     "outflow": 8600,
-    "unit": "cfs"
+    "unit": "cfs",
+    "data_source": "USGS Water Data",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   }
 ]

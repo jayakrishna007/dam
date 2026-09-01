@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "la_1",
     "name": "Xayaburi Dam",
     "river": "Mekong Mainstream",
     "state": "Xayabury",
@@ -13,10 +13,14 @@
     "inflow": 142000,
     "outflow": 139500,
     "unit": "cfs",
-    "image": "/images/dams/xayaburi.jpg"
+    "image": "/images/dams/xayaburi.jpg",
+    "data_source": "Mekong River Commission (MRC)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 2,
+    "id": "la_2",
     "name": "Don Sahong Dam",
     "river": "Mekong Mainstream",
     "state": "Champasak",
@@ -29,10 +33,14 @@
     "inflow": 88000,
     "outflow": 86500,
     "unit": "cfs",
-    "image": "/images/dams/donsahong.jpg"
+    "image": "/images/dams/donsahong.jpg",
+    "data_source": "Mekong River Commission (MRC)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 3,
+    "id": "la_3",
     "name": "Nam Ngum 1 Dam",
     "river": "Nam Ngum (Mekong)",
     "state": "Vientiane",
@@ -45,10 +53,14 @@
     "inflow": 12500,
     "outflow": 8200,
     "unit": "cfs",
-    "image": "/images/dams/namngum1.jpg"
+    "image": "/images/dams/namngum1.jpg",
+    "data_source": "Mekong River Commission (MRC)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 4,
+    "id": "la_4",
     "name": "Nam Theun 2 Dam",
     "river": "Nam Theun (Mekong)",
     "state": "Khammouane",
@@ -61,10 +73,14 @@
     "inflow": 18200,
     "outflow": 14500,
     "unit": "cfs",
-    "image": "/images/dams/namtheun2.jpg"
+    "image": "/images/dams/namtheun2.jpg",
+    "data_source": "Mekong River Commission (MRC)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 5,
+    "id": "la_5",
     "name": "Theun-Hinboun Dam",
     "river": "Nam Theun (Mekong)",
     "state": "Bolikhamxay",
@@ -77,10 +93,14 @@
     "inflow": 9800,
     "outflow": 7500,
     "unit": "cfs",
-    "image": "/images/dams/theunhinboun.jpg"
+    "image": "/images/dams/theunhinboun.jpg",
+    "data_source": "Mekong River Commission (MRC)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 6,
+    "id": "la_6",
     "name": "Nam Ou 2 Dam",
     "river": "Nam Ou (Mekong)",
     "state": "Luang Prabang",
@@ -93,10 +113,14 @@
     "inflow": 6500,
     "outflow": 6100,
     "unit": "cfs",
-    "image": "/images/dams/namou2.jpg"
+    "image": "/images/dams/namou2.jpg",
+    "data_source": "Mekong River Commission (MRC)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 7,
+    "id": "la_7",
     "name": "Nam Ou 5 Dam",
     "river": "Nam Ou (Mekong)",
     "state": "Phongsaly",
@@ -109,6 +133,10 @@
     "inflow": 8200,
     "outflow": 7900,
     "unit": "cfs",
-    "image": "/images/dams/namou5.jpg"
+    "image": "/images/dams/namou5.jpg",
+    "data_source": "Mekong River Commission (MRC)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   }
 ]

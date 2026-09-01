@@ -9,7 +9,11 @@
     "inflow": 5426,
     "outflow": 7170,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 2,
@@ -21,7 +25,11 @@
     "inflow": 4480,
     "outflow": 8260,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 3,
@@ -33,7 +41,11 @@
     "inflow": 3179,
     "outflow": 4125,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 4,
@@ -45,7 +57,11 @@
     "inflow": 2727,
     "outflow": 7275,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 5,
@@ -57,7 +73,11 @@
     "inflow": 5377,
     "outflow": 8882,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "Tungabhadra Board",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 6,
@@ -69,7 +89,11 @@
     "inflow": 10857,
     "outflow": 2003,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 7,
@@ -81,7 +105,11 @@
     "inflow": 1352,
     "outflow": 1883,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 8,
@@ -93,7 +121,11 @@
     "inflow": 111,
     "outflow": 1000,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 9,
@@ -105,7 +137,11 @@
     "inflow": 584,
     "outflow": 800,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 10,
@@ -117,7 +153,11 @@
     "inflow": 200,
     "outflow": 86,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 11,
@@ -129,7 +169,11 @@
     "inflow": 375,
     "outflow": 1105,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 12,
@@ -141,7 +185,11 @@
     "inflow": 12,
     "outflow": 100,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 13,
@@ -153,7 +201,11 @@
     "inflow": 380,
     "outflow": 558,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 14,
@@ -165,7 +217,11 @@
     "inflow": 32,
     "outflow": 350,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 15,
@@ -177,7 +233,11 @@
     "inflow": 162,
     "outflow": 162,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 16,
@@ -189,7 +249,11 @@
     "inflow": 1250,
     "outflow": 980,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 17,
@@ -201,7 +265,11 @@
     "inflow": 966,
     "outflow": 1583,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 18,
@@ -213,7 +281,11 @@
     "inflow": 1342,
     "outflow": 31,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 19,
@@ -225,7 +297,11 @@
     "inflow": 408,
     "outflow": 198,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 20,
@@ -237,7 +313,11 @@
     "inflow": 320,
     "outflow": 21,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "TN Water Resources / Agriculture",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 21,
@@ -249,7 +329,11 @@
     "inflow": 850,
     "outflow": 620,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 22,
@@ -261,7 +345,11 @@
     "inflow": 1450,
     "outflow": 980,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 23,
@@ -273,7 +361,12 @@
     "inflow": 3800,
     "outflow": 2900,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 24,
@@ -285,7 +378,12 @@
     "inflow": 5200,
     "outflow": 3850,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 25,
@@ -297,7 +395,12 @@
     "inflow": 2100,
     "outflow": 1650,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 26,
@@ -309,7 +412,11 @@
     "inflow": 650,
     "outflow": 420,
     "state": "Andhra Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 27,
@@ -321,7 +428,11 @@
     "inflow": 1800,
     "outflow": 1200,
     "state": "Andhra Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 28,
@@ -333,7 +444,11 @@
     "inflow": 950,
     "outflow": 700,
     "state": "Andhra Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 29,
@@ -345,7 +460,11 @@
     "inflow": 2400,
     "outflow": 1800,
     "state": "Andhra Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 30,
@@ -357,7 +476,11 @@
     "inflow": 3200,
     "outflow": 2100,
     "state": "Andhra Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 31,
@@ -369,7 +492,11 @@
     "inflow": 1100,
     "outflow": 850,
     "state": "Telangana",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 32,
@@ -381,7 +508,11 @@
     "inflow": 580,
     "outflow": 350,
     "state": "Telangana",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 33,
@@ -393,7 +524,11 @@
     "inflow": 720,
     "outflow": 480,
     "state": "Telangana",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 34,
@@ -405,7 +540,11 @@
     "inflow": 14800,
     "outflow": 9600,
     "state": "Telangana",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 35,
@@ -417,7 +556,11 @@
     "inflow": 460,
     "outflow": 280,
     "state": "Telangana",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 36,
@@ -429,7 +572,11 @@
     "inflow": 35859,
     "outflow": 26308,
     "state": "Himachal Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Bhakra Beas Management Board (BBMB)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 37,
@@ -441,7 +588,11 @@
     "inflow": 42772,
     "outflow": 16594,
     "state": "Himachal Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Bhakra Beas Management Board (BBMB)",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 38,
@@ -453,7 +604,12 @@
     "inflow": 15200,
     "outflow": 10400,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 39,
@@ -465,7 +621,12 @@
     "inflow": 22000,
     "outflow": 9800,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 40,
@@ -477,7 +638,12 @@
     "inflow": 6800,
     "outflow": 3200,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 41,
@@ -489,7 +655,12 @@
     "inflow": 11800,
     "outflow": 14200,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 42,
@@ -501,7 +672,12 @@
     "inflow": 3100,
     "outflow": 800,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 43,
@@ -513,7 +689,12 @@
     "inflow": 4800,
     "outflow": 1200,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 44,
@@ -525,7 +706,11 @@
     "inflow": 3900,
     "outflow": 2100,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 45,
@@ -537,7 +722,12 @@
     "inflow": 1200,
     "outflow": 1800,
     "state": "Gujarat",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 46,
@@ -549,7 +739,11 @@
     "inflow": 2500,
     "outflow": 3200,
     "state": "Madhya Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 47,
@@ -561,7 +755,12 @@
     "inflow": 4100,
     "outflow": 5000,
     "state": "Odisha",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 48,
@@ -573,7 +772,12 @@
     "inflow": 1500,
     "outflow": 2000,
     "state": "Uttar Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 49,
@@ -585,7 +789,12 @@
     "inflow": 800,
     "outflow": 1200,
     "state": "Jharkhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 50,
@@ -597,7 +806,12 @@
     "inflow": 14200,
     "outflow": 12500,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 51,
@@ -609,7 +823,12 @@
     "inflow": 9800,
     "outflow": 6400,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 52,
@@ -621,7 +840,12 @@
     "inflow": 18500,
     "outflow": 14200,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 53,
@@ -633,7 +857,12 @@
     "inflow": 1200,
     "outflow": 900,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 54,
@@ -645,7 +874,12 @@
     "inflow": 4500,
     "outflow": 3800,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 55,
@@ -657,7 +891,12 @@
     "inflow": 28400,
     "outflow": 22100,
     "state": "Andhra Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 56,
@@ -669,7 +908,12 @@
     "inflow": 11200,
     "outflow": 8900,
     "state": "Telangana",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 57,
@@ -681,7 +925,12 @@
     "inflow": 5400,
     "outflow": 4200,
     "state": "Andhra Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 58,
@@ -693,7 +942,12 @@
     "inflow": 3200,
     "outflow": 2800,
     "state": "Andhra Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 59,
@@ -705,7 +959,12 @@
     "inflow": 2100,
     "outflow": 1600,
     "state": "Telangana",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 60,
@@ -717,7 +976,11 @@
     "inflow": 19500,
     "outflow": 16200,
     "state": "Gujarat",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 61,
@@ -729,7 +992,12 @@
     "inflow": 4200,
     "outflow": 3500,
     "state": "Gujarat",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 62,
@@ -741,7 +1009,12 @@
     "inflow": 2800,
     "outflow": 2100,
     "state": "Gujarat",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 63,
@@ -753,7 +1026,11 @@
     "inflow": 18200,
     "outflow": 14500,
     "state": "Madhya Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 64,
@@ -765,7 +1042,12 @@
     "inflow": 12400,
     "outflow": 9800,
     "state": "Madhya Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 65,
@@ -777,7 +1059,12 @@
     "inflow": 8900,
     "outflow": 7200,
     "state": "Madhya Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 66,
@@ -789,7 +1076,12 @@
     "inflow": 4500,
     "outflow": 5100,
     "state": "Madhya Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 67,
@@ -801,7 +1093,11 @@
     "inflow": 3800,
     "outflow": 2400,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 68,
@@ -813,7 +1109,11 @@
     "inflow": 9400,
     "outflow": 7800,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 69,
@@ -825,7 +1125,11 @@
     "inflow": 8200,
     "outflow": 6900,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 70,
@@ -837,7 +1141,11 @@
     "inflow": 14500,
     "outflow": 11800,
     "state": "Uttarakhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 71,
@@ -849,7 +1157,11 @@
     "inflow": 7600,
     "outflow": 6200,
     "state": "Punjab",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 72,
@@ -861,7 +1173,11 @@
     "inflow": 1800,
     "outflow": 1400,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 73,
@@ -873,7 +1189,12 @@
     "inflow": 3200,
     "outflow": 2800,
     "state": "Jharkhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 74,
@@ -885,7 +1206,12 @@
     "inflow": 620,
     "outflow": 480,
     "state": "Jharkhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 75,
@@ -897,7 +1223,11 @@
     "inflow": 1100,
     "outflow": 900,
     "state": "Jharkhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 76,
@@ -909,7 +1239,11 @@
     "inflow": 4800,
     "outflow": 4200,
     "state": "West Bengal",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 77,
@@ -921,7 +1255,11 @@
     "inflow": 5600,
     "outflow": 4900,
     "state": "West Bengal",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 78,
@@ -933,7 +1271,11 @@
     "inflow": 6400,
     "outflow": 5200,
     "state": "Madhya Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 79,
@@ -945,7 +1287,12 @@
     "inflow": 7200,
     "outflow": 5800,
     "state": "Madhya Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 80,
@@ -957,7 +1304,12 @@
     "inflow": 4100,
     "outflow": 3300,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 81,
@@ -969,7 +1321,12 @@
     "inflow": 3700,
     "outflow": 2900,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 82,
@@ -981,7 +1338,11 @@
     "inflow": 2600,
     "outflow": 2100,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 83,
@@ -993,7 +1354,12 @@
     "inflow": 4900,
     "outflow": 3800,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 84,
@@ -1005,7 +1371,12 @@
     "inflow": 1400,
     "outflow": 1200,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 85,
@@ -1017,7 +1388,12 @@
     "inflow": 2100,
     "outflow": 1800,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 86,
@@ -1029,7 +1405,11 @@
     "inflow": 1900,
     "outflow": 1600,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 87,
@@ -1041,7 +1421,11 @@
     "inflow": 820,
     "outflow": 650,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 88,
@@ -1053,7 +1437,11 @@
     "inflow": 640,
     "outflow": 480,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 89,
@@ -1065,7 +1453,11 @@
     "inflow": 920,
     "outflow": 760,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 90,
@@ -1077,7 +1469,11 @@
     "inflow": 310,
     "outflow": 240,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 91,
@@ -1089,7 +1485,11 @@
     "inflow": 780,
     "outflow": 620,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 92,
@@ -1101,7 +1501,11 @@
     "inflow": 1800,
     "outflow": 1500,
     "state": "Uttar Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 93,
@@ -1113,7 +1517,12 @@
     "inflow": 2600,
     "outflow": 2100,
     "state": "Uttar Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 94,
@@ -1125,7 +1534,12 @@
     "inflow": 6400,
     "outflow": 5200,
     "state": "Uttarakhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 95,
@@ -1137,7 +1551,11 @@
     "inflow": 3200,
     "outflow": 2900,
     "state": "Uttarakhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 96,
@@ -1149,7 +1567,11 @@
     "inflow": 1600,
     "outflow": 1300,
     "state": "Uttarakhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 97,
@@ -1161,7 +1583,11 @@
     "inflow": 2400,
     "outflow": 2100,
     "state": "Punjab",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 98,
@@ -1173,7 +1599,11 @@
     "inflow": 2800,
     "outflow": 2500,
     "state": "Himachal Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 99,
@@ -1185,7 +1615,11 @@
     "inflow": 3600,
     "outflow": 3100,
     "state": "Himachal Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 100,
@@ -1197,7 +1631,11 @@
     "inflow": 1900,
     "outflow": 1600,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 101,
@@ -1209,7 +1647,11 @@
     "inflow": 680,
     "outflow": 560,
     "state": "Himachal Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 102,
@@ -1221,7 +1663,11 @@
     "inflow": 5200,
     "outflow": 4400,
     "state": "Himachal Pradesh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 103,
@@ -1233,7 +1679,11 @@
     "inflow": 1600,
     "outflow": 1300,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 104,
@@ -1245,7 +1695,12 @@
     "inflow": 4100,
     "outflow": 3400,
     "state": "Maharashtra",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 105,
@@ -1257,7 +1712,11 @@
     "inflow": 1800,
     "outflow": 1500,
     "state": "Gujarat",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 106,
@@ -1269,7 +1728,12 @@
     "inflow": 1100,
     "outflow": 890,
     "state": "Gujarat",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 107,
@@ -1281,7 +1745,11 @@
     "inflow": 560,
     "outflow": 440,
     "state": "Assam",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 108,
@@ -1293,7 +1761,11 @@
     "inflow": 420,
     "outflow": 340,
     "state": "Meghalaya",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 109,
@@ -1305,7 +1777,11 @@
     "inflow": 680,
     "outflow": 560,
     "state": "Manipur",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 110,
@@ -1317,7 +1793,11 @@
     "inflow": 1200,
     "outflow": 980,
     "state": "Assam",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 111,
@@ -1329,7 +1809,11 @@
     "inflow": 1800,
     "outflow": 1500,
     "state": "Assam",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 112,
@@ -1341,7 +1825,11 @@
     "inflow": 1400,
     "outflow": 1200,
     "state": "Jharkhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 113,
@@ -1353,7 +1841,11 @@
     "inflow": 4200,
     "outflow": 3600,
     "state": "Jharkhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 114,
@@ -1365,7 +1857,11 @@
     "inflow": 1100,
     "outflow": 920,
     "state": "Jharkhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 115,
@@ -1377,7 +1873,11 @@
     "inflow": 3800,
     "outflow": 3200,
     "state": "Jharkhand",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 116,
@@ -1389,7 +1889,11 @@
     "inflow": 480,
     "outflow": 380,
     "state": "Bihar",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 117,
@@ -1401,7 +1905,11 @@
     "inflow": 960,
     "outflow": 820,
     "state": "Bihar",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 118,
@@ -1413,7 +1921,11 @@
     "inflow": 1600,
     "outflow": 1300,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 119,
@@ -1425,7 +1937,11 @@
     "inflow": 7400,
     "outflow": 6800,
     "state": "Rajasthan",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 120,
@@ -1437,7 +1953,11 @@
     "inflow": 8600,
     "outflow": 7800,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 121,
@@ -1449,7 +1969,11 @@
     "inflow": 240,
     "outflow": 180,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 122,
@@ -1461,7 +1985,11 @@
     "inflow": 380,
     "outflow": 290,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 123,
@@ -1473,7 +2001,11 @@
     "inflow": 420,
     "outflow": 320,
     "state": "Tamil Nadu",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 124,
@@ -1485,7 +2017,11 @@
     "inflow": 680,
     "outflow": 540,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 125,
@@ -1497,7 +2033,11 @@
     "inflow": 2100,
     "outflow": 1700,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 126,
@@ -1509,7 +2049,12 @@
     "inflow": 1400,
     "outflow": 1100,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 127,
@@ -1521,7 +2066,11 @@
     "inflow": 920,
     "outflow": 740,
     "state": "Kerala",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 128,
@@ -1533,7 +2082,11 @@
     "inflow": 480,
     "outflow": 380,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 129,
@@ -1545,7 +2098,11 @@
     "inflow": 1200,
     "outflow": 980,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 130,
@@ -1557,7 +2114,11 @@
     "inflow": 1800,
     "outflow": 1500,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 131,
@@ -1569,7 +2130,12 @@
     "inflow": 5400,
     "outflow": 4600,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 132,
@@ -1581,7 +2147,11 @@
     "inflow": 1100,
     "outflow": 920,
     "state": "Karnataka",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 133,
@@ -1593,7 +2163,11 @@
     "inflow": 6800,
     "outflow": 5600,
     "state": "Chhattisgarh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 134,
@@ -1605,7 +2179,11 @@
     "inflow": 2400,
     "outflow": 2000,
     "state": "Chhattisgarh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 135,
@@ -1617,7 +2195,11 @@
     "inflow": 3200,
     "outflow": 2700,
     "state": "Chhattisgarh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 136,
@@ -1629,7 +2211,11 @@
     "inflow": 1100,
     "outflow": 890,
     "state": "Chhattisgarh",
-    "country": "India"
+    "country": "India",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 137,
@@ -1641,7 +2227,12 @@
     "inflow": 5600,
     "outflow": 4700,
     "state": "Odisha",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 138,
@@ -1653,7 +2244,12 @@
     "inflow": 4200,
     "outflow": 3500,
     "state": "Odisha",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 139,
@@ -1665,7 +2261,12 @@
     "inflow": 3800,
     "outflow": 3200,
     "state": "Odisha",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 140,
@@ -1677,7 +2278,12 @@
     "inflow": 4600,
     "outflow": 3900,
     "state": "Odisha",
-    "country": "India"
+    "country": "India",
+    "data_source": "Central Water Commission (CWC)",
+    "data_frequency": "weekly",
+    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
+    "last_updated": "2026-08-27",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 141,
@@ -1688,7 +2294,11 @@
     "capacity": 25,
     "inflow": 142360,
     "outflow": 138360,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 142,
@@ -1699,7 +2309,11 @@
     "capacity": 22,
     "inflow": 99800,
     "outflow": 99800,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 143,
@@ -1710,7 +2324,11 @@
     "capacity": 18.5,
     "inflow": 81779,
     "outflow": 68758,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 144,
@@ -1721,7 +2339,11 @@
     "capacity": 12,
     "inflow": 39856,
     "outflow": 41943,
-    "state": "Jharkhand"
+    "state": "Jharkhand",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 145,
@@ -1732,7 +2354,11 @@
     "capacity": 15,
     "inflow": 45000,
     "outflow": 43200,
-    "state": "Uttarakhand"
+    "state": "Uttarakhand",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 146,
@@ -1743,7 +2369,11 @@
     "capacity": 14.5,
     "inflow": 38000,
     "outflow": 36500,
-    "state": "Uttarakhand"
+    "state": "Uttarakhand",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 147,
@@ -1754,7 +2384,11 @@
     "capacity": 16,
     "inflow": 65000,
     "outflow": 63000,
-    "state": "Uttar Pradesh"
+    "state": "Uttar Pradesh",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 148,
@@ -1765,7 +2399,11 @@
     "capacity": 14,
     "inflow": 28000,
     "outflow": 27500,
-    "state": "Uttar Pradesh"
+    "state": "Uttar Pradesh",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 149,
@@ -1776,7 +2414,11 @@
     "capacity": 20,
     "inflow": 52000,
     "outflow": 50500,
-    "state": "West Bengal"
+    "state": "West Bengal",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 150,
@@ -1787,7 +2429,11 @@
     "capacity": 12.5,
     "inflow": 18500,
     "outflow": 17800,
-    "state": "West Bengal"
+    "state": "West Bengal",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "ACTIVE_SPILLWAY"
   },
   {
     "id": 151,
@@ -1798,7 +2444,11 @@
     "capacity": 6.5,
     "inflow": 12000,
     "outflow": 11500,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 152,
@@ -1809,7 +2459,11 @@
     "capacity": 9.1,
     "inflow": 4500,
     "outflow": 2200,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 153,
@@ -1820,7 +2474,11 @@
     "capacity": 4.8,
     "inflow": 1200,
     "outflow": 600,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 154,
@@ -1831,7 +2489,11 @@
     "capacity": 2.1,
     "inflow": 850,
     "outflow": 400,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 155,
@@ -1842,7 +2504,11 @@
     "capacity": 1.8,
     "inflow": 600,
     "outflow": 300,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 156,
@@ -1853,7 +2519,11 @@
     "capacity": 1.5,
     "inflow": 450,
     "outflow": 200,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 157,
@@ -1864,7 +2534,11 @@
     "capacity": 3,
     "inflow": 900,
     "outflow": 450,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 158,
@@ -1875,7 +2549,11 @@
     "capacity": 1,
     "inflow": 350,
     "outflow": 150,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 159,
@@ -1886,6 +2564,10 @@
     "capacity": 1,
     "inflow": 280,
     "outflow": 120,
-    "state": "Bihar"
+    "state": "Bihar",
+    "data_source": "State Water Resources (Baseline)",
+    "data_frequency": "baseline",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   }
 ]

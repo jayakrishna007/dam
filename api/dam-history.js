@@ -33,17 +33,24 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
       const rawDamId = req.query.dam_id;
-      if (!rawDamId) {
-        return res.status(400).json({ error: 'dam_id query parameter is required' });
+      const rawName = req.query.name;
+      if (!rawDamId && !rawName) {
+        return res.status(400).json({ error: 'dam_id or name query parameter is required' });
       }
 
       const parsedId = parseInt(rawDamId);
-      const filter = {
-        $or: [
+      const filter = {};
+
+      if (rawDamId) {
+        filter.$or = [
           { dam_id: rawDamId },
           ...(isNaN(parsedId) ? [] : [{ dam_id: parsedId }])
-        ]
-      };
+        ];
+      }
+
+      if (rawName) {
+        filter.name = { $regex: new RegExp(`^${rawName.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') };
+      }
 
       if (req.query.start_date || req.query.end_date) {
         filter.timestamp = {};

@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "th_1",
     "name": "Bhumibol Dam",
     "river": "Ping River",
     "state": "Tak",
@@ -13,10 +13,14 @@
     "inflow": 11939,
     "outflow": 4104,
     "unit": "cfs",
-    "image": "/images/dams/bhumibol.jpg"
+    "image": "/images/dams/bhumibol.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 2,
+    "id": "th_2",
     "name": "Sirikit Dam",
     "river": "Nan River",
     "state": "Uttaradit",
@@ -29,10 +33,14 @@
     "inflow": 12523,
     "outflow": 4059,
     "unit": "cfs",
-    "image": "/images/dams/sirikit.jpg"
+    "image": "/images/dams/sirikit.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 3,
+    "id": "th_3",
     "name": "Srinagarind Dam",
     "river": "Khwae Yai River",
     "state": "Kanchanaburi",
@@ -45,10 +53,14 @@
     "inflow": 28211,
     "outflow": 1823,
     "unit": "cfs",
-    "image": "/images/dams/srinagarind.jpg"
+    "image": "/images/dams/srinagarind.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 4,
+    "id": "th_4",
     "name": "Vajiralongkorn Dam",
     "river": "Khwae Noi River",
     "state": "Kanchanaburi",
@@ -61,10 +73,14 @@
     "inflow": 105031,
     "outflow": 1921,
     "unit": "cfs",
-    "image": "/images/dams/vajiralongkorn.jpg"
+    "image": "/images/dams/vajiralongkorn.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 5,
+    "id": "th_5",
     "name": "Sirindhorn Dam",
     "river": "Dom Noi (Mekong)",
     "state": "Ubon Ratchathani",
@@ -77,10 +93,14 @@
     "inflow": 9622,
     "outflow": 1422,
     "unit": "cfs",
-    "image": "/images/dams/sirindhorn.jpg"
+    "image": "/images/dams/sirindhorn.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 6,
+    "id": "th_6",
     "name": "Ubol Ratana Dam",
     "river": "Nam Phong (Mekong)",
     "state": "Khon Kaen",
@@ -93,10 +113,14 @@
     "inflow": 1292,
     "outflow": 1680,
     "unit": "cfs",
-    "image": "/images/dams/ubolratana.jpg"
+    "image": "/images/dams/ubolratana.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 7,
+    "id": "th_7",
     "name": "Ratchaprapha Dam",
     "river": "Klong Saeng River",
     "state": "Surat Thani",
@@ -109,10 +133,14 @@
     "inflow": 6740,
     "outflow": 1471,
     "unit": "cfs",
-    "image": "/images/dams/ratchaprapha.jpg"
+    "image": "/images/dams/ratchaprapha.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 8,
+    "id": "th_8",
     "name": "Bang Lang Dam",
     "river": "Pattani River",
     "state": "Yala",
@@ -125,10 +153,14 @@
     "inflow": 879,
     "outflow": 1619,
     "unit": "cfs",
-    "image": "/images/dams/banglang.jpg"
+    "image": "/images/dams/banglang.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 9,
+    "id": "th_9",
     "name": "Chulabhorn Dam",
     "river": "Phrom (Mekong)",
     "state": "Chaiyaphum",
@@ -141,10 +173,14 @@
     "inflow": 168,
     "outflow": 0,
     "unit": "cfs",
-    "image": "/images/dams/chulabhorn.jpg"
+    "image": "/images/dams/chulabhorn.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "GATES_CLOSED"
   },
   {
-    "id": 10,
+    "id": "th_10",
     "name": "Nam Pung Dam",
     "river": "Nam Pung (Mekong)",
     "state": "Sakon Nakhon",
@@ -157,10 +193,14 @@
     "inflow": 241,
     "outflow": 20,
     "unit": "cfs",
-    "image": "/images/dams/nampung.jpg"
+    "image": "/images/dams/nampung.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 11,
+    "id": "th_11",
     "name": "Tha Thung Na Dam",
     "river": "Khwae Yai River",
     "state": "Kanchanaburi",
@@ -173,10 +213,14 @@
     "inflow": 1590,
     "outflow": 1651,
     "unit": "cfs",
-    "image": "/images/dams/thathungna.jpg"
+    "image": "/images/dams/thathungna.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
-    "id": 12,
+    "id": "th_12",
     "name": "Huai Kum Dam",
     "river": "Nam Phrom (Mekong)",
     "state": "Chaiyaphum",
@@ -189,6 +233,10 @@
     "inflow": 0,
     "outflow": 0,
     "unit": "cfs",
-    "image": "/images/dams/huaikum.jpg"
+    "image": "/images/dams/huaikum.jpg",
+    "data_source": "EGAT Thailand Water Intelligence",
+    "data_frequency": "daily",
+    "last_updated": "2026-09-02 01:52 AM",
+    "flow_status": "GATES_CLOSED"
   }
 ]
