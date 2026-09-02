@@ -1,7 +1,7 @@
 {
-  "last_run_timestamp": "2026-09-02 03:41 PM",
+  "last_run_timestamp": "2026-09-02 07:38 PM",
   "success": true,
-  "duration_seconds": 28.83,
+  "duration_seconds": 30.38,
   "sources": {
     "tungabhadra": {
       "status": "Operational",
@@ -29,14 +29,14 @@
       "count": 159
     },
     "usa": {
-      "status": "Down",
-      "ok": false,
-      "count": 0
+      "status": "Operational",
+      "ok": true,
+      "count": 13
     },
     "brazil": {
       "status": "Operational",
       "ok": true,
-      "count": 30
+      "count": 32
     },
     "thailand": {
       "status": "Operational",
@@ -60,12 +60,80 @@
     }
   },
   "metrics": {
-    "dams_changed": 17,
-    "storage_delta_tmc": -0.391,
-    "inflow_delta_cusecs": 55,
-    "outflow_delta_cusecs": -145
+    "dams_changed": 0,
+    "storage_delta_tmc": 0.0,
+    "inflow_delta_cusecs": 0,
+    "outflow_delta_cusecs": 0
   },
   "history": [
+    {
+      "timestamp": "2026-09-02 07:38 PM",
+      "success": true,
+      "duration_seconds": 30.38,
+      "sources": {
+        "tungabhadra": {
+          "status": "Operational",
+          "ok": true,
+          "count": 1
+        },
+        "tamil_nadu": {
+          "status": "Operational",
+          "ok": true,
+          "count": 19
+        },
+        "bbmb": {
+          "status": "Operational",
+          "ok": true,
+          "count": 2
+        },
+        "bihar_wrd": {
+          "status": "Down",
+          "ok": false,
+          "count": 0
+        },
+        "pan_india": {
+          "status": "Operational",
+          "ok": true,
+          "count": 159
+        },
+        "usa": {
+          "status": "Operational",
+          "ok": true,
+          "count": 13
+        },
+        "brazil": {
+          "status": "Operational",
+          "ok": true,
+          "count": 32
+        },
+        "thailand": {
+          "status": "Operational",
+          "ok": true,
+          "count": 12
+        },
+        "nepal": {
+          "status": "Operational",
+          "ok": true,
+          "count": 10
+        },
+        "laos": {
+          "status": "Operational",
+          "ok": true,
+          "count": 7
+        },
+        "vietnam": {
+          "status": "Operational",
+          "ok": true,
+          "count": 6
+        }
+      },
+      "metrics": {
+        "dams_changed": 0,
+        "storage_delta_tmc": 0.0,
+        "inflow_delta_cusecs": 0,
+        "outflow_delta_cusecs": 0
+      }
+    },
     {
       "timestamp": "2026-09-02 03:41 PM",
       "success": true,
@@ -748,39 +816,6 @@
         "storage_delta_tmc": 5.856,
         "inflow_delta_cusecs": 22502,
         "outflow_delta_cusecs": 1732
-      }
-    },
-    {
-      "timestamp": "2026-08-23 10:28 AM",
-      "success": true,
-      "duration_seconds": 11.54,
-      "sources": {
-        "tungabhadra": {
-          "status": "Operational",
-          "ok": true,
-          "count": 1
-        },
-        "tamil_nadu": {
-          "status": "Operational",
-          "ok": true,
-          "count": 19
-        },
-        "oneindia": {
-          "status": "Operational",
-          "ok": true,
-          "count": 15
-        },
-        "bbmb": {
-          "status": "Operational",
-          "ok": true,
-          "count": 2
-        }
-      },
-      "metrics": {
-        "dams_changed": 4,
-        "storage_delta_tmc": 0.241,
-        "inflow_delta_cusecs": 0,
-        "outflow_delta_cusecs": 0
       }
     }
   ]
