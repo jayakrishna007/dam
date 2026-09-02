@@ -151,7 +151,7 @@
     "image": "/images/dams/hoover_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -171,7 +171,7 @@
     "image": "/images/dams/glen_canyon_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -191,7 +191,7 @@
     "image": "/images/dams/grand_coulee_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -230,7 +230,7 @@
     "image": "/images/dams/fort_peck_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -250,7 +250,7 @@
     "image": "/images/dams/garrison_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -269,7 +269,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -288,7 +288,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -307,7 +307,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -326,7 +326,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -345,7 +345,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 10:15 AM",
+    "last_updated": "2026-09-02 03:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
