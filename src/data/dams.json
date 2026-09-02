@@ -12,7 +12,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -28,7 +28,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -44,7 +44,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -60,7 +60,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -68,15 +68,15 @@
     "name": "Tungabhadra",
     "river": "Tungabhadra",
     "district": "Vijayanagara",
-    "level": 90.75,
+    "level": 90.39,
     "capacity": 105.788,
-    "inflow": 5377,
-    "outflow": 8882,
+    "inflow": 4939,
+    "outflow": 8944,
     "state": "Karnataka",
     "country": "India",
     "data_source": "Tungabhadra Board",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -92,7 +92,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -108,7 +108,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -124,7 +124,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -140,7 +140,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -156,7 +156,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -172,7 +172,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -188,7 +188,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -204,7 +204,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -220,7 +220,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -236,7 +236,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -252,7 +252,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -268,7 +268,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -284,7 +284,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -300,7 +300,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -316,7 +316,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -567,15 +567,15 @@
     "name": "Bhakra (Gobind Sagar)",
     "river": "Sutlej",
     "district": "Bilaspur",
-    "level": 64.52,
+    "level": 65.36,
     "capacity": 197.7,
-    "inflow": 35859,
-    "outflow": 26308,
+    "inflow": 51349,
+    "outflow": 25879,
     "state": "Himachal Pradesh",
     "country": "India",
     "data_source": "Bhakra Beas Management Board (BBMB)",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
+    "last_updated": "2026-09-02 10:15 AM",
     "flow_status": "ACTIVE_SPILLWAY"
   },
   {
@@ -583,16 +583,16 @@
     "name": "Pong (Maharana Pratap Sagar)",
     "river": "Beas",
     "district": "Kangra",
-    "level": 69.63,
+    "level": 70.17,
     "capacity": 257.0,
-    "inflow": 42772,
-    "outflow": 16594,
+    "inflow": 39928,
+    "outflow": 14010,
     "state": "Himachal Pradesh",
     "country": "India",
     "data_source": "Bhakra Beas Management Board (BBMB)",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 01:52 AM",
-    "flow_status": "ACTIVE_SPILLWAY"
+    "last_updated": "2026-09-02 10:15 AM",
+    "flow_status": "NORMAL_FLOW"
   },
   {
     "id": 38,
