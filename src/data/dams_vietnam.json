@@ -16,7 +16,7 @@
     "image": "/images/dams/yalifalls.jpg",
     "data_source": "EVN / NCHMF Vietnam",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 07:41 PM",
+    "last_updated": "2026-09-03 11:07 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -36,7 +36,7 @@
     "image": "/images/dams/pleikrong.jpg",
     "data_source": "EVN / NCHMF Vietnam",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 07:41 PM",
+    "last_updated": "2026-09-03 11:07 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -56,7 +56,7 @@
     "image": "/images/dams/buonkuop.jpg",
     "data_source": "EVN / NCHMF Vietnam",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 07:41 PM",
+    "last_updated": "2026-09-03 11:07 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -76,7 +76,7 @@
     "image": "/images/dams/sonla.jpg",
     "data_source": "EVN / NCHMF Vietnam",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 07:41 PM",
+    "last_updated": "2026-09-03 11:07 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -96,7 +96,7 @@
     "image": "/images/dams/hoabinh.jpg",
     "data_source": "EVN / NCHMF Vietnam",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 07:41 PM",
+    "last_updated": "2026-09-03 11:07 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -116,7 +116,7 @@
     "image": "/images/dams/trian.jpg",
     "data_source": "EVN / NCHMF Vietnam",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 07:41 PM",
+    "last_updated": "2026-09-03 11:07 PM",
     "flow_status": "NORMAL_FLOW"
   }
 ]
