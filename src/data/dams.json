@@ -12,7 +12,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -28,7 +28,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -44,7 +44,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -60,7 +60,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -68,15 +68,15 @@
     "name": "Tungabhadra",
     "river": "Tungabhadra",
     "district": "Vijayanagara",
-    "level": 90.39,
+    "level": 90.03,
     "capacity": 105.788,
-    "inflow": 4939,
-    "outflow": 8944,
+    "inflow": 5205,
+    "outflow": 9154,
     "state": "Karnataka",
     "country": "India",
     "data_source": "Tungabhadra Board",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -92,7 +92,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -108,7 +108,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -124,7 +124,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -140,7 +140,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -156,7 +156,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -172,7 +172,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -188,7 +188,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -204,7 +204,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -220,7 +220,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -236,7 +236,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -252,7 +252,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -268,7 +268,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -284,7 +284,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -300,7 +300,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -316,7 +316,7 @@
     "country": "India",
     "data_source": "TN Water Resources / Agriculture",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -364,8 +364,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -381,8 +381,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -398,8 +398,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -575,7 +575,7 @@
     "country": "India",
     "data_source": "Bhakra Beas Management Board (BBMB)",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "ACTIVE_SPILLWAY"
   },
   {
@@ -591,7 +591,7 @@
     "country": "India",
     "data_source": "Bhakra Beas Management Board (BBMB)",
     "data_frequency": "daily",
-    "last_updated": "2026-09-02 11:11 PM",
+    "last_updated": "2026-09-03 10:14 AM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -607,8 +607,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -624,8 +624,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -641,8 +641,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -658,8 +658,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -675,8 +675,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -692,8 +692,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -725,8 +725,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -758,8 +758,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -775,8 +775,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -792,8 +792,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -809,8 +809,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -826,8 +826,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -843,8 +843,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -860,8 +860,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -877,8 +877,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -894,8 +894,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "ACTIVE_SPILLWAY"
   },
   {
@@ -911,8 +911,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -928,8 +928,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -945,8 +945,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -962,8 +962,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -995,8 +995,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1012,8 +1012,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1045,8 +1045,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1062,8 +1062,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1079,8 +1079,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1192,8 +1192,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1209,8 +1209,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1290,8 +1290,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1307,8 +1307,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1324,8 +1324,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1357,8 +1357,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1374,8 +1374,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1391,8 +1391,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1520,8 +1520,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1537,8 +1537,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1698,8 +1698,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -1731,8 +1731,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -2052,8 +2052,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -2133,8 +2133,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -2230,8 +2230,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -2247,8 +2247,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -2264,8 +2264,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -2281,8 +2281,8 @@
     "country": "India",
     "data_source": "Central Water Commission (CWC)",
     "data_frequency": "weekly",
-    "bulletin_date": "Thursday Bulletin (27 Aug 2026)",
-    "last_updated": "2026-08-27",
+    "bulletin_date": "Thursday Bulletin (03 Sep 2026)",
+    "last_updated": "2026-09-03",
     "flow_status": "NORMAL_FLOW"
   },
   {
