@@ -37,7 +37,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/data/dams.json src/data/dams_usa.json src/data/dams_brazil.json src/data/dams_thailand.json src/data/dams_nepal.json src/data/dams_laos.json src/data/dams_vietnam.json src/data/scrape_status.json
+          git add src/data/dams.json src/data/dams_usa.json src/data/dams_brazil.json src/data/dams_thailand.json src/data/dams_nepal.json src/data/dams_laos.json src/data/dams_vietnam.json src/data/dams_japan.json src/data/dams_spain.json src/data/dams_australia.json src/data/dams_mexico.json src/data/scrape_status.json
           # Only commit if there are changes to the water level data or run status
           if ! git diff --cached --quiet; then
             git commit -m "chore: auto-update dam levels"

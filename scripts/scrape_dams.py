@@ -739,6 +739,218 @@ def main():
     except Exception as e:
         print(f"  [ERROR] Vietnam scraper: {e}")
 
+    # --- 11. Scrape Japan (MLIT) ---
+    japan_ok = False
+    japan_count = 0
+    print("Scraping Japan dams (MLIT)...")
+    try:
+        from scrape_japan import scrape_japan
+        japan_data = scrape_japan()
+        japan_json_path = os.path.join(script_dir, "..", "src", "data", "dams_japan.json")
+        old_japan = []
+        if os.path.exists(japan_json_path):
+            try:
+                with open(japan_json_path, "r", encoding="utf-8") as f:
+                    old_japan = json.load(f)
+            except Exception:
+                pass
+        if old_japan and japan_data:
+            scraped_jp_by_name = {v["name"].lower(): v for v in japan_data.values()}
+            for dam in old_japan:
+                matched = scraped_jp_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_mcm") is not None:
+                        dam["storage_mcm"] = matched["storage_mcm"]
+                    dam["data_source"] = "Official Government Telemetry"
+                    dam["data_frequency"] = "10min"
+                    dam["update_schedule"] = "Updated Every 10 Minutes from Official Government Records"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = "Official Government Telemetry"
+                    dam["data_frequency"] = "10min"
+                    dam["update_schedule"] = "Updated Every 10 Minutes from Official Government Records"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+            final_japan = old_japan
+        elif japan_data:
+            final_japan = list(japan_data.values())
+        else:
+            final_japan = old_japan
+        with open(japan_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_japan, f, indent=2)
+        japan_count = len([v for v in japan_data.values() if v.get("level") is not None])
+        japan_ok = japan_count > 0
+        print(f"  Japan: {japan_count} live readings merged into dams_japan.json")
+    except Exception as e:
+        print(f"  [ERROR] Japan scraper: {e}")
+
+    # --- 12. Scrape Spain (MITECO) ---
+    spain_ok = False
+    spain_count = 0
+    print("Scraping Spain dams (MITECO)...")
+    try:
+        from scrape_spain import scrape_spain
+        spain_data = scrape_spain()
+        spain_json_path = os.path.join(script_dir, "..", "src", "data", "dams_spain.json")
+        old_spain = []
+        if os.path.exists(spain_json_path):
+            try:
+                with open(spain_json_path, "r", encoding="utf-8") as f:
+                    old_spain = json.load(f)
+            except Exception:
+                pass
+        if old_spain and spain_data:
+            scraped_es_by_name = {v["name"].lower(): v for v in spain_data.values()}
+            for dam in old_spain:
+                matched = scraped_es_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_hm3") is not None:
+                        dam["storage_hm3"] = matched["storage_hm3"]
+                    dam["data_source"] = "Official Government Records"
+                    dam["data_frequency"] = "weekly"
+                    dam["update_schedule"] = "Updated Weekly every Tuesday from Official Government Records"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = "Official Government Records"
+                    dam["data_frequency"] = "weekly"
+                    dam["update_schedule"] = "Updated Weekly every Tuesday from Official Government Records"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+            final_spain = old_spain
+        elif spain_data:
+            final_spain = list(spain_data.values())
+        else:
+            final_spain = old_spain
+        with open(spain_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_spain, f, indent=2)
+        spain_count = len([v for v in spain_data.values() if v.get("level") is not None])
+        spain_ok = spain_count > 0
+        print(f"  Spain: {spain_count} live readings merged into dams_spain.json")
+    except Exception as e:
+        print(f"  [ERROR] Spain scraper: {e}")
+
+    # --- 13. Scrape Australia (BoM & MDBA) ---
+    australia_ok = False
+    australia_count = 0
+    print("Scraping Australia dams (BoM & MDBA)...")
+    try:
+        from scrape_australia import scrape_australia
+        australia_data = scrape_australia()
+        australia_json_path = os.path.join(script_dir, "..", "src", "data", "dams_australia.json")
+        old_australia = []
+        if os.path.exists(australia_json_path):
+            try:
+                with open(australia_json_path, "r", encoding="utf-8") as f:
+                    old_australia = json.load(f)
+            except Exception:
+                pass
+        if old_australia and australia_data:
+            scraped_au_by_name = {v["name"].lower(): v for v in australia_data.values()}
+            for dam in old_australia:
+                matched = scraped_au_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_mcm") is not None:
+                        dam["storage_mcm"] = matched["storage_mcm"]
+                    dam["data_source"] = "Official Government Telemetry"
+                    dam["data_frequency"] = "daily"
+                    dam["update_schedule"] = "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = "Official Government Telemetry"
+                    dam["data_frequency"] = "daily"
+                    dam["update_schedule"] = "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+            final_australia = old_australia
+        elif australia_data:
+            final_australia = list(australia_data.values())
+        else:
+            final_australia = old_australia
+        with open(australia_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_australia, f, indent=2)
+        australia_count = len([v for v in australia_data.values() if v.get("level") is not None])
+        australia_ok = australia_count > 0
+        print(f"  Australia: {australia_count} live readings merged into dams_australia.json")
+    except Exception as e:
+        print(f"  [ERROR] Australia scraper: {e}")
+
+    # --- 14. Scrape Mexico (CONAGUA) ---
+    mexico_ok = False
+    mexico_count = 0
+    print("Scraping Mexico dams (CONAGUA)...")
+    try:
+        from scrape_mexico import scrape_mexico
+        mexico_data = scrape_mexico()
+        mexico_json_path = os.path.join(script_dir, "..", "src", "data", "dams_mexico.json")
+        old_mexico = []
+        if os.path.exists(mexico_json_path):
+            try:
+                with open(mexico_json_path, "r", encoding="utf-8") as f:
+                    old_mexico = json.load(f)
+            except Exception:
+                pass
+        if old_mexico and mexico_data:
+            scraped_mx_by_name = {v["name"].lower(): v for v in mexico_data.values()}
+            for dam in old_mexico:
+                matched = scraped_mx_by_name.get(dam["name"].lower())
+                if matched:
+                    if matched.get("level") is not None:
+                        dam["level"] = matched["level"]
+                    if matched.get("inflow") is not None:
+                        dam["inflow"] = matched["inflow"]
+                    if matched.get("outflow") is not None:
+                        dam["outflow"] = matched["outflow"]
+                    if matched.get("storage_hm3") is not None:
+                        dam["storage_hm3"] = matched["storage_hm3"]
+                    dam["data_source"] = "Official Government Telemetry"
+                    dam["data_frequency"] = "daily"
+                    dam["update_schedule"] = "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records"
+                    dam["last_updated"] = now_str
+                else:
+                    dam["data_source"] = "Official Government Telemetry"
+                    dam["data_frequency"] = "daily"
+                    dam["update_schedule"] = "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records"
+                    dam["last_updated"] = dam.get("last_updated", now_str)
+                outf = dam.get("outflow")
+                inf = dam.get("inflow")
+                dam["flow_status"] = "GATES_CLOSED" if outf == 0 else "LOW_INFLOW" if inf == 0 else "NORMAL_FLOW"
+            final_mexico = old_mexico
+        elif mexico_data:
+            final_mexico = list(mexico_data.values())
+        else:
+            final_mexico = old_mexico
+        with open(mexico_json_path, "w", encoding="utf-8") as f:
+            json.dump(final_mexico, f, indent=2)
+        mexico_count = len([v for v in mexico_data.values() if v.get("level") is not None])
+        mexico_ok = mexico_count > 0
+        print(f"  Mexico: {mexico_count} live readings merged into dams_mexico.json")
+    except Exception as e:
+        print(f"  [ERROR] Mexico scraper: {e}")
+
     # Post historical readings to MongoDB via serverless API
     try:
         import datetime
@@ -763,7 +975,11 @@ def main():
                 })
             
             # Also include all international dams in history
-            for global_file in ["dams_usa.json", "dams_brazil.json", "dams_thailand.json", "dams_nepal.json", "dams_laos.json", "dams_vietnam.json"]:
+            for global_file in [
+                "dams_usa.json", "dams_brazil.json", "dams_thailand.json",
+                "dams_nepal.json", "dams_laos.json", "dams_vietnam.json",
+                "dams_japan.json", "dams_spain.json", "dams_australia.json", "dams_mexico.json"
+            ]:
                 try:
                     p = os.path.join(DATA_DIR, global_file)
                     if os.path.exists(p):
@@ -866,7 +1082,11 @@ def main():
             "thailand": { "status": "Operational" if thailand_ok else "Down", "ok": thailand_ok, "count": thailand_count },
             "nepal": { "status": "Operational" if nepal_ok else "Down", "ok": nepal_ok, "count": nepal_count },
             "laos": { "status": "Operational" if laos_ok else "Down", "ok": laos_ok, "count": laos_count },
-            "vietnam": { "status": "Operational" if vietnam_ok else "Down", "ok": vietnam_ok, "count": vietnam_count }
+            "vietnam": { "status": "Operational" if vietnam_ok else "Down", "ok": vietnam_ok, "count": vietnam_count },
+            "japan": { "status": "Operational" if japan_ok else "Down", "ok": japan_ok, "count": japan_count },
+            "spain": { "status": "Operational" if spain_ok else "Down", "ok": spain_ok, "count": spain_count },
+            "australia": { "status": "Operational" if australia_ok else "Down", "ok": australia_ok, "count": australia_count },
+            "mexico": { "status": "Operational" if mexico_ok else "Down", "ok": mexico_ok, "count": mexico_count }
         },
         "metrics": {
             "dams_changed": dams_changed,

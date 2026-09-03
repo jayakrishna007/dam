@@ -104,7 +104,7 @@
     },
     "map": {
       "latitude": 11.9796,
-      "longitude": 76.3510,
+      "longitude": 76.351,
       "flowPath": "Outflow joins the Cauvery River at Tirumakudal Narasipura and flows downstream into Tamil Nadu."
     }
   },
@@ -184,6 +184,474 @@
       "latitude": 9.8514,
       "longitude": 76.9725,
       "flowPath": "Outflow is directed through underground pipes to the Moolamattom Power House, then discharges into the Nachar River."
+    }
+  },
+  "kurobe-dam": {
+    "history": "Completed in 1963 on the Kurobe River in Toyama Prefecture. Standing at 186 meters, it is Japan's tallest dam and a monumental achievement in post-war hydroelectric engineering along the Tateyama Kurobe Alpine Route.",
+    "timings": {
+      "hours": "8:30 AM - 5:00 PM (June to October)",
+      "fountain": "N/A",
+      "fee": "Alpine Route Pass Required"
+    },
+    "map": {
+      "latitude": 36.5664,
+      "longitude": 137.6622,
+      "flowPath": "Outflow discharges through the Kurobe River canyon into the Sea of Japan."
+    }
+  },
+  "tokuyama-dam": {
+    "history": "Completed in 2008 in Gifu Prefecture across the Ibi River. It forms Japan's largest artificial reservoir by storage volume (660 million m³), providing vital flood control and municipal water for Nagoya and the Chukyo metropolitan area.",
+    "timings": {
+      "hours": "9:00 AM - 4:30 PM Daily",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 35.6631,
+      "longitude": 136.5028,
+      "flowPath": "Outflow feeds into the Ibi River, joining the Kiso Three Rivers before reaching Ise Bay."
+    }
+  },
+  "okutadami-dam": {
+    "history": "Completed in 1960 on the Tadami River on the border of Fukushima and Niigata prefectures. With a height of 157 meters, it is Japan's tallest concrete gravity dam and a powerhouse of clean hydro generation.",
+    "timings": {
+      "hours": "9:00 AM - 5:00 PM (May to November)",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 37.1531,
+      "longitude": 139.1919,
+      "flowPath": "Outflow cascades into the Tadami River, joining the Agano River into the Sea of Japan."
+    }
+  },
+  "yagisawa-dam": {
+    "history": "Completed in 1967 at the headwaters of the Tone River in Gunma Prefecture. It is the topmost and largest of the eight Tone River dams, serving as the cornerstone of flood control and drinking water for the Greater Tokyo Area.",
+    "timings": {
+      "hours": "9:00 AM - 5:00 PM (Spring/Summer)",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 36.8322,
+      "longitude": 139.0433,
+      "flowPath": "Outflow feeds the Tone River, flowing southeast across the Kanto Plain to the Pacific Ocean."
+    }
+  },
+  "miyagase-dam": {
+    "history": "Completed in 2000 across the Nakatsu River in Kanagawa Prefecture. It is a major multi-purpose concrete gravity dam supplying tap water to two-thirds of Kanagawa Prefecture and offering scenic tourist fountain discharge events.",
+    "timings": {
+      "hours": "9:00 AM - 5:00 PM Daily",
+      "fountain": "Sightseeing Discharge on Wednesdays & Sundays",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 35.5392,
+      "longitude": 139.2522,
+      "flowPath": "Outflow discharges into the Sagami River network and the Lake Miyagase aqueduct."
+    }
+  },
+  "la-serena-dam": {
+    "history": "Completed in 1989 across the Zújar River in Badajoz, Extremadura. Forming a reservoir of over 3.2 billion cubic meters, it is the largest reservoir in Spain and the third-largest in Western Europe, vital for irrigation in the Vegas Altas.",
+    "timings": {
+      "hours": "Open 24 Hours (Scenic viewpoints)",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 38.9242,
+      "longitude": -5.2503,
+      "flowPath": "Outflow feeds into the Zújar River and discharges into the Guadiana River towards Portugal."
+    }
+  },
+  "alcantara-dam": {
+    "history": "Completed in 1969 on the Tagus (Tajo) River in Cáceres, Extremadura. Named after the historic Roman bridge downstream, it impounds over 3.1 billion m³ and operates one of the most powerful hydroelectric stations in Spain.",
+    "timings": {
+      "hours": "Daylight hours",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 39.7289,
+      "longitude": -6.8872,
+      "flowPath": "Outflow continues westward along the Tagus River across the Portuguese border to the Atlantic Ocean."
+    }
+  },
+  "almendra-dam": {
+    "history": "Completed in 1970 on the Tormes River near Salamanca. Standing 202 meters high, it is the tallest dam in Spain, creating the vast 'Mar de Castilla' reservoir that powers the subterranean Villarino pumped-storage plant.",
+    "timings": {
+      "hours": "Daylight hours",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 41.2725,
+      "longitude": -6.3208,
+      "flowPath": "Outflow discharges into the Duero (Douro) River canyon."
+    }
+  },
+  "buendia-dam": {
+    "history": "Completed in 1958 across the Guadiela River in Cuenca. Connected with the Entrepeñas Reservoir through a subterranean canal, it forms the headwater reservoir system for the strategic Tagus-Segura Water Transfer.",
+    "timings": {
+      "hours": "Open access viewpoints",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 40.3872,
+      "longitude": -2.7533,
+      "flowPath": "Outflow joins the Tagus River and supplies the Tagus-Segura aqueduct."
+    }
+  },
+  "mequinenza-dam": {
+    "history": "Completed in 1964 on the Ebro River in Aragon. Known as the 'Mar de Aragón' (Sea of Aragon), it spans over 110 km in length, providing base-load hydroelectric power and flood regulation for the lower Ebro delta.",
+    "timings": {
+      "hours": "Open access viewpoints & boating marinas",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 41.3653,
+      "longitude": 0.2872,
+      "flowPath": "Outflow feeds into the Riba-roja reservoir and the Mediterranean Sea."
+    }
+  },
+  "dartmouth-dam": {
+    "history": "Completed in 1979 on the Mitta Mitta River in Victoria. At 180 meters, it is the highest dam in Australia and the largest capacity reservoir in the Murray-Darling Basin (3,856 GL), serving as critical drought storage for southeastern Australia.",
+    "timings": {
+      "hours": "8:30 AM - 5:00 PM Daily",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": -36.5278,
+      "longitude": 147.5333,
+      "flowPath": "Outflow flows down the Mitta Mitta River into Hume Reservoir and the Murray River."
+    }
+  },
+  "hume-dam": {
+    "history": "Constructed between 1919 and 1936 near Albury-Wodonga on the Murray River. It is the primary regulator of the Murray River, providing irrigated agriculture and urban water security across New South Wales, Victoria, and South Australia.",
+    "timings": {
+      "hours": "9:00 AM - 5:00 PM Daily",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": -36.1083,
+      "longitude": 147.0306,
+      "flowPath": "Outflow flows westward along the Murray River through Yarrawonga to the Southern Ocean."
+    }
+  },
+  "warragamba-dam": {
+    "history": "Completed in 1960 on the Warragamba River in New South Wales. Holding over 2,000 GL (four times Sydney Harbour), Lake Burragorang behind the dam supplies over 80% of Sydney's drinking water.",
+    "timings": {
+      "hours": "9:00 AM - 4:00 PM Daily (Visitor Centre)",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": -33.8833,
+      "longitude": 150.6,
+      "flowPath": "Outflow enters the Nepean River and Hawkesbury River into Broken Bay."
+    }
+  },
+  "lake-eildon-dam": {
+    "history": "Constructed in the 1950s on the Goulburn River in Victoria. With a capacity of 3,334 GL, it is the cornerstone of the Goulburn-Murray irrigation district, Australia's food bowl.",
+    "timings": {
+      "hours": "Open 24 Hours for recreation",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": -37.2278,
+      "longitude": 145.9111,
+      "flowPath": "Outflow travels along the Goulburn River towards Lake Nagambie and the Murray River."
+    }
+  },
+  "burdekin-falls-dam": {
+    "history": "Completed in 1987 on the Burdekin River in Queensland. With a massive 1,860 GL capacity, it is Queensland's largest dam, driving the Burdekin River Irrigation Area for sugarcane and horticulture.",
+    "timings": {
+      "hours": "Daylight hours",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": -20.6417,
+      "longitude": 147.1472,
+      "flowPath": "Outflow flows down the Burdekin River into Upstart Bay and the Coral Sea."
+    }
+  },
+  "belisario-dominguez-la-angostura": {
+    "history": "Completed in 1974 across the Grijalva River in Chiapas. It is the largest dam in Mexico by reservoir capacity (nearly 13 billion m³), anchoring the monumental Grijalva Hydroelectric Complex.",
+    "timings": {
+      "hours": "Scenic Highway viewpoints",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 16.4028,
+      "longitude": -92.775,
+      "flowPath": "Outflow cascades downstream through the Sumidero Canyon into Chicoasén and Malpaso reservoirs."
+    }
+  },
+  "malpaso-nezahualcoyotl": {
+    "history": "Completed in 1966 on the Grijalva River in Chiapas. Holding over 9.6 billion m³, it is Mexico's second largest reservoir and a strategic hydroelectric power generation facility.",
+    "timings": {
+      "hours": "Daylight hours",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 17.1811,
+      "longitude": -93.5978,
+      "flowPath": "Outflow discharges through Peñitas Dam into the coastal plain of Tabasco and the Gulf of Mexico."
+    }
+  },
+  "infiernillo-dam": {
+    "history": "Completed in 1964 across the Balsas River on the border of Michoacán and Guerrero. With a capacity of over 9.3 billion m³, it is one of Mexico's greatest rockfill dams, providing critical power and flood control.",
+    "timings": {
+      "hours": "Daylight hours",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 18.2731,
+      "longitude": -101.9028,
+      "flowPath": "Outflow continues down the Balsas River towards Lázaro Cárdenas on the Pacific Coast."
+    }
+  },
+  "aguamilpa-dam": {
+    "history": "Completed in 1993 across the Santiago River in Nayarit. At 187 meters high, it is a magnificent concrete-face rockfill dam (CFRD) that impounds 6.95 billion m³ for western Mexico's electrical grid.",
+    "timings": {
+      "hours": "Daylight hours",
+      "fountain": "N/A",
+      "fee": "Free"
+    },
+    "map": {
+      "latitude": 21.8389,
+      "longitude": -104.8056,
+      "flowPath": "Outflow discharges down the Santiago River to the Pacific Ocean near San Blas."
+    }
+  },
+  "presa-falcon": {
+    "history": "Dedicated in 1953 by US President Dwight D. Eisenhower and Mexican President Adolfo Ruiz Cortines across the Rio Grande / Río Bravo between Tamaulipas and Texas. It provides transboundary flood control, municipal supply, and irrigation.",
+    "timings": {
+      "hours": "Falcon State Park daylight hours",
+      "fountain": "N/A",
+      "fee": "Park entry fee"
+    },
+    "map": {
+      "latitude": 26.5583,
+      "longitude": -99.1667,
+      "flowPath": "Outflow flows downstream along the lower Rio Grande Valley to the Gulf of Mexico."
+    }
+  },
+  "sameura-dam": {
+    "history": {
+      "en": "Sameura Dam is a major multipurpose dam on the Yoshino River in Kochi Prefecture, known as the Water Jar of Shikoku. It provides flood control, irrigation, and hydroelectric power.",
+      "hi": "समेउरा बांध कोच्चि प्रान्त में योशिनो नदी पर एक प्रमुख बहुउद्देश्यीय बांध है, जिसे शिकोकू का जल पात्र कहा जाता है।",
+      "kn": "ಸಮೇವುರಾ ಅಣೆಕಟ್ಟು ಕೊಚ್ಚಿ ಪ್ರಿಫೆಕ್ಚರ್‌ನ ಯೋಶಿನೋ ನದಿಯ ಮೇಲಿನ ಪ್ರಮುಖ ಬಹುಪಯೋಗಿ ಅಣೆಕಟ್ಟು ಆಗಿದೆ.",
+      "te": "సమెవురా డ్యామ్ కోచి ప్రిఫెక్చర్‌లోని యోషినో నదిపై నిర్మించిన ప్రధాన బహుళార్థసాధక ప్రాజెక్ట్.",
+      "ta": "சமேவுரா அணை கொச்சி மாகாணத்தில் யோஷினோ ஆற்றின் குறுக்கே கட்டப்பட்ட முக்கியமான பல்நோக்கு அணை.",
+      "ml": "കൊച്ചി പ്രിഫെക്ചറിലെ യോഷിനോ നദിയിൽ സ്ഥിതി ചെയ്യുന്ന പ്രധാന അണക്കെട്ടാണ് സമേവുര ഡാം."
+    },
+    "timings": {
+      "hours": {
+        "en": "9:00 AM - 5:00 PM Daily"
+      },
+      "fountain": {
+        "en": "N/A"
+      },
+      "fee": {
+        "en": "Free admission"
+      }
+    },
+    "map": {
+      "flowPath": {
+        "en": "Discharges downstream into the Yoshino River across Tokushima."
+      }
+    }
+  },
+  "tagokura-dam": {
+    "history": {
+      "en": "Tagokura Dam is a large gravity dam on the Tadami River in Fukushima Prefecture, forming Tagokura Lake and powering one of Japan's largest conventional hydroelectric plants.",
+      "hi": "तागोकुरा बांध फुकुशिमा प्रान्त में तादामी नदी पर एक विशाल गुरुत्वाकर्षण बांध है जो तागोकुरा झील बनाता है।",
+      "kn": "ತಾಗೊಕುರಾ ಅಣೆಕಟ್ಟು ಫುಕುಶಿಮಾದ ತದಾಮಿ ನದಿಯ ಮೇಲಿನ ದೊಡ್ಡ ಗುರುತ್ವಾಕರ್ಷಣಾ ಅಣೆಕಟ್ಟಾಗಿದೆ.",
+      "te": "తాగోకురా డ్యామ్ ఫుకుషిమాలోని తదామి నదిపై నిర్మించిన భారీ గ్రావిటీ ప్రాజెక్ట్.",
+      "ta": "தாகோகுரா அணை புகுஷிமாவில் உள்ள ததாமி ஆற்றின் குறுக்கே கட்டப்பட்ட பெரிய புவியீர்ப்பு அணை.",
+      "ml": "ഫുകുഷിമയിലെ തദാമി നദിയിൽ സ്ഥിതി ചെയ്യുന്ന പ്രധാന ഗ്രാവിറ്റി അണക്കെട്ടാണ് താഗോകുര ഡാം."
+    },
+    "timings": {
+      "hours": {
+        "en": "9:00 AM - 4:30 PM Daily"
+      },
+      "fountain": {
+        "en": "N/A"
+      },
+      "fee": {
+        "en": "Free admission"
+      }
+    },
+    "map": {
+      "flowPath": {
+        "en": "Discharges downstream along the Tadami River cascade into Niigata."
+      }
+    }
+  },
+  "cijara-dam": {
+    "history": {
+      "en": "Cíjara Dam is a major reservoir on the Guadiana River in Extremadura, Spain, regulating water storage and irrigation for the Badajoz region.",
+      "hi": "सिहारा बांध स्पेन के एक्स्ट्रेमादुरा में गुआडियाना नदी पर स्थित एक प्रमुख जलाशय है।",
+      "kn": "ಸಿಜಾರಾ ಅಣೆಕಟ್ಟು ಸ್ಪೇನ್‌ನ ಎಕ್ಸ್‌ಟ್ರೆಮಡುರಾದಲ್ಲಿರುವ ಗ್ವಾಡೀಯಾನಾ ನದಿಯ ಮೇಲಿನ ಪ್ರಮುಖ ಜಲಾಶಯವಾಗಿದೆ.",
+      "te": "సిజారా డ్యామ్ స్పెయిన్‌లోని గ్వాడియానా నదిపై నిర్మించిన ప్రధాన రిజర్వాయర్.",
+      "ta": "சிஜாரா அணை ஸ்பெயினின் எக்ஸ்ட்ரீமதுராவில் உள்ள குவாடியானா ஆற்றின் குறுக்கே உள்ள பெரிய நீர்த்தேக்கம்.",
+      "ml": "സ്പെയിനിലെ ഗ്വാഡിയാന നദിയിൽ സ്ഥിതി ചെയ്യുന്ന പ്രധാന ജലാശയമാണ് സിജാറ ഡാം."
+    },
+    "timings": {
+      "hours": {
+        "en": "Open 24 Hours Daily"
+      },
+      "fountain": {
+        "en": "N/A"
+      },
+      "fee": {
+        "en": "Free access"
+      }
+    },
+    "map": {
+      "flowPath": {
+        "en": "Feeds downstream into García de Sola and Orellana reservoirs along the Guadiana."
+      }
+    }
+  },
+  "iznajar-dam": {
+    "history": {
+      "en": "Iznájar Dam forms the largest reservoir in Andalusia, Spain, located on the Genil River across Córdoba, Granada and Málaga provinces.",
+      "hi": "इज़्नाहार बांध अंडालुसिया में जेनिल नदी पर स्थित स्पेन का एक प्रमुख जलाशय है।",
+      "kn": "ಇಜ್ನಾಜರ್ ಅಣೆಕಟ್ಟು ಸ್ಪೇನ್‌ನ ಅಂಡಲೂಸಿಯಾದಲ್ಲಿರುವ ಜೆನಿಲ್ ನದಿಯ ಮೇಲಿನ ಅತಿದೊಡ್ಡ ಜಲಾಶಯವಾಗಿದೆ.",
+      "te": "ఇజ్నాజార్ డ్యామ్ స్పెయిన్‌లోని జెనిల్ నదిపై నిర్మించబడిన అతిపెద్ద రిజర్వాయర్.",
+      "ta": "இஸ்னாஜார் அணை அந்தலூசியாவில் உள்ள ஜெனில் ஆற்றின் குறுக்கே உள்ள மிகப்பெரிய நீர்த்தேக்கம்.",
+      "ml": "സ്പെയിനിലെ ജെനിൽ നദിയിൽ സ്ഥിതി ചെയ്യുന്ന വലിയ അണക്കെട്ടാണ് ഇസ്നാജാർ ഡാം."
+    },
+    "timings": {
+      "hours": {
+        "en": "Open 24 Hours Daily"
+      },
+      "fountain": {
+        "en": "N/A"
+      },
+      "fee": {
+        "en": "Free access"
+      }
+    },
+    "map": {
+      "flowPath": {
+        "en": "Regulates flow down the Genil River into the main Guadalquivir River channel."
+      }
+    }
+  },
+  "lake-argyle-dam": {
+    "history": {
+      "en": "Lake Argyle Dam (Ord River Dam) is Western Australia's largest body of freshwater, storing 10,760 GL to supply the Ord River Irrigation Area.",
+      "hi": "लेक अर्गाइल बांध पश्चिमी ऑस्ट्रेलिया का सबसे बड़ा मीठे पानी का जलाशय है, जो ऑर्ड नदी पर स्थित है।",
+      "kn": "ಲೇಕ್ ಅರ್ಗೈಲ್ ಅಣೆಕಟ್ಟು ಪಶ್ಚಿಮ ಆಸ್ಟ್ರೇಲಿಯಾದ ಅತಿದೊಡ್ಡ ಸಿಹಿನೀರಿನ ಜಲಾಶಯವಾಗಿದೆ.",
+      "te": "లేక్ అర్గైల్ డ్యామ్ పశ్చిమ ఆస్ట్రేలియాలోని అతిపెద్ద మంచినీటి రిజర్వాయర్.",
+      "ta": "லேக் அர்கைல் அணை மேற்கு ஆஸ்திரேலியாவின் மிகப்பெரிய நன்னீர் நீர்த்தேக்கம் ஆகும்.",
+      "ml": "പടിഞ്ഞാറൻ ഓസ്ട്രേലിയയിലെ ഏറ്റവും വലിയ ശുദ്ധജല തടാകമാണ് ലേക്ക് അർഗൈൽ ഡാം."
+    },
+    "timings": {
+      "hours": {
+        "en": "Open Daylight Hours Daily"
+      },
+      "fountain": {
+        "en": "N/A"
+      },
+      "fee": {
+        "en": "Free access"
+      }
+    },
+    "map": {
+      "flowPath": {
+        "en": "Discharges downstream into the lower Ord River and Kununurra Diversion Dam."
+      }
+    }
+  },
+  "wivenhoe-dam": {
+    "history": {
+      "en": "Wivenhoe Dam is Queensland's primary drinking water storage and flood mitigation facility on the Brisbane River, supplying greater Brisbane and Ipswich.",
+      "hi": "विवेनहो बांध ब्रिस्बेन नदी पर क्वींसलैंड का प्राथमिक पेयजल भंडारण और बाढ़ नियंत्रण बांध है।",
+      "kn": "ವಿವೆನ್‌ಹೋ ಅಣೆಕಟ್ಟು ಕ್ವೀನ್ಸ್‌ಲ್ಯಾಂಡ್‌ನ ಪ್ರಮುಖ ಕುಡಿಯುವ ನೀರಿನ ಜಲಾಶಯವಾಗಿದೆ.",
+      "te": "వివెన్‌హో డ్యామ్ క్వీన్స్‌లాండ్‌లోని బ్రిస్బేన్ నదిపై నిర్మించిన ప్రధాన తాగునీటి ప్రాజెక్ట్.",
+      "ta": "விவென்ஹோ அணை குயின்ஸ்லாந்தின் முதன்மை குடிநீர் சேமிப்பு மற்றும் வெள்ளக் கட்டுப்பாட்டு அணை.",
+      "ml": "ക്വീൻസ്‌ലാൻഡിലെ പ്രധാന കുടിവെള്ള സംഭരണിയാണ് വിവെൻഹോ ഡാം."
+    },
+    "timings": {
+      "hours": {
+        "en": "6:00 AM - 6:00 PM Daily"
+      },
+      "fountain": {
+        "en": "N/A"
+      },
+      "fee": {
+        "en": "Free admission"
+      }
+    },
+    "map": {
+      "flowPath": {
+        "en": "Discharges downstream into the Brisbane River towards Moreton Bay."
+      }
+    }
+  },
+  "presa-la-amistad": {
+    "history": {
+      "en": "Presa La Amistad (Amistad Dam) is a major binational reservoir on the Rio Grande (Río Bravo) on the border between Coahuila, Mexico and Texas, USA, managed by the International Boundary and Water Commission.",
+      "hi": "प्रेसा ला अमिस्ताद मेक्सिको और अमेरिका की सीमा पर रियो ग्रांडे नदी पर स्थित एक प्रमुख द्विपक्षीय बांध है।",
+      "kn": "ಪ್ರೆಸಾ ಲಾ ಅಮಿಸ್ಟಾಡ್ ಮೆಕ್ಸಿಕೊ ಮತ್ತು ಯುಎಸ್ ಗಡಿಯಲ್ಲಿರುವ ರಿಯೊ ಗ್ರಾಂಡೆ ನದಿಯ ಮೇಲಿನ ಪ್ರಮುಖ ದ್ವಿಪಕ್ಷೀಯ ಅಣೆಕಟ್ಟು.",
+      "te": "ప్రెసా లా అమిస్టాడ్ మెక్సికో మరియు అమెరికా సరిహద్దులోని రియో గ్రాండే నదిపై నిర్మించిన ప్రాజెక్ట్.",
+      "ta": "பிரேசா லா அமிஸ்டாட் மெக்ஸிகோ மற்றும் அமெரிக்க எல்லைக்கு இடைப்பட்ட பெரிய இருதரப்பு அணை ஆகும்.",
+      "ml": "മെക്സിക്കോയ്ക്കും യുഎസിനും ഇടയിലുള്ള റിയോ ഗ്രാൻഡെ നദിയിലെ പ്രധാന അണക്കെട്ടാണ് പ്രെസ ലാ അമിസ്റ്റാഡ്."
+    },
+    "timings": {
+      "hours": {
+        "en": "Open Daylight Hours Daily"
+      },
+      "fountain": {
+        "en": "N/A"
+      },
+      "fee": {
+        "en": "Free access"
+      }
+    },
+    "map": {
+      "flowPath": {
+        "en": "Releases water downstream along the international Rio Grande reach towards Presa Falcón."
+      }
+    }
+  },
+  "chicoasen-manuel-moreno-torres": {
+    "history": {
+      "en": "Chicoasén Dam (Manuel Moreno Torres) on the Grijalva River in Chiapas is the tallest dam in Mexico (261m) and houses the largest hydroelectric power station in the country (2,400 MW).",
+      "hi": "चिकोआसेन बांध चियापास में ग्रिजल्वा नदी पर स्थित मेक्सिको का सबसे ऊंचा बांध (261 मी) और सबसे बड़ा जलविद्युत स्टेशन है।",
+      "kn": "ಚಿಕೋಅಸೆನ್ ಅಣೆಕಟ್ಟು ಚಿಯಾಪಾಸ್‌ನ ಗ್ರಿಜಾಲ್ವಾ ನದಿಯ ಮೇಲಿರುವ ಮೆಕ್ಸಿಕೊದ ಅತ್ಯಂತ ಎತ್ತರದ ಅಣೆಕಟ್ಟು (261 ಮೀ).",
+      "te": "చికోవాసెన్ డ్యామ్ చియాపాస్‌లోని గ్రిజాల్వా నదిపై నిర్మించిన మెక్సికోలోనే అత్యంత ఎత్తైన డ్యామ్ (261 మీ).",
+      "ta": "சிகோவாசென் அணை மெக்சிகோவின் மிக உயரமான அணை (261 மீ) மற்றும் மிகப்பெரிய நீர்மின் நிலையமாகும்.",
+      "ml": "മെക്സിക്കോയിലെ ഏറ്റവും ഉയരമുള്ള അണക്കെട്ടാണ് ചികോസെൻ ഡാം (261 മീറ്റർ)."
+    },
+    "timings": {
+      "hours": {
+        "en": "8:00 AM - 5:00 PM Daily"
+      },
+      "fountain": {
+        "en": "N/A"
+      },
+      "fee": {
+        "en": "Free access"
+      }
+    },
+    "map": {
+      "flowPath": {
+        "en": "Discharges downstream through the Sumidero Canyon cascade into the Malpaso reservoir."
+      }
     }
   }
 }

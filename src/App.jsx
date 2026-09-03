@@ -7,34 +7,99 @@ import DAMS_THAILAND from "./data/dams_thailand.json";
 import DAMS_NEPAL from "./data/dams_nepal.json";
 import DAMS_LAOS from "./data/dams_laos.json";
 import DAMS_VIETNAM from "./data/dams_vietnam.json";
+import DAMS_JAPAN from "./data/dams_japan.json";
+import DAMS_SPAIN from "./data/dams_spain.json";
+import DAMS_AUSTRALIA from "./data/dams_australia.json";
+import DAMS_MEXICO from "./data/dams_mexico.json";
 import SCRAPE_STATUS from "./data/scrape_status.json";
 import DAM_STATIC_INFO from "./data/dam_static_info.json";
 import TRANSLATIONS from "./data/translations.json";
 
 const DAMS = DAMS_INDIA;
-const ALL_DAMS = [...DAMS_INDIA, ...DAMS_USA, ...DAMS_BRAZIL, ...DAMS_THAILAND, ...DAMS_NEPAL, ...DAMS_LAOS, ...DAMS_VIETNAM];
+const ALL_DAMS = [
+  ...DAMS_INDIA,
+  ...DAMS_USA,
+  ...DAMS_BRAZIL,
+  ...DAMS_THAILAND,
+  ...DAMS_NEPAL,
+  ...DAMS_LAOS,
+  ...DAMS_VIETNAM,
+  ...DAMS_JAPAN,
+  ...DAMS_SPAIN,
+  ...DAMS_AUSTRALIA,
+  ...DAMS_MEXICO
+];
 
 const COUNTRIES = [
-  { code: "India", label: "India", name: "India", sub: "India" },
-  { code: "USA", label: "USA", name: "USA", sub: "United States" },
-  { code: "Brazil", label: "Brazil", name: "Brazil", sub: "Brazil" },
-  { code: "Thailand", label: "Thailand", name: "Thailand", sub: "Thailand" },
-  { code: "Nepal", label: "Nepal", name: "Nepal", sub: "Nepal" },
-  { code: "Laos", label: "Laos", name: "Laos", sub: "Laos" },
-  { code: "Vietnam", label: "Vietnam", name: "Vietnam", sub: "Vietnam" }
+  { code: "India", label: "India", name: "India", flag: "🇮🇳", sub: "India" },
+  { code: "USA", label: "USA", name: "USA", flag: "🇺🇸", sub: "United States" },
+  { code: "Brazil", label: "Brazil", name: "Brazil", flag: "🇧🇷", sub: "Brazil" },
+  { code: "Japan", label: "Japan", name: "Japan", flag: "🇯🇵", sub: "Japan" },
+  { code: "Spain", label: "Spain", name: "Spain", flag: "🇪🇸", sub: "Spain" },
+  { code: "Australia", label: "Australia", name: "Australia", flag: "🇦🇺", sub: "Australia" },
+  { code: "Mexico", label: "Mexico", name: "Mexico", flag: "🇲🇽", sub: "Mexico" },
+  { code: "Thailand", label: "Thailand", name: "Thailand", flag: "🇹🇭", sub: "Thailand" },
+  { code: "Nepal", label: "Nepal", name: "Nepal", flag: "🇳🇵", sub: "Nepal" },
+  { code: "Laos", label: "Laos", name: "Laos", flag: "🇱🇦", sub: "Laos" },
+  { code: "Vietnam", label: "Vietnam", name: "Vietnam", flag: "🇻🇳", sub: "Vietnam" }
 ];
 
 const COUNTRY_ZONES = {
   "India": ["All", "North", "South", "East", "West", "Central"],
   "USA": ["All", "California", "Colorado River", "Columbia River", "Missouri River", "Tennessee River"],
   "Brazil": ["All", "Amazon", "São Francisco", "Paraná"],
+  "Japan": ["All", "Chubu", "Kanto", "Tohoku", "Shikoku"],
+  "Spain": ["All", "Guadiana Basin", "Tagus Basin", "Duero Basin"],
+  "Australia": ["All", "Murray-Darling Basin", "East Coast Basin", "North Coast Basin"],
+  "Mexico": ["All", "Grijalva-Usumacinta Basin", "Balsas Basin", "Santiago Basin", "Rio Bravo Basin"],
   "Thailand": ["All", "Mekong Basin", "Northern Basin", "Western Basin", "Southern Basin"],
   "Nepal": ["All", "Bagmati Basin", "Gandaki Basin", "Koshi Basin", "Mahakali Basin"],
   "Laos": ["All", "Mekong Mainstream", "Nam Ngum Basin", "Nam Theun Basin", "Nam Ou Cascade"],
   "Vietnam": ["All", "Sesan Basin (Mekong)", "Srepok Basin (Mekong)", "Northern Basin", "Southern Basin"]
 };
 
-// ===================== MONGODB VERCEL SERVERLESS TELEMETRY API =====================
+// ===================== USER-FRIENDLY SCHEDULE RESOLVER =====================
+const getUpdateSchedule = (dam) => {
+  if (!dam) return "Updated Daily from Official Government Records";
+  if (dam.update_schedule) return dam.update_schedule;
+  const country = dam.country || "India";
+  if (country === "Japan") {
+    return "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records";
+  }
+  if (country === "Spain") {
+    return "Updated Weekly every Tuesday from Official Government Records";
+  }
+  if (country === "Australia") {
+    return "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records";
+  }
+  if (country === "Mexico") {
+    return "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records";
+  }
+  if (country === "USA") {
+    if (dam.state === "California" || (dam.data_source && dam.data_source.includes("CDEC"))) {
+      return "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records";
+    }
+    return "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records";
+  }
+  if (country === "Brazil") {
+    return "Updated Daily at 03:30 PM IST (10:00 UTC) from Official Government Records";
+  }
+  if (country === "Thailand" || country === "Laos") {
+    return "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records";
+  }
+  if (country === "Nepal" || country === "Vietnam") {
+    return "Updated Daily at 03:30 PM IST (10:00 UTC) from Official Government Records";
+  }
+  // India
+  const name = (dam.name || "").toLowerCase();
+  const state = (dam.state || "").toLowerCase();
+  if (name.includes("tungabhadra") || state.includes("tamil nadu") || name.includes("bhakra") || name.includes("pong") || name.includes("gobind sagar")) {
+    return "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records";
+  }
+  return "Updated Weekly every Thursday at 03:30 PM IST (10:00 UTC) from Official Government Records";
+};
+
+
 const callMongo = async (action, collection, payload = {}) => {
   try {
     if (collection === "page_views") {
@@ -583,32 +648,42 @@ function WaterViz({ level = 0, outflow = null, capacity = 0, active }) {
 
 // ===================== FRESHNESS & TELEMETRY INFO MODAL =====================
 // ===================== FRESHNESS & TELEMETRY INFO MODAL =====================
+
 function FreshnessPill({ dam, onOpenInfo, t }) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const isWeekly = dam.data_frequency === "weekly" || (dam.data_source && dam.data_source.includes("CWC"));
-  const isLive = dam.data_frequency === "daily" || (dam.data_source && (dam.data_source.includes("TN") || dam.data_source.includes("TB") || dam.data_source.includes("BBMB") || dam.data_source.includes("USGS") || dam.data_source.includes("EGAT") || dam.data_source.includes("ONS") || dam.data_source.includes("DHM") || dam.data_source.includes("MRC") || dam.data_source.includes("EVN")));
+  const sched = getUpdateSchedule(dam);
+  const is10Min = dam.data_frequency === "10min" || (dam.country === "Japan");
+  const isWeekly = dam.data_frequency === "weekly" || sched.includes("Weekly");
+  const isLive = !isWeekly;
 
   let bg = "rgba(100, 116, 139, 0.12)";
   let border = "rgba(148, 163, 184, 0.25)";
   let color = "#94A3B8";
   let dotColor = "#94A3B8";
   let label = t ? t("baselineData") : "Reference Data";
-  let tooltipText = t ? t("baselineTooltip") : "Official government baseline water capacity & survey specifications.";
+  let tooltipText = sched;
 
-  if (isLive) {
-    bg = "rgba(34, 197, 94, 0.1)";
-    border = "rgba(34, 197, 94, 0.25)";
-    color = "#86EFAC";
-    dotColor = "#22C55E";
-    label = t ? t("verifiedLive") : "Live (Daily)";
-    tooltipText = t ? t("liveTooltip") : "Updated daily from official government telemetry records.";
+  if (is10Min) {
+    bg = "rgba(6, 182, 212, 0.12)";
+    border = "rgba(6, 182, 212, 0.35)";
+    color = "#67E8F9";
+    dotColor = "#06B6D4";
+    label = "Live (10 Min)";
+    tooltipText = sched;
   } else if (isWeekly) {
     bg = "rgba(56, 189, 248, 0.1)";
     border = "rgba(56, 189, 248, 0.25)";
     color = "#7DD3FC";
     dotColor = "#38BDF8";
     label = t ? t("weeklyReport") : "Weekly Report";
-    tooltipText = t ? t("weeklyTooltip") : "Official government reservoir storage report, updated weekly on Thursdays.";
+    tooltipText = sched;
+  } else if (isLive) {
+    bg = "rgba(34, 197, 94, 0.1)";
+    border = "rgba(34, 197, 94, 0.25)";
+    color = "#86EFAC";
+    dotColor = "#22C55E";
+    label = t ? t("verifiedLive") : "Live (Daily)";
+    tooltipText = sched;
   }
 
   return (
@@ -637,59 +712,49 @@ function FreshnessPill({ dam, onOpenInfo, t }) {
           background: bg,
           border: `1px solid ${border}`,
           color: color,
-          fontSize: 10.5,
+          fontSize: 10,
           fontWeight: 700,
           cursor: "pointer",
-          transition: "all 0.2s ease",
-          lineHeight: 1.2
-        }}
-        onMouseEnterCapture={(e) => {
-          e.currentTarget.style.transform = "scale(1.04)";
-          e.currentTarget.style.borderColor = color;
-        }}
-        onMouseLeaveCapture={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.borderColor = border;
+          transition: "all 0.2s ease"
         }}
       >
-        <span style={{ width: 6, height: 6, borderRadius: "50%", background: dotColor, boxShadow: `0 0 6px ${dotColor}` }}></span>
+        <span style={{
+          width: 6,
+          height: 6,
+          borderRadius: "50%",
+          backgroundColor: dotColor,
+          display: "inline-block",
+          animation: (isLive || is10Min) ? "pulse 2s infinite" : "none"
+        }} />
         <span>{label}</span>
       </button>
 
-      {/* Instant Interactive Hover / Mobile Touch Tooltip */}
       {showTooltip && (
-        <div
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            position: "absolute",
-            bottom: "calc(100% + 6px)",
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "rgba(3, 10, 20, 0.96)",
-            backdropFilter: "blur(14px)",
-            border: "1px solid rgba(6, 182, 212, 0.35)",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.6)",
-            borderRadius: 8,
-            padding: "6px 10px",
-            color: "#E0F2FE",
-            fontSize: 10.5,
-            fontWeight: 500,
-            lineHeight: 1.35,
-            whiteSpace: "normal",
-            width: "max-content",
-            maxWidth: 220,
-            zIndex: 1000,
-            pointerEvents: "none",
-            textAlign: "center",
-            animation: "fadeIn 0.15s ease-out"
-          }}
-        >
+        <div style={{
+          position: "absolute",
+          bottom: "125%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "rgba(3, 10, 20, 0.95)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(6, 182, 212, 0.4)",
+          borderRadius: 8,
+          padding: "6px 10px",
+          color: "#E0F2FE",
+          fontSize: 11,
+          whiteSpace: "nowrap",
+          zIndex: 100,
+          boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+          pointerEvents: "none",
+          animation: "fadeSlideUp 0.15s ease-out"
+        }}>
           {tooltipText}
         </div>
       )}
     </div>
   );
 }
+
 
 function FlowStatusTag({ dam, t }) {
   const status = dam.flow_status || (dam.outflow === 0 ? "GATES_CLOSED" : dam.inflow === 0 ? "LOW_INFLOW" : "NORMAL_FLOW");
@@ -750,13 +815,11 @@ function FlowStatusTag({ dam, t }) {
   return null;
 }
 
+
 function DamInfoModal({ dam, onClose, t }) {
   if (!dam) return null;
-  const isWeekly = dam.data_frequency === "weekly" || (dam.data_source && dam.data_source.includes("CWC"));
-  const sourceName = t ? t("officialGovSource") : "Collected from Official Government Records";
-  const updateTiming = isWeekly 
-    ? (t ? t("weeklyTooltip") : "Official government reservoir storage report, updated weekly on Thursdays.") 
-    : (t ? t("liveTooltip") : "Updated daily from official government telemetry records.");
+  const sourceName = "Official Government Records & Telemetry";
+  const updateTiming = getUpdateSchedule(dam);
 
   let flowExpl = "Spillways and canal discharges operate under standard seasonal regulation.";
   if (dam.outflow === 0 || dam.flow_status === "GATES_CLOSED") {
@@ -833,49 +896,40 @@ function DamInfoModal({ dam, onClose, t }) {
 
           <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "10px 14px" }}>
             <div style={{ fontSize: 10, color: "rgba(220, 240, 255, 0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
-              {t ? t("updateSchedule") : "Update Schedule & Recording Frequency"}
+              {t ? t("updateFrequency") : "Update Schedule"}
             </div>
-            <div style={{ fontSize: 12, color: "#E0F2FE", marginTop: 3, lineHeight: 1.4 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#67E8F9", marginTop: 3 }}>
               {updateTiming}
             </div>
-            {dam.last_updated && (
-              <div style={{ fontSize: 11, color: "#86EFAC", fontWeight: 600, marginTop: 4 }}>
-                Last synced: {dam.last_updated} IST
-              </div>
-            )}
           </div>
 
-          <div style={{ background: "rgba(6, 182, 212, 0.05)", border: "1px solid rgba(6, 182, 212, 0.18)", borderRadius: 10, padding: "10px 14px" }}>
-            <div style={{ fontSize: 10, color: "#67E8F9", textTransform: "uppercase", letterSpacing: 1 }}>
-              {t ? t("flowExplanation") : "Hydrological State (Why values may be 0)"}
+          <div style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "10px 14px" }}>
+            <div style={{ fontSize: 10, color: "rgba(220, 240, 255, 0.4)", textTransform: "uppercase", letterSpacing: 1 }}>
+              {t ? t("flowRegulationStatus") : "Flow Regulation Status"}
             </div>
-            <div style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.85)", marginTop: 4, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: "rgba(224, 242, 254, 0.8)", marginTop: 4, lineHeight: 1.5 }}>
               {flowExpl}
             </div>
-          </div>
-
-          <div style={{ fontSize: 10.5, color: "rgba(224, 242, 254, 0.35)", textAlign: "center", marginTop: 4 }}>
-            🛡️ {t ? t("noDummyDataNote") : "Damtoday strictly collects official government records without synthetic or dummy data."}
           </div>
         </div>
 
         <button
           onClick={onClose}
           style={{
-            marginTop: 18, width: "100%", padding: "10px 0", borderRadius: 10,
+            marginTop: 20, width: "100%", padding: "10px 0",
             background: "linear-gradient(135deg, #0284C7, #06B6D4)",
-            border: "none", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
-            boxShadow: "0 4px 14px rgba(6, 182, 212, 0.3)"
+            border: "none", borderRadius: 10, color: "#fff",
+            fontSize: 13, fontWeight: 700, cursor: "pointer"
           }}
         >
-          {t ? t("understood") : "Understood"}
+          {t ? t("close") : "Close"}
         </button>
       </div>
     </div>
   );
 }
 
-// ===================== DAM CARD =====================
+
 function DamCard({ dam, delay, onClick, onOpenInfo, t }) {
   const ref=useRef(null);
   const [vis,setVis]=useState(false);
@@ -1127,6 +1181,7 @@ function useVisitorTracking() {
 }
 
 // ===================== ANALYTICS DASHBOARD =====================
+
 function AnalyticsDashboard({ navigate, setView, searchHistory, selectedCountry = "India", countryDams = DAMS_INDIA }) {
   const activeDams = countryDams || DAMS;
   const currentCountry = selectedCountry || "India";
@@ -1961,6 +2016,7 @@ function AnalyticsDashboard({ navigate, setView, searchHistory, selectedCountry 
 }
 
 // ===================== DAM DETAIL PAGE =====================
+
 function HistoricalCharts({ dam, safeLevel }) {
   const [period, setPeriod] = useState("7D"); // "7D", "30D", "90D", "6M", "1Y", "ALL", "CUSTOM"
   const [customStartDate, setCustomStartDate] = useState("");
@@ -2962,6 +3018,7 @@ function HistoricalCharts({ dam, safeLevel }) {
 
 // ===================== DAM DETAIL PAGE =====================
 
+
 function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = "India", onOpenInfo }) {
   const [shareCopied, setShareCopied] = useState(false);
   const safeLevel = typeof dam.level === 'number' ? dam.level : parseFloat(dam.level) || 0;
@@ -3419,6 +3476,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = 
 }
 
 // ===================== ABOUT US PAGE =====================
+
 function AboutUsPage({ navigate, setView, lang, t }) {
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 16px", animation: "fadeSlideUp 0.5s ease" }}>
@@ -3633,9 +3691,11 @@ function PrivacyPolicyPage({ navigate, setView, lang, t }) {
     </div>
   );
 }
+
 const getDamSlug = (name) => {
   return name
     .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9\-]/g, '')
     .replace(/\-+/g, '-')
@@ -3643,12 +3703,23 @@ const getDamSlug = (name) => {
 };
 
 const getStateSlug = (state) => {
-  if (state === "all") return "";
-  return state.toLowerCase().replace(/\s+/g, '-');
+  if (!state || state === "all") return "";
+  return state
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+    .replace(/\-+/g, '-')
+    .replace(/(^-|-$)/g, '');
 };
 
 const getZoneSlug = (zone) => {
-  return zone.toLowerCase();
+  if (!zone || zone === "All") return "all";
+  return zone
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '');
 };
 
 const getZoneFromSlug = (slug) => {
@@ -3682,11 +3753,32 @@ const STATE_TO_ZONE = {
   "Bahia": "São Francisco", "Sergipe": "São Francisco",
   "Paraná": "Paraná", "São Paulo": "Paraná", "Minas Gerais": "São Francisco",
 
+  // Japan
+  "Toyama": "Chubu", "Gifu": "Chubu", "Fukushima": "Tohoku", "Niigata": "Tohoku",
+  "Gunma": "Kanto", "Kanagawa": "Kanto", "Kochi": "Shikoku",
+
+  // Spain
+  "Extremadura": "Guadiana Basin", "Castile and León": "Duero Basin",
+  "Castilla-La Mancha": "Tagus Basin", "Aragon": "Ebro Basin", "Andalusia": "Guadalquivir Basin",
+
+  // Australia
+  "Victoria": "Murray-Darling Basin", "New South Wales": "Murray-Darling Basin",
+  "Queensland": "North Coast Basin", "Western Australia": "North Coast Basin",
+
+  // Mexico
+  "Chiapas": "Grijalva-Usumacinta Basin", "Michoacán": "Balsas Basin", "Guerrero": "Balsas Basin",
+  "Nayarit": "Santiago Basin", "Tamaulipas": "Rio Bravo Basin", "Coahuila": "Rio Bravo Basin",
+
   // Thailand
   "Tak": "Northern Basin", "Uttaradit": "Northern Basin",
   "Kanchanaburi": "Western Basin",
   "Ubon Ratchathani": "Mekong Basin", "Khon Kaen": "Mekong Basin", "Chaiyaphum": "Mekong Basin", "Sakon Nakhon": "Mekong Basin",
   "Surat Thani": "Southern Basin", "Yala": "Southern Basin",
+
+  // Nepal
+  "Makwanpur": "Bagmati Basin", "Dolakha": "Koshi Basin", "Saptari": "Koshi Basin",
+  "Syangja": "Gandaki Basin", "Tanahun": "Gandaki Basin", "Lamjung": "Gandaki Basin", "Nuwakot": "Gandaki Basin", "Rasuwa": "Gandaki Basin", "Nawalparasi": "Gandaki Basin",
+  "Darchula": "Mahakali Basin",
 
   // Laos
   "Xayabury": "Mekong Mainstream", "Champasak": "Mekong Mainstream",
@@ -3729,11 +3821,39 @@ const ZONE_MAP = {
   "São Francisco": ["Bahia", "Sergipe", "Minas Gerais"],
   "Paraná": ["Paraná", "São Paulo", "Goiás", "Minas Gerais"],
 
+  // Japan
+  "Chubu": ["Toyama", "Gifu"],
+  "Kanto": ["Gunma", "Kanagawa"],
+  "Tohoku": ["Fukushima", "Niigata"],
+  "Shikoku": ["Kochi"],
+
+  // Spain
+  "Guadiana Basin": ["Extremadura"],
+  "Tagus Basin": ["Extremadura", "Castilla-La Mancha"],
+  "Duero Basin": ["Castile and León"],
+
+  // Australia
+  "Murray-Darling Basin": ["Victoria", "New South Wales"],
+  "East Coast Basin": ["New South Wales"],
+  "North Coast Basin": ["Queensland", "Western Australia"],
+
+  // Mexico
+  "Grijalva-Usumacinta Basin": ["Chiapas"],
+  "Balsas Basin": ["Michoacán", "Guerrero"],
+  "Santiago Basin": ["Nayarit"],
+  "Rio Bravo Basin": ["Tamaulipas", "Coahuila"],
+
   // Thailand
   "Mekong Basin": ["Ubon Ratchathani", "Khon Kaen", "Chaiyaphum", "Sakon Nakhon"],
   "Northern Basin": ["Tak", "Uttaradit"],
   "Western Basin": ["Kanchanaburi"],
   "Southern Basin": ["Surat Thani", "Yala"],
+
+  // Nepal
+  "Bagmati Basin": ["Makwanpur"],
+  "Gandaki Basin": ["Syangja", "Tanahun", "Lamjung", "Nuwakot", "Rasuwa", "Nawalparasi"],
+  "Koshi Basin": ["Dolakha", "Saptari"],
+  "Mahakali Basin": ["Darchula"],
 
   // Laos
   "Mekong Mainstream": ["Xayabury", "Champasak"],
@@ -3750,88 +3870,14 @@ const ZONE_MAP = {
 
 
 const getLocalizedState = (stateName, lang) => {
-  const s = stateName || "Karnataka";
-  if (s === "Karnataka") {
-    if (lang === "hi") return "कर्नाटक";
-    if (lang === "kn") return "ಕರ್ನಾಟಕ";
-    if (lang === "te") return "కర్ణాటక";
-    if (lang === "ta") return "கர்நாடகா";
-    if (lang === "ml") return "ಕರ್ನಾಟಕ";
-  }
-  if (s === "Tamil Nadu") {
-    if (lang === "hi") return "तमिलनाडु";
-    if (lang === "kn") return "ತಮಿಳುನಾಡು";
-    if (lang === "te") return "తమిళనాడు";
-    if (lang === "ta") return "தமிழ்நாடு";
-    if (lang === "ml") return "തമിഴ്നാട്";
-  }
-  if (s === "Kerala") {
-    if (lang === "hi") return "केरल";
-    if (lang === "kn") return "ಕೇರಳ";
-    if (lang === "te") return "కేరళ";
-    if (lang === "ta") return "கேரளா";
-    if (lang === "ml") return "കേരളം";
-  }
-  if (s === "Andhra Pradesh") {
-    if (lang === "hi") return "आंध्र प्रदेश";
-    if (lang === "kn") return "ಆಂಧ್ರ ಪ್ರದೇಶ";
-    if (lang === "te") return "ఆంధ్రప్రదేశ్";
-    if (lang === "ta") return "ஆந்திரப் பிரதேசம்";
-    if (lang === "ml") return "ஆന്ധ്രാപ്രദേശ്";
-  }
-  if (s === "Telangana") {
-    if (lang === "hi") return "तेलंगाना";
-    if (lang === "kn") return "ತೆಲಂಗಾಣ";
-    if (lang === "te") return "తెలంగాణ";
-    if (lang === "ta") return "தெலுங்கானா";
-    if (lang === "ml") return "തെലങ്കാന";
-  }
-  return s;
+  if (!stateName) return "";
+  if (TRANSLATIONS[lang]?.[stateName]) return TRANSLATIONS[lang][stateName];
+  return stateName;
 };
 
 const getLocalizedZone = (zone, lang) => {
-  if (zone === "All") {
-    if (lang === "hi") return "सभी";
-    if (lang === "kn") return "ಎಲ್ಲಾ";
-    if (lang === "te") return "అన్నీ";
-    if (lang === "ta") return "அனைத்தும்";
-    if (lang === "ml") return "എല്ലാം";
-  }
-  if (zone === "North") {
-    if (lang === "hi") return "उत्तर";
-    if (lang === "kn") return "ಉತ್ತರ";
-    if (lang === "te") return "ఉత్తర";
-    if (lang === "ta") return "வடக்கு";
-    if (lang === "ml") return "വടക്ക്";
-  }
-  if (zone === "South") {
-    if (lang === "hi") return "दक्षिण";
-    if (lang === "kn") return "ದಕ್ಷಿಣ";
-    if (lang === "te") return "ದಕ್ಷಿಣ";
-    if (lang === "ta") return "தெற்கு";
-    if (lang === "ml") return "തെക്ക്";
-  }
-  if (zone === "East") {
-    if (lang === "hi") return "पूर्व";
-    if (lang === "kn") return "ಪೂರ್ವ";
-    if (lang === "te") return "తూర్పు";
-    if (lang === "ta") return "கிழக்கு";
-    if (lang === "ml") return "കിഴക്ക്";
-  }
-  if (zone === "West") {
-    if (lang === "hi") return "पश्चिम";
-    if (lang === "kn") return "ಪಶ್ಚಿಮ";
-    if (lang === "te") return "పడమర";
-    if (lang === "ta") return "மேற்கு";
-    if (lang === "ml") return "പടിഞ്ഞാറ്";
-  }
-  if (zone === "Central") {
-    if (lang === "hi") return "मध्य";
-    if (lang === "kn") return "ಮಧ್ಯ";
-    if (lang === "te") return "మధ్య";
-    if (lang === "ta") return "மத்திய";
-    if (lang === "ml") return "മധ്യം";
-  }
+  if (!zone) return "";
+  if (TRANSLATIONS[lang]?.[zone]) return TRANSLATIONS[lang][zone];
   return zone;
 };
 
@@ -3863,11 +3909,12 @@ function useRouter() {
   return { path, navigate };
 }
 
-// Dynamic slider dams per active country: strictly top 5 largest for USA and Brazil
+
+// Dynamic slider dams per active country: strictly top 5 largest/featured for each country
 const getFeaturedDamsForCountry = (countryDamsList, countryName) => {
   if (!countryDamsList || countryDamsList.length === 0) return [];
   if (countryName === "USA") {
-    const usTop5Names = ["Hoover Dam","Glen Canyon Dam","Grand Coulee","Shasta","Oroville"];
+    const usTop5Names = ["Hoover Dam", "Glen Canyon Dam", "Grand Coulee", "Shasta", "Oroville"];
     const found = [];
     for (const key of usTop5Names) {
       const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
@@ -3876,7 +3923,7 @@ const getFeaturedDamsForCountry = (countryDamsList, countryName) => {
     return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
   }
   if (countryName === "Brazil") {
-    const brTop5Names = ["Serra da Mesa","Tucuruí","Sobradinho","Itaipu","Furnas"];
+    const brTop5Names = ["Serra da Mesa", "Tucuruí", "Sobradinho", "Itaipu", "Furnas"];
     const found = [];
     for (const key of brTop5Names) {
       const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
@@ -3884,38 +3931,88 @@ const getFeaturedDamsForCountry = (countryDamsList, countryName) => {
     }
     return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
   }
+  if (countryName === "Japan") {
+    const jpTop5Names = ["Kurobe", "Tokuyama", "Okutadami", "Yagisawa", "Miyagase"];
+    const found = [];
+    for (const key of jpTop5Names) {
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
+  if (countryName === "Spain") {
+    const esTop3Names = ["La Serena", "Alcántara", "Almendra"];
+    const found = [];
+    for (const key of esTop3Names) {
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length > 0 ? found : countryDamsList;
+  }
+  if (countryName === "Australia") {
+    const auTop5Names = ["Dartmouth", "Hume", "Warragamba", "Eildon", "Burdekin Falls"];
+    const found = [];
+    for (const key of auTop5Names) {
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
+  if (countryName === "Mexico") {
+    const mxTop5Names = ["Angostura", "Malpaso", "Infiernillo", "Aguamilpa", "Falcón"];
+    const found = [];
+    for (const key of mxTop5Names) {
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
   if (countryName === "Thailand") {
-    const thTop5Names = ["Bhumibol Dam","Sirikit Dam","Srinagarind Dam","Vajiralongkorn Dam","Sirindhorn Dam"];
+    const thTop5Names = ["Bhumibol", "Sirikit", "Srinagarind", "Vajiralongkorn", "Sirindhorn"];
     const found = [];
     for (const key of thTop5Names) {
-      const d = countryDamsList.find(item => item.name === key || item.name.includes(key));
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
       if (d && !found.includes(d)) found.push(d);
     }
-    return found.length > 0 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+  }
+  if (countryName === "Nepal") {
+    const npTop5Names = ["Kulekhani", "Kaligandaki", "Marshyangdi", "Middle Marsyangdi", "Trishuli"];
+    const found = [];
+    for (const key of npTop5Names) {
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
+      if (d && !found.includes(d)) found.push(d);
+    }
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
   }
   if (countryName === "Laos") {
-    const laTop5Names = ["Nam Theun 2 Dam","Nam Ngum 1 Dam","Xayaburi Dam","Theun-Hinboun Dam","Nam Ou 5 Dam"];
+    const laosTop5Names = ["Xayaburi", "Don Sahong", "Nam Ngum", "Nam Theun", "Theun-Hinboun"];
     const found = [];
-    for (const key of laTop5Names) {
-      const d = countryDamsList.find(item => item.name === key || item.name.includes(key));
+    for (const key of laosTop5Names) {
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
       if (d && !found.includes(d)) found.push(d);
     }
-    return found.length > 0 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
   }
   if (countryName === "Vietnam") {
-    const vnTop5Names = ["Hoa Binh Dam","Son La Dam","Yali Falls Dam","Tri An Dam","Plei Krong Dam"];
+    const vnTop5Names = ["Son La", "Hoa Binh", "Yali Falls", "Plei Krông", "Tri An"];
     const found = [];
     for (const key of vnTop5Names) {
-      const d = countryDamsList.find(item => item.name === key || item.name.includes(key));
+      const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
       if (d && !found.includes(d)) found.push(d);
     }
-    return found.length > 0 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
+    return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
   }
-  // India — top 5 most iconic
-  const inFeatured = ["Tehri Dam","Sardar Sarovar","Nagarjunsagar","Bhakra","Hirakud"];
-  const found = inFeatured.map(n => countryDamsList.find(d => d.name === n || d.name.startsWith(n))).filter(Boolean);
+  // India
+  const indiaTop5Names = ["Krishna Raja Sagara", "Bhakra", "Hirakud", "Sardar Sarovar", "Nagarjuna Sagar"];
+  const found = [];
+  for (const key of indiaTop5Names) {
+    const d = countryDamsList.find(item => item.name.includes(key) || (item.name && key.includes(item.name)));
+    if (d && !found.includes(d)) found.push(d);
+  }
   return found.length >= 5 ? found.slice(0, 5) : countryDamsList.slice(0, 5);
 };
+
 
 const DAM_PHOTOS = {
   // India
@@ -4018,6 +4115,66 @@ const DAM_PHOTOS = {
   "Furnas": "/images/dams/furnas_dam.jpg",
   "Belo Monte": "/images/dams/belo_monte_dam.jpg",
 
+  // Japan
+  "Kurobe Dam": "/images/dams/kurobe.jpg",
+  "Kurobe": "/images/dams/kurobe.jpg",
+  "Tokuyama Dam": "/images/dams/tokuyama.jpg",
+  "Tokuyama": "/images/dams/tokuyama.jpg",
+  "Okutadami Dam": "/images/dams/okutadami.jpg",
+  "Okutadami": "/images/dams/okutadami.jpg",
+  "Yagisawa Dam": "/images/dams/yagisawa.jpg",
+  "Yagisawa": "/images/dams/yagisawa.jpg",
+  "Miyagase Dam": "/images/dams/miyagase.jpg",
+  "Miyagase": "/images/dams/miyagase.jpg",
+  "Sameura Dam": "/images/dams/sameura.jpg",
+  "Sameura": "/images/dams/sameura.jpg",
+  "Tagokura Dam": "/images/dams/tagokura.jpg",
+  "Tagokura": "/images/dams/tagokura.jpg",
+
+  // Spain
+  "La Serena Dam": "/images/dams/la_serena.jpg",
+  "Alcántara Dam": "/images/dams/alcantara.jpg",
+  "Almendra Dam": "/images/dams/almendra.jpg",
+  "Buendía Dam": "/images/dams/buendia.jpg",
+  "Mequinenza Dam": "/images/dams/mequinenza.jpg",
+  "Cijara Dam": "/images/dams/cijara.jpg",
+  "Iznájar Dam": "/images/dams/iznajar.jpg",
+
+  // Australia
+  "Dartmouth Dam": "/images/dams/dartmouth.jpg",
+  "Dartmouth": "/images/dams/dartmouth.jpg",
+  "Hume Dam": "/images/dams/hume.jpg",
+  "Hume": "/images/dams/hume.jpg",
+  "Warragamba Dam": "/images/dams/warragamba.jpg",
+  "Warragamba": "/images/dams/warragamba.jpg",
+  "Lake Eildon Dam": "/images/dams/lake_eildon.jpg",
+  "Lake Eildon": "/images/dams/lake_eildon.jpg",
+  "Eildon": "/images/dams/lake_eildon.jpg",
+  "Burdekin Falls Dam": "/images/dams/burdekin_falls.jpg",
+  "Burdekin Falls": "/images/dams/burdekin_falls.jpg",
+  "Burdekin": "/images/dams/burdekin_falls.jpg",
+  "Lake Argyle Dam": "/images/dams/lake_argyle.jpg",
+  "Wivenhoe Dam": "/images/dams/wivenhoe.jpg",
+
+  // Mexico
+  "Belisario Domínguez (La Angostura)": "/images/dams/la_angostura.jpg",
+  "Belisario Domínguez": "/images/dams/la_angostura.jpg",
+  "Belisario Dominguez": "/images/dams/la_angostura.jpg",
+  "La Angostura": "/images/dams/la_angostura.jpg",
+  "Malpaso (Nezahualcóyotl)": "/images/dams/malpaso.jpg",
+  "Malpaso": "/images/dams/malpaso.jpg",
+  "Nezahualcóyotl": "/images/dams/malpaso.jpg",
+  "Infiernillo Dam": "/images/dams/infiernillo.jpg",
+  "Infiernillo": "/images/dams/infiernillo.jpg",
+  "Aguamilpa Dam": "/images/dams/aguamilpa.jpg",
+  "Aguamilpa": "/images/dams/aguamilpa.jpg",
+  "Presa Falcón": "/images/dams/presa_falcon.jpg",
+  "Presa Falcon": "/images/dams/presa_falcon.jpg",
+  "Falcón": "/images/dams/presa_falcon.jpg",
+  "Falcon": "/images/dams/presa_falcon.jpg",
+  "Presa La Amistad": "/images/dams/la_amistad.jpg",
+  "Chicoasén (Manuel Moreno Torres)": "/images/dams/chicoasen.jpg",
+
   // Thailand
   "Bhumibol Dam": "/images/dams/bhumibol.jpg",
   "Sirikit Dam": "/images/dams/sirikit.jpg",
@@ -4078,6 +4235,7 @@ const getDamPhoto = (damObj) => {
   const idNum = typeof damObj.id === 'number' ? damObj.id : (raw.length || 0);
   return FALLBACK_PHOTOS[idNum % FALLBACK_PHOTOS.length];
 };
+
 
 const PALETTES = [
   {bg:'radial-gradient(ellipse 140% 100% at 65% 0%, #0c2a4a 0%, #030A14 60%)', accent:'#06B6D4', glow:'rgba(6,182,212,0.12)'},
@@ -4209,11 +4367,19 @@ function HeroDamSlider({
           <span style={{ fontSize:10, fontWeight:700, color:'rgba(224,242,254,0.5)', letterSpacing:1 }}>LIVE</span>
         </div>
         <div style={{ overflow:'hidden', flex:1 }}>
-          <div className="hero-live-ticker-track" style={{
-            display:'inline-block', whiteSpace:'nowrap', fontFamily:'monospace',
-            fontSize:11, color:`${pal.accent}99`, letterSpacing:0.4, paddingLeft:14,
-            animation:'tickerScroll 190s linear infinite', cursor:'default'
-          }}>{tickerText}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tickerText}</div>
+          {(() => {
+            const charCount = (tickerText || "").length;
+            const tickerDuration = Math.max(Math.round(charCount / 16), 25);
+            return (
+              <div className="hero-live-ticker-track" style={{
+                display:'inline-block', whiteSpace:'nowrap', fontFamily:'monospace',
+                fontSize:11, color:`${pal.accent}99`, letterSpacing:0.4, paddingLeft:14,
+                animation:`tickerScroll ${tickerDuration}s linear infinite`, cursor:'default'
+              }}>
+                {tickerText}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{tickerText}
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -4537,6 +4703,265 @@ function HeroDamSlider({
   );
 }
 
+
+function CountryFilterDropdown({ selectedCountry, onSelectCountry, lang, t, allDams }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        if (inputRef.current) inputRef.current.focus();
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  const countryDamCounts = useMemo(() => {
+    const counts = {};
+    COUNTRIES.forEach(c => {
+      counts[c.name] = (allDams || ALL_DAMS).filter(d => (d.country || "India") === c.name).length;
+    });
+    return counts;
+  }, [allDams]);
+
+  const filteredCountries = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return COUNTRIES;
+    return COUNTRIES.filter(c => {
+      const locLabel = (getLocalizedState(c.name, lang) || c.label).toLowerCase();
+      return (
+        c.name.toLowerCase().includes(q) ||
+        c.label.toLowerCase().includes(q) ||
+        locLabel.includes(q) ||
+        (c.sub && c.sub.toLowerCase().includes(q))
+      );
+    });
+  }, [searchQuery, lang]);
+
+  const currentObj = COUNTRIES.find(c => c.name === selectedCountry) || COUNTRIES[0];
+  const currentLabel = getLocalizedState(currentObj.name, lang) || currentObj.label;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0, position: "relative" }}>
+      <span style={{ fontSize: 10, color: "rgba(224, 242, 254, 0.4)", textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700 }}>
+        Country
+      </span>
+      <div style={{ position: "relative" }}>
+        {/* Trigger Button */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsOpen(!isOpen);
+            setSearchQuery("");
+          }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 8,
+            background: "linear-gradient(135deg, rgba(6,182,212,0.18), rgba(2,132,199,0.22))",
+            border: "1px solid rgba(6,182,212,0.45)",
+            borderRadius: 14,
+            color: "#67E8F9",
+            fontSize: 12,
+            fontWeight: 700,
+            padding: "6px 12px",
+            cursor: "pointer",
+            outline: "none",
+            minWidth: 125,
+            maxWidth: 180,
+            height: 32,
+            transition: "all 0.2s",
+            backdropFilter: "blur(8px)",
+            boxShadow: "0 0 12px rgba(6,182,212,0.15)"
+          }}
+        >
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}>
+            <span>{currentObj.flag}</span>
+            <span>{currentLabel}</span>
+          </span>
+          <span style={{ fontSize: 9, color: "#67E8F9", transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }}>▼</span>
+        </button>
+
+        {/* Dropdown Menu */}
+        {isOpen && (
+          <>
+            <div
+              onClick={() => setIsOpen(false)}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 390,
+                background: "transparent"
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: "calc(100% + 8px)",
+                width: 270,
+                maxWidth: "min(320px, calc(100vw - 32px))",
+                background: "#030e1d",
+                border: "1px solid rgba(6, 182, 212, 0.45)",
+                borderRadius: 14,
+                boxShadow: "0 16px 40px rgba(0,0,0,0.95), 0 0 25px rgba(6,182,212,0.2)",
+                backdropFilter: "blur(24px)",
+                zIndex: 400,
+                padding: 10,
+                animation: "fadeSlideUp 0.18s ease"
+              }}
+            >
+              {/* Header */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, padding: "0 2px" }}>
+                <span style={{ fontSize: 11, color: "rgba(224,242,254,0.6)", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>
+                  Select Country ({COUNTRIES.length})
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "rgba(224,242,254,0.4)",
+                    fontSize: 14,
+                    cursor: "pointer",
+                    padding: 0,
+                    lineHeight: 1
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Search Box */}
+              <div style={{ position: "relative", marginBottom: 8 }}>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Search country..."
+                  style={{
+                    width: "100%",
+                    background: "rgba(2, 6, 14, 0.85)",
+                    border: "1px solid rgba(6, 182, 212, 0.3)",
+                    borderRadius: 8,
+                    padding: "6px 10px 6px 28px",
+                    color: "#E0F2FE",
+                    fontSize: 12,
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }}
+                />
+                <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", fontSize: 11, opacity: 0.5, pointerEvents: "none" }}>
+                  🔍
+                </span>
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    style={{
+                      position: "absolute",
+                      right: 8,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      background: "none",
+                      border: "none",
+                      color: "rgba(224,242,254,0.5)",
+                      fontSize: 11,
+                      cursor: "pointer",
+                      padding: 0
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* Country List */}
+              <div style={{ maxHeight: 240, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
+                {filteredCountries.length === 0 ? (
+                  <div style={{ padding: "12px 8px", textAlign: "center", color: "rgba(224,242,254,0.4)", fontSize: 12 }}>
+                    No country matching "{searchQuery}"
+                  </div>
+                ) : (
+                  filteredCountries.map(opt => {
+                    const isSelected = selectedCountry === opt.name;
+                    const count = countryDamCounts[opt.name] || 0;
+                    const optLabel = getLocalizedState(opt.name, lang) || opt.label;
+                    return (
+                      <button
+                        key={opt.code}
+                        type="button"
+                        onClick={() => {
+                          onSelectCountry(opt.name);
+                          setIsOpen(false);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 8,
+                          padding: "7px 10px",
+                          borderRadius: 8,
+                          background: isSelected ? "rgba(6,182,212,0.18)" : "transparent",
+                          border: isSelected ? "1px solid rgba(6,182,212,0.45)" : "1px solid transparent",
+                          color: isSelected ? "#67E8F9" : "#E0F2FE",
+                          fontSize: 12,
+                          fontWeight: isSelected ? 700 : 400,
+                          cursor: "pointer",
+                          textAlign: "left",
+                          transition: "all 0.15s"
+                        }}
+                        onMouseEnter={e => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = "rgba(6,182,212,0.08)";
+                            e.currentTarget.style.color = "#38bdf8";
+                          }
+                        }}
+                        onMouseLeave={e => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = "transparent";
+                            e.currentTarget.style.color = "#E0F2FE";
+                          }
+                        }}
+                      >
+                        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 16 }}>{opt.flag}</span>
+                          <span>{optLabel}</span>
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 10,
+                            padding: "2px 6px",
+                            borderRadius: 10,
+                            background: isSelected ? "rgba(6,182,212,0.3)" : "rgba(255,255,255,0.06)",
+                            color: isSelected ? "#A5F3FC" : "rgba(224,242,254,0.5)",
+                            fontWeight: 600
+                          }}
+                        >
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 function StateFilterDropdown({ selectedState, selectedZone, onSelectState, lang, dams }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -4831,6 +5256,7 @@ function StateFilterDropdown({ selectedState, selectedZone, onSelectState, lang,
 }
 
 // ===================== MAIN APP =====================
+
 export default function App() {
   const { path, navigate } = useRouter();
   const [view, setView] = useState("main");
@@ -4854,9 +5280,24 @@ export default function App() {
   const [searchHistory, setSearchHistory] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(() => localStorage.getItem("dam_country") || "India");
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  const [navCountrySearch, setNavCountrySearch] = useState("");
+  const navCountryInputRef = useRef(null);
+
+  useEffect(() => {
+    if (countryDropdownOpen) {
+      const timer = setTimeout(() => {
+        if (navCountryInputRef.current) navCountryInputRef.current.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [countryDropdownOpen]);
   const countryDams = useMemo(() => {
     if (selectedCountry === "USA") return DAMS_USA;
     if (selectedCountry === "Brazil") return DAMS_BRAZIL;
+    if (selectedCountry === "Japan") return DAMS_JAPAN;
+    if (selectedCountry === "Spain") return DAMS_SPAIN;
+    if (selectedCountry === "Australia") return DAMS_AUSTRALIA;
+    if (selectedCountry === "Mexico") return DAMS_MEXICO;
     if (selectedCountry === "Thailand") return DAMS_THAILAND;
     if (selectedCountry === "Nepal") return DAMS_NEPAL;
     if (selectedCountry === "Laos") return DAMS_LAOS;
@@ -4922,7 +5363,12 @@ export default function App() {
   };
 
   const tickerText = useMemo(() => {
-    return countryDams.map(d => {
+    let sourceDams = countryDams || [];
+    if (sourceDams.length > 0 && sourceDams.length < 12) {
+      const repeatCount = Math.ceil(16 / sourceDams.length);
+      sourceDams = Array(repeatCount).fill(sourceDams).flat();
+    }
+    return sourceDams.map(d => {
       const cap = typeof d.capacity === 'number' ? d.capacity : parseFloat(d.capacity) || 0;
       const lvl = typeof d.level === 'number' ? d.level : parseFloat(d.level) || 0;
       const tmc = (cap * lvl / 100).toFixed(2);
@@ -5284,6 +5730,13 @@ export default function App() {
       const slug = zoneMatch[1];
       const zoneName = getZoneFromSlug(slug);
       setSelectedZone(zoneName);
+      for (const [cName, zones] of Object.entries(COUNTRY_ZONES)) {
+        if (zones.includes(zoneName) && cName !== selectedCountry && zoneName !== "All") {
+          setSelectedCountry(cName);
+          localStorage.setItem("dam_country", cName);
+          break;
+        }
+      }
       setSelectedState("all");
       setView("main");
       setSelectedDam(null);
@@ -5319,6 +5772,11 @@ export default function App() {
       const stateName = getStateFromSlug(slug);
       setSelectedState(stateName);
       if (stateName !== "all") {
+        const matchDam = ALL_DAMS.find(d => d.state === stateName);
+        if (matchDam && matchDam.country && matchDam.country !== selectedCountry) {
+          setSelectedCountry(matchDam.country);
+          localStorage.setItem("dam_country", matchDam.country);
+        }
         setSelectedZone(STATE_TO_ZONE[stateName] || "All");
       } else {
         setSelectedZone("All");
@@ -5496,7 +5954,7 @@ export default function App() {
         ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#38bdf8 0%,#0ea5e9 100%);box-shadow:0 0 10px rgba(56,189,248,0.6)}
         @keyframes wv1{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
         @keyframes rain{0%{transform:translateY(-20px);opacity:0}8%{opacity:0.55}88%{opacity:0.55}100%{transform:translateY(92vh);opacity:0}}
-        @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+        @keyframes tickerScroll{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
         @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
         @keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
         @keyframes glowPulse{0%,100%{opacity:0.65}50%{opacity:1}}
@@ -5837,7 +6295,7 @@ export default function App() {
               <div>
                 <div style={{ fontWeight: 900, fontSize: 15, color: "#E0F2FE", letterSpacing: 0.3 }}>Damtoday</div>
                 <div style={{ fontSize: 9, color: "rgba(224, 242, 254, 0.33)", letterSpacing: 2, textTransform: "uppercase" }}>
-                  {selectedCountry === "USA" ? t("brandSubUSA") : selectedCountry === "Brazil" ? t("brandSubBrazil") : selectedCountry === "Thailand" ? "Live Thailand Reservoirs" : selectedCountry === "Laos" ? "Live Laos Reservoirs" : selectedCountry === "Vietnam" ? "Live Vietnam Reservoirs" : t("brandSubIndia")}
+                  {selectedCountry === "USA" ? t("brandSubUSA") : selectedCountry === "Brazil" ? t("brandSubBrazil") : selectedCountry === "Japan" ? "Live Japan Reservoirs & Hydro Telemetry" : selectedCountry === "Spain" ? "Live Spain Reservoirs & Embalses Peninsulares" : selectedCountry === "Australia" ? "Live Australia Reservoirs & Water Storages" : selectedCountry === "Mexico" ? "Live Mexico Reservoirs & Presas Principales" : selectedCountry === "Thailand" ? "Live Thailand Reservoirs" : selectedCountry === "Nepal" ? "Live Nepal Reservoirs" : selectedCountry === "Laos" ? "Live Laos Reservoirs" : selectedCountry === "Vietnam" ? "Live Vietnam Reservoirs" : t("brandSubIndia")}
                 </div>
               </div>
             </a>
@@ -5900,10 +6358,13 @@ export default function App() {
                 </a>
               </div>
 
-              {/* Premium Glassmorphic Country Selector */}
+              {/* Premium Glassmorphic Searchable Country Selector */}
               <div className="main-nav-country-selector" style={{ position: "relative", zIndex: 101 }}>
                 <button
-                  onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
+                  onClick={() => {
+                    setCountryDropdownOpen(!countryDropdownOpen);
+                    setNavCountrySearch("");
+                  }}
                   style={{
                     background: "rgba(255, 255, 255, 0.05)",
                     backdropFilter: "blur(12px)",
@@ -5934,53 +6395,145 @@ export default function App() {
                 </button>
 
                 {countryDropdownOpen && (
-                  <div style={{
-                    position: "absolute",
-                    right: 0,
-                    top: "125%",
-                    background: "rgba(3, 10, 20, 0.94)",
-                    backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(6, 182, 212, 0.25)",
-                    borderRadius: "10px",
-                    padding: "6px 0",
-                    width: 140,
-                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 2,
-                    animation: "fadeSlideUp 0.15s ease-out"
-                  }}>
-                    {COUNTRIES.map(opt => (
-                      <button
-                        key={opt.code}
-                        onClick={() => selectCountry(opt.name)}
-                        style={{
-                          background: selectedCountry === opt.name ? "rgba(6, 182, 212, 0.15)" : "transparent",
-                          border: "none",
-                          color: selectedCountry === opt.name ? "#38bdf8" : "rgba(224, 242, 254, 0.7)",
-                          padding: "8px 14px",
-                          fontSize: 12,
-                          fontWeight: selectedCountry === opt.name ? 700 : 500,
-                          textAlign: "left",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          width: "100%"
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)";
-                          e.currentTarget.style.color = "#38bdf8";
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.background = selectedCountry === opt.name ? "rgba(6, 182, 212, 0.15)" : "transparent";
-                          e.currentTarget.style.color = selectedCountry === opt.name ? "#38bdf8" : "rgba(224, 242, 254, 0.7)";
-                        }}
-                      >
-                        <span>{opt.label}</span>
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <div
+                      onClick={() => setCountryDropdownOpen(false)}
+                      style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 390,
+                        background: "transparent"
+                      }}
+                    />
+                    <div style={{
+                      position: "absolute",
+                      right: 0,
+                      top: "125%",
+                      background: "rgba(3, 14, 29, 0.96)",
+                      backdropFilter: "blur(24px)",
+                      WebkitBackdropFilter: "blur(24px)",
+                      border: "1px solid rgba(6, 182, 212, 0.35)",
+                      borderRadius: "12px",
+                      padding: "8px",
+                      width: 220,
+                      boxShadow: "0 16px 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(6, 182, 212, 0.15)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 6,
+                      animation: "fadeSlideUp 0.15s ease-out",
+                      zIndex: 400
+                    }}>
+                      {/* Search Input */}
+                      <div style={{ position: "relative" }}>
+                        <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", fontSize: 11, opacity: 0.6, pointerEvents: "none" }}>🔍</span>
+                        <input
+                          ref={navCountryInputRef}
+                          type="text"
+                          placeholder="Search country..."
+                          value={navCountrySearch}
+                          onChange={(e) => setNavCountrySearch(e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "6px 24px 6px 26px",
+                            borderRadius: 6,
+                            border: "1px solid rgba(6, 182, 212, 0.25)",
+                            background: "rgba(6, 20, 40, 0.8)",
+                            color: "#FFFFFF",
+                            fontSize: 11.5,
+                            outline: "none"
+                          }}
+                        />
+                        {navCountrySearch && (
+                          <button
+                            type="button"
+                            onClick={() => setNavCountrySearch("")}
+                            style={{
+                              position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)",
+                              background: "none", border: "none", color: "rgba(224, 242, 254, 0.6)",
+                              fontSize: 10, cursor: "pointer", padding: 2
+                            }}
+                          >✕</button>
+                        )}
+                      </div>
+
+                      {/* Filtered Country List */}
+                      <div style={{ maxHeight: 220, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
+                        {(() => {
+                          const q = navCountrySearch.trim().toLowerCase();
+                          const filtered = COUNTRIES.filter(opt =>
+                            !q ||
+                            opt.name.toLowerCase().includes(q) ||
+                            opt.label.toLowerCase().includes(q) ||
+                            (getLocalizedState(opt.name, lang) || "").toLowerCase().includes(q)
+                          );
+                          if (filtered.length === 0) {
+                            return (
+                              <div style={{ padding: "10px 6px", textAlign: "center", color: "rgba(224,242,254,0.4)", fontSize: 11 }}>
+                                No country matching "{navCountrySearch}"
+                              </div>
+                            );
+                          }
+                          return filtered.map(opt => {
+                            const isSelected = selectedCountry === opt.name;
+                            const damCount = ALL_DAMS.filter(d => (d.country || "India") === opt.name).length;
+                            return (
+                              <button
+                                key={opt.code}
+                                onClick={() => {
+                                  selectCountry(opt.name);
+                                  setCountryDropdownOpen(false);
+                                }}
+                                style={{
+                                  background: isSelected ? "rgba(6, 182, 212, 0.18)" : "transparent",
+                                  border: isSelected ? "1px solid rgba(6, 182, 212, 0.4)" : "1px solid transparent",
+                                  borderRadius: 6,
+                                  color: isSelected ? "#67E8F9" : "rgba(224, 242, 254, 0.75)",
+                                  padding: "6px 10px",
+                                  fontSize: 11.5,
+                                  fontWeight: isSelected ? 700 : 500,
+                                  textAlign: "left",
+                                  cursor: "pointer",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  gap: 6,
+                                  width: "100%",
+                                  transition: "all 0.15s"
+                                }}
+                                onMouseEnter={e => {
+                                  if (!isSelected) {
+                                    e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)";
+                                    e.currentTarget.style.color = "#38bdf8";
+                                  }
+                                }}
+                                onMouseLeave={e => {
+                                  if (!isSelected) {
+                                    e.currentTarget.style.background = "transparent";
+                                    e.currentTarget.style.color = "rgba(224, 242, 254, 0.75)";
+                                  }
+                                }}
+                              >
+                                <span>{opt.label}</span>
+                                <span style={{
+                                  fontSize: 9.5,
+                                  padding: "1px 5px",
+                                  borderRadius: 8,
+                                  background: isSelected ? "rgba(6, 182, 212, 0.3)" : "rgba(255,255,255,0.06)",
+                                  color: isSelected ? "#A5F3FC" : "rgba(224, 242, 254, 0.5)",
+                                  fontWeight: 600
+                                }}>
+                                  {damCount}
+                                </span>
+                              </button>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
 
@@ -6314,7 +6867,7 @@ export default function App() {
             borderBottom:"1px solid rgba(255,255,255,0.03)", position:"relative", zIndex:6
           }}>
             <div style={{ maxWidth:1100, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))", gap:24 }}>
-              <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={selectedCountry === "USA" ? "Active US federal & state dams" : selectedCountry === "Brazil" ? "Barragens monitoradas pelo ONS" : selectedCountry === "Thailand" ? "EGAT hydro reservoirs across 4 river basins" : selectedCountry === "Laos" ? "Mekong mainstream & tributary cascade dams" : selectedCountry === "Vietnam" ? "Sesan, Srepok & national hydro reservoirs" : t("monitoredDamsSub")} decimals={0} />
+              <StatCard label={t("monitoredDams")} target={currentTotalDams} active={goStats} color="#67E8F9" sub={selectedCountry === "USA" ? "Active US federal & state dams" : selectedCountry === "Brazil" ? "Barragens monitoradas pelo ONS" : selectedCountry === "Japan" ? "MLIT river telemetry & hydro dams" : selectedCountry === "Spain" ? "Embalses peninsulares MITECO" : selectedCountry === "Australia" ? "BoM & MDBA water storages" : selectedCountry === "Mexico" ? "Presas monitoreadas por CONAGUA" : selectedCountry === "Thailand" ? "EGAT hydro reservoirs across 4 river basins" : selectedCountry === "Nepal" ? "DHM & NEA hydro dams across river basins" : selectedCountry === "Laos" ? "Mekong mainstream & tributary cascade dams" : selectedCountry === "Vietnam" ? "Sesan, Srepok & national hydro reservoirs" : t("monitoredDamsSub")} decimals={0} />
               <StatCard label={t("averageLevel")} target={currentAvgLevel} active={goStats} suffix="%" color="#22D3EE" sub={t("averageLevelSub")} decimals={1} />
               <StatCardLarge
                 label={t("totalCapacity")}
@@ -6394,6 +6947,13 @@ export default function App() {
               </div>
 
               {/* Compact Searchable State Dropdown */}
+              <CountryFilterDropdown
+                selectedCountry={selectedCountry}
+                onSelectCountry={selectCountry}
+                lang={lang}
+                t={t}
+                allDams={ALL_DAMS}
+              />
               <StateFilterDropdown
                 selectedState={selectedState}
                 selectedZone={selectedZone}
