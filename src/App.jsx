@@ -14,9 +14,6 @@ import DAMS_MEXICO from "./data/dams_mexico.json";
 import SCRAPE_STATUS from "./data/scrape_status.json";
 import DAM_STATIC_INFO from "./data/dam_static_info.json";
 import TRANSLATIONS from "./data/translations.json";
-import SupportPage from "./components/SupportPage";
-import SupportButton from "./components/SupportButton";
-import UpiPaymentCard from "./components/UpiPaymentCard";
 
 const DAMS = DAMS_INDIA;
 const ALL_DAMS = [
@@ -3482,7 +3479,7 @@ function DamDetailPage({ dam, navigate, setView, t, td, lang, selectedCountry = 
 
 function AboutUsPage({ navigate, setView, lang, t }) {
   return (
-    <div style={{ maxWidth: 840, margin: "0 auto", padding: "40px 16px 60px", animation: "fadeSlideUp 0.5s ease" }}>
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 16px", animation: "fadeSlideUp 0.5s ease" }}>
       <button 
         onClick={() => navigate("/")}
         style={{
@@ -3498,114 +3495,33 @@ function AboutUsPage({ navigate, setView, lang, t }) {
         &larr; {t("backToDashboard")}
       </button>
 
-      {/* Main Story Container */}
       <div style={{
         background: "linear-gradient(135deg, #091a2f 0%, #040c17 100%)",
-        border: "1px solid rgba(6, 182, 212, 0.25)", borderRadius: 20,
-        padding: "clamp(24px, 5vw, 44px) clamp(16px, 4vw, 36px)", marginBottom: 32,
-        boxShadow: "0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(6, 182, 212, 0.08)"
+        border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16,
+        padding: "clamp(20px, 4vw, 40px) clamp(16px, 5vw, 40px)", marginBottom: 24
       }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "4px 12px", borderRadius: 20, background: "rgba(6, 182, 212, 0.1)", border: "1px solid rgba(6, 182, 212, 0.25)", marginBottom: 14 }}>
-          <span style={{ fontSize: 13 }}>🌾</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: "#67E8F9", letterSpacing: 1, textTransform: "uppercase" }}>
-            The Damtoday Origin Story
-          </span>
-        </div>
-
-        <h1 style={{ fontSize: "clamp(26px, 5vw, 38px)", fontWeight: 900, color: "#fff", marginBottom: 14, lineHeight: 1.2 }}>
-          Built by Tech Engineers with Farming Roots
-        </h1>
-        <p style={{ fontSize: 16, color: "rgba(224,242,254,0.8)", lineHeight: 1.8, marginBottom: 28 }}>
-          We are a group of software and data engineers who grew up watching our agrarian families, farming communities, and village elders navigate the unpredictable realities of water. Damtoday was born out of a simple question: <strong style={{ color: "#38BDF8" }}>Why should vital water information be so hard for ordinary people to access?</strong>
+        <h1 style={{ fontSize: "clamp(26px, 5vw, 36px)", fontWeight: 900, color: "#fff", marginBottom: 12 }}>{t("aboutDamToday")}</h1>
+        <p style={{ fontSize: 15, color: "rgba(224,242,254,0.6)", lineHeight: 1.7, marginBottom: 20 }}>
+          {t("aboutDesc")}
         </p>
 
-        {/* Story Chapters */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }}>
-          {/* Chapter 1: The Problem */}
-          <div style={{
-            background: "rgba(255, 255, 255, 0.02)",
-            borderLeft: "4px solid #F59E0B",
-            borderRadius: "0 12px 12px 0",
-            padding: "18px 20px"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 16 }}>📜</span>
-              <h3 style={{ fontSize: 17, fontWeight: 800, color: "#FDE68A", margin: 0 }}>
-                1. The Struggle with Fragmented Government Portals
-              </h3>
-            </div>
-            <p style={{ fontSize: 13.5, color: "rgba(224,242,254,0.7)", lineHeight: 1.7, margin: 0 }}>
-              During monsoon seasons and summer droughts, farmers desperately need to know whether upstream reservoirs are releasing water or holding storage to plan their crop sowing and irrigation. But official government data was trapped across dozens of separate state portals, unsearchable PDFs, and archaic hydrological tables that consistently failed to load on mobile phones. Critical water telemetry was effectively hidden in plain sight.
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24, marginTop: 32 }}>
+          <div style={{ borderLeft: "3px solid #38bdf8", paddingLeft: 16 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t("ourMission")}</h3>
+            <p style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
+              {t("missionDesc")}
             </p>
           </div>
 
-          {/* Chapter 2: The Engineering Mission */}
-          <div style={{
-            background: "rgba(255, 255, 255, 0.02)",
-            borderLeft: "4px solid #38BDF8",
-            borderRadius: "0 12px 12px 0",
-            padding: "18px 20px"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 16 }}>🚀</span>
-              <h3 style={{ fontSize: 17, fontWeight: 800, color: "#BAE6FD", margin: 0 }}>
-                2. Our Solution: One Unified, Real-Time Dashboard
-              </h3>
-            </div>
-            <p style={{ fontSize: 13.5, color: "rgba(224,242,254,0.7)", lineHeight: 1.7, margin: 0 }}>
-              As engineers, we decided to build what didn't exist. We engineered autonomous scrapers, data normalization parsers, and a high-speed telemetry engine. Today, Damtoday monitors hundreds of reservoirs across India (from the Cauvery and Krishna basins to the Ganga, Narmada, and Bhakra cascades) alongside major international dams in the USA, Brazil, Spain, Japan, Australia, and Mexico — all in one accessible, real-time map.
-            </p>
-          </div>
-
-          {/* Chapter 3: The No-Ads Promise */}
-          <div style={{
-            background: "rgba(255, 255, 255, 0.02)",
-            borderLeft: "4px solid #10B981",
-            borderRadius: "0 12px 12px 0",
-            padding: "18px 20px"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 16 }}>🛡️</span>
-              <h3 style={{ fontSize: 17, fontWeight: 800, color: "#A7F3D0", margin: 0 }}>
-                3. Our Strict 100% Ad-Free Promise
-              </h3>
-            </div>
-            <p style={{ fontSize: 13.5, color: "rgba(224,242,254,0.7)", lineHeight: 1.7, margin: 0 }}>
-              Most websites monetize by bombarding visitors with aggressive popup ads, video banners, and data-heavy tracking scripts. We made a firm decision never to do that. When a farmer is standing under the sun in a field checking live water discharge, every second and every kilobyte matters. Damtoday is, and will forever remain, 100% free and completely ad-free.
-            </p>
-          </div>
-
-          {/* Chapter 4: Understanding the Metrics */}
-          <div style={{
-            background: "rgba(255, 255, 255, 0.02)",
-            borderLeft: "4px solid #818CF8",
-            borderRadius: "0 12px 12px 0",
-            padding: "18px 20px"
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 16 }}>📊</span>
-              <h3 style={{ fontSize: 17, fontWeight: 800, color: "#C7D2FE", margin: 0 }}>
-                4. Understanding the Key Metrics
-              </h3>
-            </div>
-            <div style={{ fontSize: 13, color: "rgba(224,242,254,0.65)", lineHeight: 1.7 }}>
-              <p style={{ marginBottom: 8 }}>
-                <strong style={{ color: "#E0F2FE" }}>{t("tmc")} (Thousand Million Cubic feet)</strong>: {lang === "hi" ? "जलाशयों में संग्रहीत पानी की मात्रा का वर्णन करने के लिए इस्तेमाल की जाने वाली इकाई। एक टीएमसी लगभग 28.3 अरब लीटर पानी के बराबर होती है।" : lang === "kn" ? "ಜಲಾಶಯಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ನೀರಿನ ಪ್ರಮಾಣವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ಘಟಕ. ಒಂದು ಟಿಎಂಸಿ ಎಂದರೆ ಸುಮಾರು 28.3 ಶತಕೋಟಿ ಲೀಟರ್ ನೀರು." : lang === "te" ? "రిజర్వాయర్లలో నిల్వ ఉన్న నీటి పరిమాణాన్ని తెలియజేసే ప్రమాణం. ఒక టీఎండీ అంటే సుమారు 28.3 బిలియన్ లీటర్ల నీరు." : lang === "ta" ? "நீர்த்தேக்கங்களில் சேமிக்கப்படும் நீரின் அளவை விவரிக்கும் அலகு. ஒரு டிஎம்சி என்பது தோராயமாக 28.3 பில்லியன் லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലാശയങ്ങളിലെ ജലത്തിന്റെ അളവ് സൂചിപ്പിക്കുന്ന യൂണിറ്റ്. ഒരു ടിഎംസി എന്നാൽ ഏകദേശം 28.3 ബില്യൺ ലിറ്റർ ജലമാണ്." : "The unit used to describe the volume of water stored in reservoirs. One TMC is equal to approximately 28.3 billion liters of water."}
-              </p>
-              <p style={{ marginBottom: 8 }}>
-                <strong style={{ color: "#E0F2FE" }}>{t("cusecs").charAt(0).toUpperCase() + t("cusecs").slice(1)} (Cubic feet per second)</strong>: {lang === "hi" ? "प्रवाह वेग का वर्णन करने के लिए इस्तेमाल की जाने वाली दर। 1 क्यूसेक हर सेकंड एक बिंदु से गुजरने वाले 28.3 लीटर पानी के बराबर होता है।" : lang === "kn" ? "ನೀರಿನ ಹರಿವಿನ ವೇಗವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ದರ. 1 ಕ್ಯೂಸೆಕ್ ಎಂದರೆ ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಒಂದು ಬಿಂದುವನ್ನು ದಾಟುವ 28.3 ಲೀಟರ್ ನೀರು." : lang === "te" ? "నీటి ప్రవాహ వేగాన్ని తెలియజేసే కొలత. ఒక క్యూసెక్కు అంటే ప్రతి సెకనుకు ఒక బిందువును దాటి ప్రవహించే 28.3 లీటర్ల నీరు." : lang === "ta" ? "நீர் ஓட்டத்தின் வேகத்தை விவரிக்கும் அலகு. 1 கனஅடி என்பது ஒவ்வொரு வினாடியும் ஒரு புள்ளியைக் கடந்து செல்லும் 28.3 லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലപ്രവാഹത്തിന്റെ വേഗത അളക്കുന്ന യൂണിറ്റ്. ഒരു ക്യൂസെക്സ് എന്നാൽ ഒരു സെക്കൻഡിൽ ഒരു പോയിന്റിലൂടെ ഒഴുകിപ്പോകുന്ന 28.3 ലിറ്റർ ജലമാണ്." : "The rate used to describe flow velocity. 1 cusec equals 28.3 liters of water passing a point every second."}
-              </p>
-              <p style={{ margin: 0 }}>
-                <strong style={{ color: "#E0F2FE" }}>{lang === "hi" ? "प्रवाह संतुलन" : lang === "kn" ? "ಹರಿವಿನ ಸಮತೋಲನ" : lang === "te" ? "ప్రవాహ సమతుల్యత" : lang === "ta" ? "ஓட்ட சமநிலை" : lang === "ml" ? "നീரொഴുക്ക് സന്തുലിതാവസ്ഥ" : "Flow Balance"}</strong>: {lang === "hi" ? "जब आवक निकासी से अधिक हो जाती है, तो जलाशय में भंडारण जमा होता है। जब निकासी आवक से अधिक हो जाती है, तो भंडारण कम हो जाता है।" : lang === "kn" ? "ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಜಲಾಶಯದಲ್ಲಿ ನೀರು ಸಂಗ್ರಹವಾಗುತ್ತದೆ. ಹೊರಹರಿವು ಒಳಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತದೆ." : lang === "te" ? "ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు రిజర్వాయర్‌లో నిల్వ పెరుగుతుంది. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు నిల్వ తగ్గుతుంది." : lang === "ta" ? "நீர்வரத்து வெளியேற்றத்தை விட அதிகமாக இருக்கும்போது, நீர்த்தேக்கத்தின் சேமிப்பு அதிகரிக்கும். வெளியேற்றம் நீர்வரத்தை விட அதிகமாக இருக்கும்போது, சேமிப்பு குறையும்." : lang === "ml" ? "നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കൂടുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കുറയുന്നു." : "When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes."}
-              </p>
+          <div style={{ borderLeft: "3px solid #86efac", paddingLeft: 16 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 6 }}>{t("understandingMetrics")}</h3>
+            <div style={{ fontSize: 13, color: "rgba(224,242,254,0.5)", lineHeight: 1.6 }}>
+              <p style={{ marginBottom: 8 }}><strong>{t("tmc")} (Thousand Million Cubic feet)</strong>: {lang === "hi" ? "जलाशयों में संग्रहीत पानी की मात्रा का वर्णन करने के लिए इस्तेमाल की जाने वाली इकाई। एक टीएमसी लगभग 28.3 अरब लीटर पानी के बराबर होती है।" : lang === "kn" ? "ಜಲಾಶಯಗಳಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ನೀರಿನ ಪ್ರಮಾಣವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ಘಟಕ. ಒಂದು ಟಿಎಂಸಿ ಎಂದರೆ ಸುಮಾರು 28.3 ಶತಕೋಟಿ ಲೀಟರ್ ನೀರು." : lang === "te" ? "రిజర్వాయర్లలో నిల్వ ఉన్న నీటి పరిమాణాన్ని తెలియజేసే ప్రమాణం. ఒక టీఎండీ అంటే సుమారు 28.3 బిలియన్ లీటర్ల నీరు." : lang === "ta" ? "நீர்த்தேக்கங்களில் சேமிக்கப்படும் நீரின் அளவை விவரிக்கும் அலகு. ஒரு டிஎம்சி என்பது தோராயமாக 28.3 பில்லியன் லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലാശയങ്ങളിലെ ജലത്തിന്റെ അളവ് സൂചിപ്പിക്കുന്ന യൂണിറ്റ്. ഒരു ടിഎംസി എന്നാൽ ഏകദേശം 28.3 ബില്യൺ ലിറ്റർ ജലമാണ്." : "The unit used to describe the volume of water stored in reservoirs. One TMC is equal to approximately 28.3 billion liters of water."}</p>
+              <p style={{ marginBottom: 8 }}><strong>{t("cusecs").charAt(0).toUpperCase() + t("cusecs").slice(1)} (Cubic feet per second)</strong>: {lang === "hi" ? "प्रवाह वेग का वर्णन करने के लिए इस्तेमाल की जाने वाली दर। 1 क्यूसेक हर सेकंड एक बिंदु से गुजरने वाले 28.3 लीटर पानी के बराबर होता है।" : lang === "kn" ? "ನೀರಿನ ಹರಿವಿನ ವೇಗವನ್ನು ವಿವರಿಸಲು ಬಳಸುವ ದರ. 1 ಕ್ಯೂಸೆಕ್ ಎಂದರೆ ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಒಂದು ಬಿಂದುವನ್ನು ದಾಟುವ 28.3 ಲೀಟರ್ ನೀರು." : lang === "te" ? "నీటి ప్రవాహ వేగాన్ని తెలియజేసే కొలత. ఒక క్యూసెక్కు అంటే ప్రతి సెకనుకు ఒక బిందువును దాటి ప్రవహించే 28.3 లೀటర్ల నీరు." : lang === "ta" ? "நீர் ஓட்டத்தின் வேகத்தை விவரிக்கும் அலகு. 1 கனஅடி என்பது ஒவ்வொரு வினாடியும் ஒரு புள்ளியைக் கடந்து செல்லும் 28.3 லிட்டர் தண்ணீருக்குச் சமம்." : lang === "ml" ? "ജലപ്രവാഹത്തിന്റെ വേഗത അളക്കുന്ന യൂണിറ്റ്. ഒരു ക്യൂസെക്സ് എന്നാൽ ഒരു സെക്കൻഡിൽ ഒരു പോയിന്റിലൂടെ ഒഴുകിപ്പോകുന്ന 28.3 ലിറ്റർ ജലമാണ്." : "The rate used to describe flow velocity. 1 cusec equals 28.3 liters of water passing a point every second."}</p>
+              <p style={{ marginBottom: 8 }}><strong>{lang === "hi" ? "प्रवाह संतुलन" : lang === "kn" ? "ಹರಿವಿನ ಸಮತೋಲನ" : lang === "te" ? "ప్రవాహ సమతుల్యత" : lang === "ta" ? "ஓட்ட சமநிலை" : lang === "ml" ? "നീரொഴുക്ക് സന്തുലിതാവസ്ഥ" : "Flow Balance"}</strong>: {lang === "hi" ? "जब आवक निकासी से अधिक हो जाती है, तो जलाशय में भंडारण जमा होता है। जब निकासी आवक से अधिक हो जाती है, तो भंडारण कम हो जाता है।" : lang === "kn" ? "ಒಳಹರಿವು ಹೊರಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಜಲಾಶಯದಲ್ಲಿ ನೀರು ಸಂಗ್ರಹವಾಗುತ್ತದೆ. ಹೊರಹರಿವು ಒಳಹರಿವಿಗಿಂತ ಹೆಚ್ಚಾದಾಗ ಸಂಗ್ರಹ ಕಡಿಮೆಯಾಗುತ್ತದೆ." : lang === "te" ? "ఇన్‌ఫ్లో అవుట్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు రిజర్వాయర్‌లో నిల్వ పెరుగుతుంది. అవుట్‌ఫ్లో ఇన్‌ఫ్లో కంటే ఎక్కువగా ఉన్నప్పుడు నిల్వ తగ్గుతుంది." : lang === "ta" ? "நீர்வரத்து வெளியேற்றத்தை விட அதிகமாக இருக்கும்போது, நீர்த்தேக்கத்தின் சேமிப்பு அதிகரிக்கும். வெளியேற்றம் நீர்வரத்தை விட அதிகமாக இருக்கும்போது, சேமிப்பு குறையும்." : lang === "ml" ? "നീരൊഴുക്ക് പുറത്തേക്കുള്ള ഒഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കൂടുന്നു. പുറത്തേക്കുള്ള ഒഴുക്ക് നീരൊഴുക്കിനേക്കാൾ കൂടുതലാകുമ്പോൾ സംഭരണം കുറയുന്നു." : "When inflow exceeds outflow, the reservoir accumulates storage. When outflow exceeds inflow, storage depletes."}</p>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Support Section on About Us page */}
-      <div style={{ marginTop: 32 }}>
-        <UpiPaymentCard lang={lang} t={t} />
       </div>
     </div>
   );
@@ -5603,30 +5519,6 @@ export default function App() {
           }
         ]
       });
-    } else if (path === "/support") {
-      setView("support");
-      let title = "Support Our Ad-Free Mission - Buy a Coffee / Chai - Damtoday";
-      let desc = "Damtoday is 100% free and ad-free. Support our daily reservoir telemetry scraping and cloud infrastructure with a cup of chai or coffee via instant UPI.";
-      if (lang === "hi") {
-        title = "हमारे विज्ञापन-मुक्त मिशन का समर्थन करें - चाय / कॉफ़ी भेंट करें - डैमटुडे";
-        desc = "डैमटुडे 100% मुफ़्त और विज्ञापन-मुक्त है। त्वरित UPI के माध्यम से चाय या कॉफ़ी देकर हमारे बुनियादी ढांचे का समर्थन करें।";
-      } else if (lang === "kn") {
-        title = "ನಮ್ಮ ಜಾಹೀರಾತು ರಹಿತ ಧ್ಯೇಯವನ್ನು ಬೆಂಬಲಿಸಿ - ಚಹಾ / ಕಾಫಿ ನೀಡಿ - ಡ್ಯಾಮ್‌ಟುಡೇ";
-        desc = "ಡ್ಯಾಮ್‌ಟುಡೇ 100% ಉಚಿತ ಮತ್ತು ಜಾಹೀರಾತು ರಹಿತವಾಗಿದೆ. UPI ಮೂಲಕ ಕಾಫಿ ನೀಡಿ ನಮ್ಮ ಸರ್ವರ್ ವೆಚ್ಚವನ್ನು ಬೆಂಬಲಿಸಿ।";
-      } else if (lang === "te") {
-        title = "మా ప్రకటన రహిత లక్ష్యానికి మద్దతు ఇవ్వండి - టీ / కాఫీ అందించండి - డ్యామ్‌టుడే";
-        desc = "డ్యామ్‌టుడే 100% ఉచితం మరియు ప్రకటనలు లేనిది. UPI ద్వారా కాఫీ అందించి మా సర్వర్లను సమర్థించండి.";
-      } else if (lang === "ta") {
-        title = "விளம்பரமில்லா எங்கள் நோக்கத்தை ஆதரிக்கவும் - டேம்டுடே";
-        desc = "டேம்டுடே முற்றிலும் இலவசம் மற்றும் விளம்பரமில்லாதது. UPI மூலம் காபி வழங்கி எங்கள் சேவையை ஆதரிக்கவும்.";
-      } else if (lang === "ml") {
-        title = "പരസ്യരഹിത സംരംഭത്തെ പിന്തുണക്കുക - ഡാംടുഡേ";
-        desc = "ഡാംടുഡേ പൂർണ്ണമായും സൗജന്യവും പരസ്യരഹിതവുമാണ്. UPI വഴി കോഫി നൽകി ഞങ്ങളെ സഹായിക്കുക.";
-      }
-      document.title = title;
-      setMetaDescription(desc);
-      setOpenGraphTags(title, desc, currentUrl);
-      removeJsonLdSchema();
     } else if (path === "/about") {
       setView("about");
       let title = "About Us - Open Reservoir Telemetry Integrity - Damtoday";
@@ -6464,28 +6356,7 @@ export default function App() {
                 >
                   {t("privacy")}
                 </a>
-                <a
-                  href="/support"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate("/support");
-                  }}
-                  style={{
-                    textDecoration: "none",
-                    color: view === "support" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)",
-                    fontSize: 12,
-                    fontWeight: view === "support" ? 700 : 600,
-                    transition: "color 0.2s"
-                  }}
-                  onMouseEnter={e => e.target.style.color = "#38bdf8"}
-                  onMouseLeave={e => e.target.style.color = view === "support" ? "#67E8F9" : "rgba(224, 242, 254, 0.5)"}
-                >
-                  {t("support") || "Support"}
-                </a>
               </div>
-
-              {/* Support Pill Button */}
-              <SupportButton navigate={navigate} variant="navbar" t={t} />
 
               {/* Premium Glassmorphic Searchable Country Selector */}
               <div className="main-nav-country-selector" style={{ position: "relative", zIndex: 101 }}>
@@ -6848,8 +6719,7 @@ export default function App() {
                   { path: "/", label: t("home") || "Home" },
                   { path: "/about", label: t("about") || "About Us" },
                   { path: "/contact", label: t("contact") || "Contact Us" },
-                  { path: "/privacy", label: t("privacy") || "Privacy Policy" },
-                  { path: "/support", label: "☕ " + (t("buyCoffeeChai") || "Support Damtoday") }
+                  { path: "/privacy", label: t("privacy") || "Privacy Policy" }
                 ].map((link) => (
                   <a
                     key={link.path}
@@ -6967,8 +6837,6 @@ export default function App() {
           <div style={{ flexGrow: 1 }}>
             {view === "detail" && selectedDam ? (
               <DamDetailPage dam={selectedDam} navigate={navigate} setView={setView} t={t} td={td} lang={lang} selectedCountry={selectedCountry} onOpenInfo={setActiveInfoDam} />
-            ) : view === "support" ? (
-              <SupportPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : view === "about" ? (
               <AboutUsPage navigate={navigate} setView={setView} lang={lang} t={t} />
             ) : view === "contact" ? (
@@ -7223,10 +7091,7 @@ export default function App() {
         <div style={{ borderTop:"1px solid rgba(255,255,255,0.03)", paddingTop:16, fontSize:12, color:"rgba(224,242,254,0.35)" }}>
           &copy; {new Date().getFullYear()} Damtoday. {t("createdAsLocal")}
         </div>
-        <div style={{ marginTop: 22, display: "flex", justifyContent: "center" }}>
-          <SupportButton navigate={navigate} variant="footer" t={t} />
-        </div>
-        <div style={{ marginTop:20, display:"flex", justifyContent:"center", gap:20, flexWrap:"wrap", fontSize:11 }}>
+        <div style={{ marginTop:24, display:"flex", justifyContent:"center", gap:20, flexWrap:"wrap", fontSize:11 }}>
           <a
             href="/about"
             onClick={(e) => {
@@ -7274,22 +7139,6 @@ export default function App() {
             onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
           >
             {t("privacy")}
-          </a>
-          <a
-            href="/support"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/support");
-            }}
-            style={{
-              textDecoration: "none",
-              background:"none", border:"none", color:"rgba(224,242,254,0.35)", cursor:"pointer",
-              transition:"color 0.2s"
-            }}
-            onMouseEnter={e => e.target.style.color="#38bdf8"}
-            onMouseLeave={e => e.target.style.color="rgba(224,242,254,0.35)"}
-          >
-            {t("support") || "Support"}
           </a>
           <button
             onClick={() => {

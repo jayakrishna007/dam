@@ -270,9 +270,7 @@
     "South": "South",
     "East": "East",
     "West": "West",
-    "Central": "Central",
-    "support": "Support",
-    "buyCoffeeChai": "Buy a Coffee / Chai"
+    "Central": "Central"
   },
   "hi": {
     "brandSub": "अखिल भारतीय",
@@ -545,9 +543,7 @@
     "South": "दक्षिण",
     "East": "पूर्व",
     "West": "पश्चिम",
-    "Central": "मध्य",
-    "support": "सहयोग",
-    "buyCoffeeChai": "चाय / कॉफ़ी भेंट करें"
+    "Central": "मध्य"
   },
   "kn": {
     "brandSub": "ಅಖಿಲ ಭಾರತ",
@@ -820,9 +816,7 @@
     "South": "ದಕ್ಷಿಣ",
     "East": "ಪೂರ್ವ",
     "West": "ಪಶ್ಚಿಮ",
-    "Central": "ಮಧ್ಯ",
-    "support": "ಬೆಂಬಲಿಸಿ",
-    "buyCoffeeChai": "ಚಹಾ / ಕಾಫಿ ನೀಡಿ"
+    "Central": "ಮಧ್ಯ"
   },
   "te": {
     "brandSub": "భారతదేశం",
@@ -1095,9 +1089,7 @@
     "South": "దక్షిణ",
     "East": "తూర్పు",
     "West": "పడమర",
-    "Central": "మధ్య",
-    "support": "మద్దతు",
-    "buyCoffeeChai": "టీ / కాఫీ అందించండి"
+    "Central": "మధ్య"
   },
   "ta": {
     "brandSub": "அனைத்திந்தியா",
@@ -1370,9 +1362,7 @@
     "South": "தெற்கு",
     "East": "கிழக்கு",
     "West": "மேற்கு",
-    "Central": "மத்திய",
-    "support": "ஆதரவு",
-    "buyCoffeeChai": "காபி / டீ வழங்கவும்"
+    "Central": "மத்திய"
   },
   "ml": {
     "brandSub": "ഭാരതമൊട്ടാകെ",
@@ -1645,8 +1635,6 @@
     "South": "തെക്ക്",
     "East": "കിഴക്ക്",
     "West": "പടിഞ്ഞാറ്",
-    "Central": "മധ്യം",
-    "support": "പിന്തുണ",
-    "buyCoffeeChai": "ചായ / കോഫി നൽകുക"
+    "Central": "മധ്യം"
   }
 }
