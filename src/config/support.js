@@ -2,8 +2,8 @@
 // You can override these values via .env (VITE_UPI_ID, VITE_PAYEE_NAME)
 
 export const SUPPORT_CONFIG = {
-  // Your PhonePe / YBL UPI ID
-  upiId: (typeof import.meta !== "undefined" && import.meta.env?.VITE_UPI_ID) || "6364197580@ybl",
+  // Your UPI ID
+  upiId: (typeof import.meta !== "undefined" && import.meta.env?.VITE_UPI_ID) || "999254256@axl",
   
   // Payee name shown on Google Pay, PhonePe, Paytm, etc.
   payeeName: (typeof import.meta !== "undefined" && import.meta.env?.VITE_PAYEE_NAME) || "DamToday",
