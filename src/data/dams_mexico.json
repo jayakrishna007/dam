@@ -1,7 +1,7 @@
 [
   {
     "id": "mx_1",
-    "name": "Belisario Domínguez (La Angostura)",
+    "name": "Belisario Dom\u00ednguez (La Angostura)",
     "river": "Grijalva River",
     "state": "Chiapas",
     "country": "Mexico",
@@ -17,18 +17,18 @@
     "data_source": "Official Government Telemetry",
     "data_frequency": "daily",
     "update_schedule": "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 07:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
     "id": "mx_2",
-    "name": "Malpaso (Nezahualcóyotl)",
+    "name": "Malpaso (Nezahualc\u00f3yotl)",
     "river": "Grijalva River",
     "state": "Chiapas",
     "country": "Mexico",
     "basin": "Grijalva-Usumacinta Basin",
     "level": 68.1,
-    "capacity": 339.20,
+    "capacity": 339.2,
     "capacity_hm3": 9605,
     "storage_hm3": 6541.0,
     "inflow": 3820,
@@ -38,14 +38,14 @@
     "data_source": "Official Government Telemetry",
     "data_frequency": "daily",
     "update_schedule": "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 07:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
     "id": "mx_3",
     "name": "Infiernillo Dam",
     "river": "Balsas River",
-    "state": "Michoacán",
+    "state": "Michoac\u00e1n",
     "country": "Mexico",
     "basin": "Balsas Basin",
     "level": 55.7,
@@ -59,7 +59,7 @@
     "data_source": "Official Government Telemetry",
     "data_frequency": "daily",
     "update_schedule": "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 07:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -80,12 +80,12 @@
     "data_source": "Official Government Telemetry",
     "data_frequency": "daily",
     "update_schedule": "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 07:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
     "id": "mx_5",
-    "name": "Presa Falcón",
+    "name": "Presa Falc\u00f3n",
     "river": "Rio Grande",
     "state": "Tamaulipas",
     "country": "Mexico",
@@ -101,7 +101,7 @@
     "data_source": "Official Government Telemetry",
     "data_frequency": "daily",
     "update_schedule": "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 07:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -122,12 +122,12 @@
     "data_source": "Official Government Telemetry",
     "data_frequency": "daily",
     "update_schedule": "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 07:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
     "id": "mx_7",
-    "name": "Chicoasén (Manuel Moreno Torres)",
+    "name": "Chicoas\u00e9n (Manuel Moreno Torres)",
     "river": "Grijalva River",
     "state": "Chiapas",
     "country": "Mexico",
@@ -143,7 +143,7 @@
     "data_source": "Official Government Telemetry",
     "data_frequency": "daily",
     "update_schedule": "Updated Daily at 07:30 PM IST (14:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 07:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   }
 ]

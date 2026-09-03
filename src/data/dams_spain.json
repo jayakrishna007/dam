@@ -2,7 +2,7 @@
   {
     "id": "es_1",
     "name": "La Serena Dam",
-    "river": "Zújar River",
+    "river": "Z\u00fajar River",
     "state": "Extremadura",
     "country": "Spain",
     "basin": "Guadiana Basin",
@@ -17,12 +17,12 @@
     "data_source": "Official Government Records",
     "data_frequency": "weekly",
     "update_schedule": "Updated Weekly every Tuesday from Official Government Records",
-    "last_updated": "2026-09-02 03:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
     "id": "es_2",
-    "name": "Alcántara Dam",
+    "name": "Alc\u00e1ntara Dam",
     "river": "Tagus River",
     "state": "Extremadura",
     "country": "Spain",
@@ -38,14 +38,14 @@
     "data_source": "Official Government Records",
     "data_frequency": "weekly",
     "update_schedule": "Updated Weekly every Tuesday from Official Government Records",
-    "last_updated": "2026-09-02 03:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
     "id": "es_3",
     "name": "Almendra Dam",
     "river": "Tormes River",
-    "state": "Castile and León",
+    "state": "Castile and Le\u00f3n",
     "country": "Spain",
     "basin": "Duero Basin",
     "level": 71.2,
@@ -59,7 +59,7 @@
     "data_source": "Official Government Records",
     "data_frequency": "weekly",
     "update_schedule": "Updated Weekly every Tuesday from Official Government Records",
-    "last_updated": "2026-09-02 03:30 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   }
 ]

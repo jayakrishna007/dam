@@ -6,17 +6,17 @@
     "state": "California",
     "basin": "California",
     "country": "USA",
-    "level": 58.0,
+    "level": 57.0,
     "capacity_af": 4552000,
     "capacity": 198.3,
-    "storage_af": 2621233,
-    "inflow": 3198,
-    "outflow": 7290,
+    "storage_af": 2614421,
+    "inflow": 3828,
+    "outflow": 7262,
     "unit": "cfs",
     "image": "/images/dams/shasta_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -29,14 +29,14 @@
     "level": 57.0,
     "capacity_af": 3537577,
     "capacity": 154.1,
-    "storage_af": 1955933,
-    "inflow": 1569,
-    "outflow": 10217,
+    "storage_af": 1941028,
+    "inflow": 2005,
+    "outflow": 9384,
     "unit": "cfs",
     "image": "/images/dams/oroville_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -49,13 +49,13 @@
     "level": 72.0,
     "capacity_af": 2447650,
     "capacity": 106.6,
-    "storage_af": 1769013,
-    "inflow": -101,
-    "outflow": 1659,
+    "storage_af": 1765452,
+    "inflow": -53,
+    "outflow": 1714,
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -68,13 +68,13 @@
     "level": 47.0,
     "capacity_af": 977000,
     "capacity": 42.6,
-    "storage_af": 460469,
-    "inflow": 1532,
-    "outflow": 2842,
+    "storage_af": 458580,
+    "inflow": 1862,
+    "outflow": 2766,
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -87,13 +87,13 @@
     "level": 65.0,
     "capacity_af": 2400000,
     "capacity": 104.5,
-    "storage_af": 1560771,
-    "inflow": 694,
-    "outflow": 1235,
+    "storage_af": 1559724,
+    "inflow": 673,
+    "outflow": 1130,
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -103,16 +103,16 @@
     "state": "California",
     "basin": "California",
     "country": "USA",
-    "level": 63.0,
+    "level": 64.0,
     "capacity_af": 2041000,
     "capacity": 88.9,
-    "storage_af": 1293156,
+    "storage_af": 1298716,
     "inflow": null,
     "outflow": null,
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -125,13 +125,13 @@
     "level": 79.0,
     "capacity_af": 2030000,
     "capacity": 88.4,
-    "storage_af": 7667,
+    "storage_af": 7650,
     "inflow": 500,
     "outflow": 900,
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -151,7 +151,7 @@
     "image": "/images/dams/hoover_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -171,7 +171,7 @@
     "image": "/images/dams/glen_canyon_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -191,7 +191,7 @@
     "image": "/images/dams/grand_coulee_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -230,7 +230,7 @@
     "image": "/images/dams/fort_peck_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -250,7 +250,7 @@
     "image": "/images/dams/garrison_dam.jpg",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -269,7 +269,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -288,7 +288,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -307,7 +307,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -326,7 +326,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -345,7 +345,7 @@
     "unit": "cfs",
     "data_source": "USGS / California CDEC",
     "data_frequency": "daily",
-    "last_updated": "2026-09-03 03:53 PM",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {

@@ -15,9 +15,9 @@
     "unit": "m3/s",
     "image": "/images/dams/kurobe.jpg",
     "data_source": "Official Government Telemetry",
-    "data_frequency": "daily",
-    "update_schedule": "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 11:30 AM",
+    "data_frequency": "10min",
+    "update_schedule": "Updated Every 10 Minutes from Official Government Records",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -36,9 +36,9 @@
     "unit": "m3/s",
     "image": "/images/dams/tokuyama.jpg",
     "data_source": "Official Government Telemetry",
-    "data_frequency": "daily",
-    "update_schedule": "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 11:30 AM",
+    "data_frequency": "10min",
+    "update_schedule": "Updated Every 10 Minutes from Official Government Records",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -57,9 +57,9 @@
     "unit": "m3/s",
     "image": "/images/dams/okutadami.jpg",
     "data_source": "Official Government Telemetry",
-    "data_frequency": "daily",
-    "update_schedule": "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 11:30 AM",
+    "data_frequency": "10min",
+    "update_schedule": "Updated Every 10 Minutes from Official Government Records",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -70,7 +70,7 @@
     "country": "Japan",
     "basin": "Kanto Region",
     "level": 68.9,
-    "capacity": 7.20,
+    "capacity": 7.2,
     "capacity_mcm": 204,
     "storage_mcm": 140.5,
     "inflow": 64,
@@ -78,9 +78,9 @@
     "unit": "m3/s",
     "image": "/images/dams/yagisawa.jpg",
     "data_source": "Official Government Telemetry",
-    "data_frequency": "daily",
-    "update_schedule": "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 11:30 AM",
+    "data_frequency": "10min",
+    "update_schedule": "Updated Every 10 Minutes from Official Government Records",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -99,9 +99,9 @@
     "unit": "m3/s",
     "image": "/images/dams/miyagase.jpg",
     "data_source": "Official Government Telemetry",
-    "data_frequency": "daily",
-    "update_schedule": "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 11:30 AM",
+    "data_frequency": "10min",
+    "update_schedule": "Updated Every 10 Minutes from Official Government Records",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -120,9 +120,9 @@
     "unit": "m3/s",
     "image": "/images/dams/sameura.jpg",
     "data_source": "Official Government Telemetry",
-    "data_frequency": "daily",
-    "update_schedule": "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 11:30 AM",
+    "data_frequency": "10min",
+    "update_schedule": "Updated Every 10 Minutes from Official Government Records",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -141,9 +141,9 @@
     "unit": "m3/s",
     "image": "/images/dams/tagokura.jpg",
     "data_source": "Official Government Telemetry",
-    "data_frequency": "daily",
-    "update_schedule": "Updated Daily at 11:30 AM IST (06:00 UTC) from Official Government Records",
-    "last_updated": "2026-09-02 11:30 AM",
+    "data_frequency": "10min",
+    "update_schedule": "Updated Every 10 Minutes from Official Government Records",
+    "last_updated": "2026-09-03 07:41 PM",
     "flow_status": "NORMAL_FLOW"
   }
 ]
