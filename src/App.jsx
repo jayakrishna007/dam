@@ -4369,7 +4369,7 @@ function HeroDamSlider({
         <div style={{ overflow:'hidden', flex:1 }}>
           {(() => {
             const charCount = (tickerText || "").length;
-            const tickerDuration = Math.max(Math.round(charCount / 16), 25);
+            const tickerDuration = Math.max(Math.round(charCount / 10.5), 35);
             return (
               <div className="hero-live-ticker-track" style={{
                 display:'inline-block', whiteSpace:'nowrap', fontFamily:'monospace',
@@ -5954,7 +5954,7 @@ export default function App() {
         ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#38bdf8 0%,#0ea5e9 100%);box-shadow:0 0 10px rgba(56,189,248,0.6)}
         @keyframes wv1{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
         @keyframes rain{0%{transform:translateY(-20px);opacity:0}8%{opacity:0.55}88%{opacity:0.55}100%{transform:translateY(92vh);opacity:0}}
-        @keyframes tickerScroll{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+        @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
         @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
         @keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
         @keyframes glowPulse{0%,100%{opacity:0.65}50%{opacity:1}}
