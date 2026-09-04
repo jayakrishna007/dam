@@ -16,7 +16,7 @@
     "image": "/images/dams/bhumibol.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -36,7 +36,7 @@
     "image": "/images/dams/sirikit.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -56,7 +56,7 @@
     "image": "/images/dams/srinagarind.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -76,7 +76,7 @@
     "image": "/images/dams/vajiralongkorn.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -96,7 +96,7 @@
     "image": "/images/dams/sirindhorn.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -116,7 +116,7 @@
     "image": "/images/dams/ubolratana.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -136,7 +136,7 @@
     "image": "/images/dams/ratchaprapha.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -156,7 +156,7 @@
     "image": "/images/dams/banglang.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -176,7 +176,7 @@
     "image": "/images/dams/chulabhorn.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "GATES_CLOSED"
   },
   {
@@ -196,7 +196,7 @@
     "image": "/images/dams/nampung.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "GATES_CLOSED"
   },
   {
@@ -216,7 +216,7 @@
     "image": "/images/dams/thathungna.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "NORMAL_FLOW"
   },
   {
@@ -236,7 +236,7 @@
     "image": "/images/dams/huaikum.jpg",
     "data_source": "EGAT Thailand Water Intelligence",
     "data_frequency": "daily",
-    "last_updated": "2026-09-04 07:32 PM",
+    "last_updated": "2026-09-04 10:55 PM",
     "flow_status": "GATES_CLOSED"
   }
 ]
