@@ -1,7 +1,7 @@
 {
-  "last_run_timestamp": "2026-09-05 06:46 PM",
+  "last_run_timestamp": "2026-09-05 10:07 PM",
   "success": true,
-  "duration_seconds": 29.64,
+  "duration_seconds": 19.18,
   "sources": {
     "tungabhadra": {
       "status": "Operational",
@@ -36,7 +36,7 @@
     "brazil": {
       "status": "Operational",
       "ok": true,
-      "count": 32
+      "count": 28
     },
     "thailand": {
       "status": "Operational",
@@ -80,12 +80,100 @@
     }
   },
   "metrics": {
-    "dams_changed": 17,
-    "storage_delta_tmc": -1.425,
-    "inflow_delta_cusecs": -1659,
-    "outflow_delta_cusecs": 920
+    "dams_changed": 2,
+    "storage_delta_tmc": 1.289,
+    "inflow_delta_cusecs": 1695,
+    "outflow_delta_cusecs": 1919
   },
   "history": [
+    {
+      "timestamp": "2026-09-05 10:07 PM",
+      "success": true,
+      "duration_seconds": 19.18,
+      "sources": {
+        "tungabhadra": {
+          "status": "Operational",
+          "ok": true,
+          "count": 1
+        },
+        "tamil_nadu": {
+          "status": "Operational",
+          "ok": true,
+          "count": 19
+        },
+        "bbmb": {
+          "status": "Operational",
+          "ok": true,
+          "count": 2
+        },
+        "bihar_wrd": {
+          "status": "Down",
+          "ok": false,
+          "count": 0
+        },
+        "pan_india": {
+          "status": "Operational",
+          "ok": true,
+          "count": 159
+        },
+        "usa": {
+          "status": "Operational",
+          "ok": true,
+          "count": 13
+        },
+        "brazil": {
+          "status": "Operational",
+          "ok": true,
+          "count": 28
+        },
+        "thailand": {
+          "status": "Operational",
+          "ok": true,
+          "count": 12
+        },
+        "nepal": {
+          "status": "Operational",
+          "ok": true,
+          "count": 10
+        },
+        "laos": {
+          "status": "Operational",
+          "ok": true,
+          "count": 7
+        },
+        "vietnam": {
+          "status": "Operational",
+          "ok": true,
+          "count": 6
+        },
+        "japan": {
+          "status": "Operational",
+          "ok": true,
+          "count": 7
+        },
+        "spain": {
+          "status": "Operational",
+          "ok": true,
+          "count": 3
+        },
+        "australia": {
+          "status": "Operational",
+          "ok": true,
+          "count": 7
+        },
+        "mexico": {
+          "status": "Operational",
+          "ok": true,
+          "count": 7
+        }
+      },
+      "metrics": {
+        "dams_changed": 2,
+        "storage_delta_tmc": 1.289,
+        "inflow_delta_cusecs": 1695,
+        "outflow_delta_cusecs": 1919
+      }
+    },
     {
       "timestamp": "2026-09-05 06:46 PM",
       "success": true,
@@ -1148,74 +1236,6 @@
         "storage_delta_tmc": 0.0,
         "inflow_delta_cusecs": 0,
         "outflow_delta_cusecs": 0
-      }
-    },
-    {
-      "timestamp": "2026-09-02 03:41 PM",
-      "success": true,
-      "duration_seconds": 28.83,
-      "sources": {
-        "tungabhadra": {
-          "status": "Operational",
-          "ok": true,
-          "count": 1
-        },
-        "tamil_nadu": {
-          "status": "Operational",
-          "ok": true,
-          "count": 19
-        },
-        "bbmb": {
-          "status": "Operational",
-          "ok": true,
-          "count": 2
-        },
-        "bihar_wrd": {
-          "status": "Down",
-          "ok": false,
-          "count": 0
-        },
-        "pan_india": {
-          "status": "Operational",
-          "ok": true,
-          "count": 159
-        },
-        "usa": {
-          "status": "Down",
-          "ok": false,
-          "count": 0
-        },
-        "brazil": {
-          "status": "Operational",
-          "ok": true,
-          "count": 30
-        },
-        "thailand": {
-          "status": "Operational",
-          "ok": true,
-          "count": 12
-        },
-        "nepal": {
-          "status": "Operational",
-          "ok": true,
-          "count": 10
-        },
-        "laos": {
-          "status": "Operational",
-          "ok": true,
-          "count": 7
-        },
-        "vietnam": {
-          "status": "Operational",
-          "ok": true,
-          "count": 6
-        }
-      },
-      "metrics": {
-        "dams_changed": 17,
-        "storage_delta_tmc": -0.391,
-        "inflow_delta_cusecs": 55,
-        "outflow_delta_cusecs": -145
       }
     }
   ]
